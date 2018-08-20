@@ -31,7 +31,13 @@ void getActiveWindow(const v8::FunctionCallbackInfo<v8::Value>& args) {
 void moveWindow(const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate* isolate = args.GetIsolate();
 
-  if (!args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber() || !args[3]->IsNumber() || !args[4]->IsNumber()) {
+  if (
+    !args[0]->IsNumber() ||
+    !args[1]->IsNumber() ||
+    !args[2]->IsNumber() ||
+    !args[3]->IsNumber() ||
+    !args[4]->IsNumber()
+  ) {
     throwError(isolate, "Wrong arguments");
     return;
   }
@@ -70,6 +76,11 @@ void getWindowBounds(const v8::FunctionCallbackInfo<v8::Value>& args) {
   args.GetReturnValue().Set(obj);
 }
 
+/**
+ * Gets window title.
+ * @param {int} windowHandle
+ * @returns {string}
+ */
 void getWindowTitle(const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate* isolate = args.GetIsolate();
 
@@ -86,11 +97,67 @@ void getWindowTitle(const v8::FunctionCallbackInfo<v8::Value>& args) {
   args.GetReturnValue().Set(result);
 }
 
+/**
+ * Sets window state (e.g minimized)
+ * @param {int} flag
+ */
+void setWindowState(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = args.GetIsolate();
+
+  if (!args[0]->IsNumber() || !args[1]->IsNumber()) {
+    throwError(isolate, "Wrong arguments");
+    return;
+  }
+
+  const HWND handle = (HWND)args[0]->Int32Value();
+  const int flag = args[1]->Int32Value();
+
+  ShowWindow(handle, flag);
+}
+
+/**
+ * @param {int} windowHandle
+ * @param {int} hWndInsertAfter
+ * @param {int} x
+ * @param {int} y
+ * @param {int} cx - width
+ * @param {int} cy - height
+ * @param {int} uFlags
+ */
+void setWindowPos(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = args.GetIsolate();
+
+  if (
+      !args[0]->IsNumber() || 
+      !args[1]->IsNumber() || 
+      !args[2]->IsNumber() || 
+      !args[3]->IsNumber() || 
+      !args[4]->IsNumber() || 
+      !args[5]->IsNumber() || 
+      !args[6]->IsNumber()  
+    ) {
+    throwError(isolate, "Wrong arguments");
+    return;
+  }
+
+  const HWND handle = (HWND)args[0]->Int32Value();
+  const HWND hWndInsertAfter = (HWND)args[1]->Int32Value();
+  const int x = args[2]->Int32Value();
+  const int y = args[3]->Int32Value();
+  const int cx = args[4]->Int32Value();
+  const int cy = args[5]->Int32Value();
+  const UINT uFlags = (UINT)args[6]->Int32Value();
+
+  SetWindowPos(handle, hWndInsertAfter, x, y, cx, cy, uFlags);
+}
+
 void Initialize(v8::Local<v8::Object> exports) {
   NODE_SET_METHOD(exports, "getActiveWindow", getActiveWindow);
   NODE_SET_METHOD(exports, "moveWindow", moveWindow);
   NODE_SET_METHOD(exports, "getWindowBounds", getWindowBounds);
   NODE_SET_METHOD(exports, "getWindowTitle", getWindowTitle);
+  NODE_SET_METHOD(exports, "setWindowState", setWindowState);
+  NODE_SET_METHOD(exports, "setWindowPos", setWindowPos);
 }
 
 NODE_MODULE(windows_window_manager, Initialize);
