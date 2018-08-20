@@ -25,15 +25,13 @@ class Window {
     this.handle = windowHandle;
     this.onMoved = new EventEmitter();
 
-    if (this.onMoved.listeners.length > 0) {
-      setInterval(() => {
-        const msg = native.getMessage(this.handle);
-        if (msg === 562) {
-          // WM_EXITSIZEMOVE
-          this.onMoved.emit();
-        }
-      }, 100);
-    }
+    setInterval(() => {
+      const msg = native.getMessage(this.handle);
+      if (msg === 562) {
+        // WM_EXITSIZEMOVE
+        this.onMoved.emit();
+      }
+    }, 100);
   }
 
   getBounds() {
