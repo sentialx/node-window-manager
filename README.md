@@ -103,7 +103,7 @@ Toggles window top most setting.
 ## Enum WindowState
 
 ```javascript
-    const { WindowState } = require('window-manager');
+const { WindowState } = require('window-manager');
 ```
 
 Windows states: 
