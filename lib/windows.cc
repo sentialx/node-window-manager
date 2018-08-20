@@ -38,9 +38,9 @@ void moveWindow(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
   const HWND handle = (HWND)args[0]->Int32Value();
   const size_t x = args[1]->Int32Value();
-	const size_t y = args[2]->Int32Value();
-	const size_t width = args[3]->Int32Value();
-	const size_t height = args[4]->Int32Value();
+  const size_t y = args[2]->Int32Value();
+  const size_t width = args[3]->Int32Value();
+  const size_t height = args[4]->Int32Value();
 
   MoveWindow(handle, x, y, width, height, true);
 }
@@ -51,7 +51,7 @@ void moveWindow(const v8::FunctionCallbackInfo<v8::Value>& args) {
  * @returns {object} the window bounds
  */
 void getWindowBounds(const v8::FunctionCallbackInfo<v8::Value>& args) {
-   v8::Isolate* isolate = args.GetIsolate();
+  v8::Isolate* isolate = args.GetIsolate();
 
   if (!args[0]->IsNumber()) {
     throwError(isolate, "Wrong arguments");
@@ -70,10 +70,27 @@ void getWindowBounds(const v8::FunctionCallbackInfo<v8::Value>& args) {
   args.GetReturnValue().Set(obj);
 }
 
+void getWindowTitle(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = args.GetIsolate();
+
+  if (!args[0]->IsNumber()) {
+    throwError(isolate, "Wrong arguments");
+    return;
+  }
+
+  char title[256];
+  HWND handle = (HWND)args[0]->Int32Value();
+  GetWindowText(handle, title, sizeof(title));
+
+  v8::Local<v8::String> result = v8::String::NewFromUtf8(isolate, title);
+  args.GetReturnValue().Set(result);
+}
+
 void Initialize(v8::Local<v8::Object> exports) {
   NODE_SET_METHOD(exports, "getActiveWindow", getActiveWindow);
   NODE_SET_METHOD(exports, "moveWindow", moveWindow);
   NODE_SET_METHOD(exports, "getWindowBounds", getWindowBounds);
+  NODE_SET_METHOD(exports, "getWindowTitle", getWindowTitle);
 }
 
 NODE_MODULE(windows_window_manager, Initialize);

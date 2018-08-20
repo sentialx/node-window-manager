@@ -12,7 +12,6 @@ const getWindowBounds = (windowHandle) => {
     return native.getWindowBounds(windowHandle);
 }
 
-setInterval(() => {
-    const window = getActiveWindow();
-    console.log(getWindowBounds(window));
-}, 1000)
+const getWindowTitle = (windowHandle) => {
+    return native.getWindowTitle(windowHandle);
+}
