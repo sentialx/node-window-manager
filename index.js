@@ -69,11 +69,17 @@ class Window {
   }
 
   setFrameless(toggle) {
+    const { left, top } = this.getBounds();
+    const width = this.getWidth();
+    const height = this.getHeight();
+
     native.setWindowLong(
       this.handle,
       GWL.STYLE,
       toggle ? WindowStyles.POPUP : this.style
     );
+
+    native.setWindowPos(this.handle, 0, left, top, width, height, 0);
   }
 }
 
