@@ -27,7 +27,7 @@ class Window {
         native.moveWindow(this.windowHandle, x, y, width, height);
     }
 
-    setWindowState(state) {
+    setState(state) {
         native.setWindowState(this.windowHandle, state);
     }
 
