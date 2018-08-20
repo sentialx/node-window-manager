@@ -2,7 +2,8 @@
 #include <windows.h>
 #include <string>
 
-void throwError(v8::Isolate* isolate, const char* error) {
+void throwError(v8::Isolate *isolate, const char *error)
+{
   isolate->ThrowException(v8::Exception::TypeError(v8::String::NewFromUtf8(isolate, error)));
 }
 
@@ -10,8 +11,9 @@ void throwError(v8::Isolate* isolate, const char* error) {
  * Gets currently focused window.
  * @returns {int} windowHandle
  */
-void getActiveWindow(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  v8::Isolate* isolate = args.GetIsolate();
+void getActiveWindow(const v8::FunctionCallbackInfo<v8::Value> &args)
+{
+  v8::Isolate *isolate = args.GetIsolate();
 
   HWND handle = GetForegroundWindow();
 
@@ -28,16 +30,17 @@ void getActiveWindow(const v8::FunctionCallbackInfo<v8::Value>& args) {
  * @param {int} width
  * @param {int} height
  */
-void moveWindow(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  v8::Isolate* isolate = args.GetIsolate();
+void moveWindow(const v8::FunctionCallbackInfo<v8::Value> &args)
+{
+  v8::Isolate *isolate = args.GetIsolate();
 
   if (
-    !args[0]->IsNumber() ||
-    !args[1]->IsNumber() ||
-    !args[2]->IsNumber() ||
-    !args[3]->IsNumber() ||
-    !args[4]->IsNumber()
-  ) {
+      !args[0]->IsNumber() ||
+      !args[1]->IsNumber() ||
+      !args[2]->IsNumber() ||
+      !args[3]->IsNumber() ||
+      !args[4]->IsNumber())
+  {
     throwError(isolate, "Wrong arguments");
     return;
   }
@@ -56,10 +59,12 @@ void moveWindow(const v8::FunctionCallbackInfo<v8::Value>& args) {
  * @param {int} windowHandle
  * @returns {object} the window bounds
  */
-void getWindowBounds(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  v8::Isolate* isolate = args.GetIsolate();
+void getWindowBounds(const v8::FunctionCallbackInfo<v8::Value> &args)
+{
+  v8::Isolate *isolate = args.GetIsolate();
 
-  if (!args[0]->IsNumber()) {
+  if (!args[0]->IsNumber())
+  {
     throwError(isolate, "Wrong arguments");
     return;
   }
@@ -81,10 +86,12 @@ void getWindowBounds(const v8::FunctionCallbackInfo<v8::Value>& args) {
  * @param {int} windowHandle
  * @returns {string}
  */
-void getWindowTitle(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  v8::Isolate* isolate = args.GetIsolate();
+void getWindowTitle(const v8::FunctionCallbackInfo<v8::Value> &args)
+{
+  v8::Isolate *isolate = args.GetIsolate();
 
-  if (!args[0]->IsNumber()) {
+  if (!args[0]->IsNumber())
+  {
     throwError(isolate, "Wrong arguments");
     return;
   }
@@ -101,10 +108,12 @@ void getWindowTitle(const v8::FunctionCallbackInfo<v8::Value>& args) {
  * Sets window state (e.g minimized)
  * @param {int} flag
  */
-void setWindowState(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  v8::Isolate* isolate = args.GetIsolate();
+void setWindowState(const v8::FunctionCallbackInfo<v8::Value> &args)
+{
+  v8::Isolate *isolate = args.GetIsolate();
 
-  if (!args[0]->IsNumber() || !args[1]->IsNumber()) {
+  if (!args[0]->IsNumber() || !args[1]->IsNumber())
+  {
     throwError(isolate, "Wrong arguments");
     return;
   }
@@ -124,18 +133,19 @@ void setWindowState(const v8::FunctionCallbackInfo<v8::Value>& args) {
  * @param {int} cy - height
  * @param {int} uFlags
  */
-void setWindowPos(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  v8::Isolate* isolate = args.GetIsolate();
+void setWindowPos(const v8::FunctionCallbackInfo<v8::Value> &args)
+{
+  v8::Isolate *isolate = args.GetIsolate();
 
   if (
-      !args[0]->IsNumber() || 
-      !args[1]->IsNumber() || 
-      !args[2]->IsNumber() || 
-      !args[3]->IsNumber() || 
-      !args[4]->IsNumber() || 
-      !args[5]->IsNumber() || 
-      !args[6]->IsNumber()  
-    ) {
+      !args[0]->IsNumber() ||
+      !args[1]->IsNumber() ||
+      !args[2]->IsNumber() ||
+      !args[3]->IsNumber() ||
+      !args[4]->IsNumber() ||
+      !args[5]->IsNumber() ||
+      !args[6]->IsNumber())
+  {
     throwError(isolate, "Wrong arguments");
     return;
   }
@@ -151,13 +161,66 @@ void setWindowPos(const v8::FunctionCallbackInfo<v8::Value>& args) {
   SetWindowPos(handle, hWndInsertAfter, x, y, cx, cy, uFlags);
 }
 
-void Initialize(v8::Local<v8::Object> exports) {
+/**
+ * @param {int} windowHandle
+ * @param {int} nIndex
+ * @param {int} dwNewLong
+ */
+void setWindowLong(const v8::FunctionCallbackInfo<v8::Value> &args)
+{
+  v8::Isolate *isolate = args.GetIsolate();
+
+  if (
+      !args[0]->IsNumber() ||
+      !args[1]->IsNumber() ||
+      !args[2]->IsNumber())
+  {
+    throwError(isolate, "Wrong arguments");
+    return;
+  }
+
+  const HWND handle = (HWND)args[0]->Int32Value();
+  const int nIndex = args[1]->Int32Value();
+  const LONG dwNewLong = (LONG)args[2]->Int32Value();
+
+  SetWindowLong(handle, nIndex, dwNewLong);
+}
+
+/**
+ * @param {int} windowHandle
+ * @param {int} nIndex
+ * @return {int}
+ */
+void getWindowLong(const v8::FunctionCallbackInfo<v8::Value> &args)
+{
+  v8::Isolate *isolate = args.GetIsolate();
+
+  if (
+      !args[0]->IsNumber() ||
+      !args[1]->IsNumber())
+  {
+    throwError(isolate, "Wrong arguments");
+    return;
+  }
+
+  const HWND handle = (HWND)args[0]->Int32Value();
+  const int nIndex = args[1]->Int32Value();
+  const long val = GetWindowLong(handle, nIndex);
+
+  v8::Local<v8::Number> num = v8::Number::New(isolate, (int)val);
+
+  args.GetReturnValue().Set(num);
+}
+
+void Initialize(v8::Local<v8::Object> exports)
+{
   NODE_SET_METHOD(exports, "getActiveWindow", getActiveWindow);
   NODE_SET_METHOD(exports, "moveWindow", moveWindow);
   NODE_SET_METHOD(exports, "getWindowBounds", getWindowBounds);
   NODE_SET_METHOD(exports, "getWindowTitle", getWindowTitle);
   NODE_SET_METHOD(exports, "setWindowState", setWindowState);
   NODE_SET_METHOD(exports, "setWindowPos", setWindowPos);
+  NODE_SET_METHOD(exports, "setWindowLong", setWindowLong);
 }
 
 NODE_MODULE(windows_window_manager, Initialize);
