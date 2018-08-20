@@ -2,7 +2,7 @@ const native = require("bindings")("windows-window-manager");
 
 class Window {
   constructor(windowHandle) {
-    thishandle = windowHandle;
+    this.handle = windowHandle;
     this.style = native.getWindowLong(this.handle, GWL.STYLE);
   }
 
