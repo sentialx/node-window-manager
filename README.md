@@ -100,3 +100,23 @@ Toggles window top most setting.
 
 - `toggle` boolean
 
+## Enum WindowState
+
+```javascript
+    const { WindowState } = require('window-manager');
+```
+
+Windows states: 
+- `HIDE`
+- `SHOWNORMAL`
+- `SHOWMINIMIZED`
+- `MAXIMIZE`
+- `SHOWMAXIMIZED`
+- `SHOWNOACTIVATE`
+- `SHOW`
+- `MINIMIZE`
+- `SHOWMINNOACTIVE`
+- `SHOWNA`
+- `RESTORE`
+- `SHOWDEFAULT`
+- `FORCEMINIMIZE`
