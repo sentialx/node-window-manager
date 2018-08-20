@@ -212,6 +212,26 @@ void getWindowLong(const v8::FunctionCallbackInfo<v8::Value> &args)
   args.GetReturnValue().Set(num);
 }
 
+void getMessage(const v8::FunctionCallbackInfo<v8::Value> &args)
+{
+  v8::Isolate *isolate = args.GetIsolate();
+
+  if (!args[0]->IsNumber())
+  {
+    throwError(isolate, "Wrong arguments");
+    return;
+  }
+
+  const HWND handle = (HWND)args[0]->Int32Value();
+
+  MSG msg;
+  GetMessage(&msg, handle, 0, 0);
+
+  v8::Local<v8::Number> num = v8::Number::New(isolate, (int)msg.message);
+
+  args.GetReturnValue().Set(num);
+}
+
 void Initialize(v8::Local<v8::Object> exports)
 {
   NODE_SET_METHOD(exports, "getActiveWindow", getActiveWindow);
@@ -222,6 +242,7 @@ void Initialize(v8::Local<v8::Object> exports)
   NODE_SET_METHOD(exports, "setWindowPos", setWindowPos);
   NODE_SET_METHOD(exports, "setWindowLong", setWindowLong);
   NODE_SET_METHOD(exports, "getWindowLong", getWindowLong);
+  NODE_SET_METHOD(exports, "getMessage", getMessage);
 }
 
 NODE_MODULE(windows_window_manager, Initialize);

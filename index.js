@@ -1,8 +1,39 @@
 const native = require("bindings")("windows-window-manager");
 
+class EventEmitter {
+  constructor() {
+    this.listeners = [];
+  }
+
+  addListener(callback) {
+    this.listeners.push(callback);
+  }
+
+  removeListener(callback) {
+    this.listeners.splice(this.listeners.indexOf(callback));
+  }
+
+  emit() {
+    for (const listener of this.listeners) {
+      if (typeof listener === "function") listener();
+    }
+  }
+}
+
 class Window {
   constructor(windowHandle) {
     this.handle = windowHandle;
+    this.onMoved = new EventEmitter();
+
+    if (this.onMoved.listeners.length > 0) {
+      setInterval(() => {
+        const msg = native.getMessage(this.handle);
+        if (msg === 562) {
+          // WM_EXITSIZEMOVE
+          this.onMoved.emit();
+        }
+      }, 100);
+    }
   }
 
   getBounds() {
