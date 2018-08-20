@@ -3,7 +3,6 @@ const native = require("bindings")("windows-window-manager");
 class Window {
   constructor(windowHandle) {
     this.handle = windowHandle;
-    this.style = native.getWindowLong(this.handle, GWL.STYLE);
   }
 
   getBounds() {
@@ -22,6 +21,10 @@ class Window {
   getHeight() {
     const bounds = this.getBounds();
     return bounds.bottom - bounds.top;
+  }
+
+  getStyle() {
+    return native.getWindowLong(this.handle, GWL.STYLE);
   }
 
   move(x, y, width, height) {
@@ -68,16 +71,12 @@ class Window {
     );
   }
 
-  setFrameless(toggle) {
+  setStyle(style) {
     const { left, top } = this.getBounds();
     const width = this.getWidth();
     const height = this.getHeight();
 
-    native.setWindowLong(
-      this.handle,
-      GWL.STYLE,
-      toggle ? WindowStyles.POPUP : this.style
-    );
+    native.setWindowLong(this.handle, GWL.STYLE, style);
 
     native.setWindowPos(
       this.handle,
@@ -114,7 +113,37 @@ const WindowStates = {
 const WindowStyles = {
   BORDER: 8388608,
   CAPTION: 12582912,
-  POPUP: 2147483648
+  POPUP: 2147483648,
+  CHILD: 1073741824,
+  CHILDWINDOW: 40000000,
+  CLIPCHILDREN: 33554432,
+  CLIPSIBLINGS: 67108864,
+  DISABLED: 134217728,
+  DLGFRAME: 4194304,
+  GROUP: 131072,
+  HSSCROLL: 1048576,
+  ICONIC: 536870912,
+  MAXIMIZE: 16777216,
+  MAXIMIZEBOX: 65536,
+  MINIMIZE: 536870912,
+  MINIMIZEBOX: 131072,
+  OVERLAPPED: 0,
+  OVERLAPPEDWINDOW:
+    this.OVERLAPPED |
+    this.CAPTION |
+    this.SYSMENU |
+    this.THICKFRAME |
+    this.MINIMIZEBOX |
+    this.MAXIMIZEBOX,
+  POPUPWINDOW: this.POPUP | this.BORDER | this.SYSMENU,
+  SIZEBOX: 262144,
+  SYSMENU: 524288,
+  TABSTOP: 65536,
+  THICKFRAME: 262144,
+  TILED: 0,
+  TILEDWINDOW: this.OVERLAPPEDWINDOW,
+  VISIBLE: 268435456,
+  VSCROLL: 2097152
 };
 
 const AncestorFlags = {
