@@ -221,6 +221,7 @@ void Initialize(v8::Local<v8::Object> exports)
   NODE_SET_METHOD(exports, "setWindowState", setWindowState);
   NODE_SET_METHOD(exports, "setWindowPos", setWindowPos);
   NODE_SET_METHOD(exports, "setWindowLong", setWindowLong);
+  NODE_SET_METHOD(exports, "getWindowLong", getWindowLong);
 }
 
 NODE_MODULE(windows_window_manager, Initialize);
