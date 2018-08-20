@@ -79,7 +79,15 @@ class Window {
       toggle ? WindowStyles.POPUP : this.style
     );
 
-    native.setWindowPos(this.handle, 0, left, top, width, height, 0);
+    native.setWindowPos(
+      this.handle,
+      0,
+      left,
+      top,
+      width,
+      height,
+      SWP.SHOWWINDOW
+    );
   }
 }
 
