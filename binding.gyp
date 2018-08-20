@@ -1,7 +1,7 @@
 {
   "targets": [
     {
-      "target_name": "addon",
+      "target_name": "windows-window-manager",
       "sources": [ "lib/windows.cc" ]
     }
   ]
