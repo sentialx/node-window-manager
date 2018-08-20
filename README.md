@@ -72,7 +72,7 @@ Moves the window to x, y position and sets new width and height.
 
 Sets the window state, for example minimizes it.
 
-- `state` [WindowState](#enum-windowstate) - the window state
+- `state` [`WindowState`](#enum-windowstate) - the window state
 
 `Window.show`
 
@@ -100,7 +100,7 @@ Toggles window top most setting.
 
 - `toggle` boolean
 
-## Enum WindowState
+## Enum `WindowState`
 
 ```javascript
 const { WindowState } = require('window-manager');
