@@ -7,6 +7,7 @@
   "scripts": {
     "build-win32": "node-gyp rebuild",
     "install": "node install.js",
+    "build": "tsc",
     "prepare": "npm run build",
     "watch": "tsc --watch"
   },
