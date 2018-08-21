@@ -31,10 +31,6 @@ export class Window {
     return addon.getWindowLong(this.handle, GWL.STYLE);
   }
 
-  getMessage() {
-    return addon.getMessage(this.handle);
-  }
-
   move(x: number, y: number, width: number, height: number) {
     addon.moveWindow(this.handle, x, y, width, height);
   }
@@ -63,7 +59,7 @@ export class Window {
     this.setState(WindowStates.MAXIMIZE);
   }
 
-  setTopMost(toggle: boolean) {
+  setTopMost(toggle: boolean, uFlags = 0) {
     const { left, top } = this.getBounds();
     const width = this.getWidth();
     const height = this.getHeight();
@@ -75,7 +71,7 @@ export class Window {
       top,
       width,
       height,
-      0
+      uFlags,
     );
   }
 
