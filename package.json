@@ -2,8 +2,8 @@
   "name": "window-manager",
   "version": "1.0.0",
   "description": "Manage windows in macOS, Windows and Linux",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build-win32": "node-gyp rebuild",
     "install": "node install.js",

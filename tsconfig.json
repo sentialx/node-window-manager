@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./build/",
+    "outDir": "./dist/",
     "baseUrl": "./src",
     "typeRoots": ["./node_modules/@types"],
     "noImplicitAny": true,
