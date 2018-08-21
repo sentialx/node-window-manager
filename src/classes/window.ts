@@ -86,14 +86,16 @@ export class Window {
 
     addon.setWindowLong(this.handle, GWL.STYLE, style);
 
-    addon.setWindowPos(
-      this.handle,
-      0,
-      left,
-      top,
-      width,
-      height,
-      SWP.SHOWWINDOW
-    );
+    setTimeout(() => {
+      addon.setWindowPos(
+        this.handle,
+        0,
+        left,
+        top,
+        width,
+        height,
+        SWP.SHOWWINDOW
+      );
+    }, 10);
   }
 }
