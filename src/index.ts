@@ -1,8 +1,25 @@
-import { WindowsManager } from "./classes";
+import { WindowsManager, Window } from "./classes";
+import {
+  GWL,
+  HWND,
+  AncestorFlags,
+  SWP,
+  WindowStates,
+  WindowStyles
+} from "./constants";
 
 const addon = require("bindings")("windows-window-manager");
 
-export * from "./constants";
-export * from "./classes";
+const windowsManager = new WindowsManager();
 
-export default new WindowsManager();
+export {
+  GWL,
+  HWND,
+  AncestorFlags,
+  SWP,
+  WindowStates,
+  WindowStyles,
+  WindowsManager,
+  windowsManager,
+  Window
+};
