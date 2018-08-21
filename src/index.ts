@@ -1,4 +1,4 @@
-import { Windows } from "./classes";
+import { WindowsManager } from "./classes";
 
 const addon = require("bindings")("windows-window-manager");
 
@@ -11,4 +11,4 @@ const createMouseUpHook = (callback: () => void) => {
 export * from "./constants";
 export * from "./classes";
 
-export const windows = new Windows();
+export default new WindowsManager();

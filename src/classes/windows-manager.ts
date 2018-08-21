@@ -2,7 +2,7 @@ import { Window, EventEmitter } from ".";
 
 const addon = require("bindings")("windows-window-manager");
 
-export class Windows {
+export class WindowsManager {
   public onActivated: EventEmitter = new EventEmitter("window-activated");
 
   getActive() {
