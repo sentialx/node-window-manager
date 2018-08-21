@@ -8,4 +8,10 @@ export class WindowsManager {
   getActive() {
     return new Window(addon.getActiveWindow());
   }
+
+  createMouseUpHook(callback: () => void) {
+    addon.createMouseUpHook(() => {
+      callback();
+    });
+  }
 }
