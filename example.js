@@ -1,10 +1,7 @@
-const {
-  getActiveWindow,
-  onWindowActivated,
-  createMouseUpHook,
-  windows
-} = require("./build/index");
+const windowsManager = require("./dist/index");
 
-windows.onActivated.addListener(window => {
+console.log(windowsManager);
+
+windowsManager.default.onActivated.addListener(window => {
   console.log(window.handle);
 });
