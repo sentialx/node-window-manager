@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "build-win32": "node-gyp rebuild",
-    "install": "node install.js && npm run build",
+    "install": "npm run build && node install.js",
     "build": "tsc"
   },
   "repository": {
