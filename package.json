@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Manage windows in macOS, Windows and Linux",
   "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "build-win32": "node-gyp rebuild",
     "install": "npm run build && node install.js",
