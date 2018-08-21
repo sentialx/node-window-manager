@@ -6,8 +6,9 @@
   "types": "build/index.d.ts",
   "scripts": {
     "build-win32": "node-gyp rebuild",
-    "install": "npm run build && node install.js",
-    "build": "tsc"
+    "install": "node install.js",
+    "prepare": "npm run build",
+    "watch": "tsc --watch"
   },
   "repository": {
     "type": "git",
