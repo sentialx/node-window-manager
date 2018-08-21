@@ -5,8 +5,8 @@
   "main": "build/index.js",
   "scripts": {
     "build-win32": "node-gyp rebuild",
-    "install": "node install.js",
-    "prepare": "tsc"
+    "install": "node install.js && npm run build",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
