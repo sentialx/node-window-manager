@@ -63,7 +63,7 @@ window.hide();
 
 Moves the window to x, y position and sets new width and height.
 
-`Window.setState(state: [`WindowState`](#enum-windowstate))`
+`Window.setState(state: [WindowState](#enum-windowstate))`
 
 Sets the window state, for example minimizes it.
 
