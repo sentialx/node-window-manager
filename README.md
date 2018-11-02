@@ -39,7 +39,7 @@ window.hide();
 
 ### Methods
 
-`Window.getBounds`
+`Window.getBounds()`
 
 - Returns:
   - `left` number
@@ -47,58 +47,49 @@ window.hide();
   - `right` number
   - `bottom` number
 
-`Window.getTitle`
+`Window.getTitle()`
 
 - Returns string
 
-`Window.getWidth`
+`Window.getWidth()`
 
 - Returns number
 
-`Window.getHeight`
+`Window.getHeight()`
 
 - Returns number
 
-`Window.move`
+`Window.move(x: number, y: number, width: number, height: number)`
 
 Moves the window to x, y position and sets new width and height.
 
-- `x` number - Window x position
-- `y` number - Window y position
-- `width` number - Window's new width
-- `height` number - Window`s new height
-
-`Window.setState`
+`Window.setState(state: [`WindowState`](#enum-windowstate))`
 
 Sets the window state, for example minimizes it.
 
-- `state` [`WindowState`](#enum-windowstate) - the window state
-
-`Window.show`
+`Window.show()`
 
 Shows the window.
 
-`Window.hide`
+`Window.hide()`
 
 Hides the window.
 
-`Window.minimize`
+`Window.minimize()`
 
 Minimizes the window.
 
-`Window.restore`
+`Window.restore()`
 
 Restores the window.
 
-`Window.maximize`
+`Window.maximize()`
 
 Maximizes the window.
 
-`Window.setTopMost`
+`Window.setTopMost(toggle: boolean)`
 
 Toggles window top most setting.
-
-- `toggle` boolean
 
 ## Enum `WindowState`
 
