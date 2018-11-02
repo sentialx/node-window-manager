@@ -1,4 +1,6 @@
 # node-window-manager
+> NOTE: The package works currently only on Windows.
+
 Manage windows in macOS, Windows and Linux
 
 # Install
@@ -25,17 +27,23 @@ window.hide();
 
 # Documentation
 
-## Methods
+## Class `WindowsManager`
 
-`getActiveWindow`
+### Methods
+
+`WindowsManager.getActive()`
 
 - Returns [`Window`](#class-window)
 
+`createMouseUpHook(callback: Function)`
+
+> NOTE: It's recommended to use this hook in another process, since it freezes current process.
+
+- `callback` Function - fires when system has received mouse up input
+
 ## Class `Window`
 
-### `new Window(windowHandle)`
-
-- `windowHandle` number - A window handle.
+### `new Window(windowHandle: number)`
 
 ### Methods
 
