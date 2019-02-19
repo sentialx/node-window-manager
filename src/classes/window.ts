@@ -1,77 +1,83 @@
 import { windows } from "../constants";
+import {
+  getProcessId,
+  getProcessHandle,
+  getProcessPath,
+  getWindowBounds,
+  getWindowTitle,
+  user32,
+  getWindowId
+} from "../bindings/windows";
+import { basename } from "path";
 
-const addon = require("bindings")("windows-window-manager");
+interface Process {
+  id: number;
+  handle: number;
+  name: string;
+  path: string;
+}
 
 export class Window {
-  public handle: number;
+  public handle: Buffer;
+  public process: Process;
+  public windowId: number;
 
-  constructor(windowHandle: number) {
-    this.handle = windowHandle;
+  constructor(handle: Buffer) {
+    this.handle = handle;
+    this.windowId = getWindowId(handle);
+
+    const processId = getProcessId(handle);
+    const processPath = getProcessPath(processId);
+
+    this.process = {
+      id: processId,
+      handle: getProcessHandle(processId),
+      path: processPath,
+      name: basename(processPath)
+    };
   }
 
   getBounds() {
-    return addon.getWindowBounds(this.handle);
+    return getWindowBounds(this.handle);
   }
 
   getTitle() {
-    return addon.getWindowTitle(this.handle);
-  }
-
-  getWidth() {
-    const bounds = this.getBounds();
-    return bounds.right - bounds.left;
-  }
-
-  getHeight() {
-    const bounds = this.getBounds();
-    return bounds.bottom - bounds.top;
-  }
-
-  getStyle() {
-    return addon.getWindowLong(this.handle, windows.GWL_STYLE);
+    return getWindowTitle(this.handle);
   }
 
   move(x: number, y: number, width: number, height: number) {
-    addon.moveWindow(this.handle, x, y, width, height);
-  }
-
-  setState(state: number) {
-    addon.setWindowState(this.handle, state);
+    user32.MoveWindow(this.handle, x, y, width, height, true);
   }
 
   show() {
-    this.setState(windows.SW_SHOW);
+    user32.ShowWindow(this.handle, windows.SW_SHOW);
   }
 
   hide() {
-    this.setState(windows.SW_HIDE);
+    user32.ShowWindow(this.handle, windows.SW_HIDE);
   }
 
   minimize() {
-    this.setState(windows.SW_MINIMIZE);
+    user32.ShowWindow(this.handle, windows.SW_MINIMIZE);
   }
 
   restore() {
-    this.setState(windows.SW_RESTORE);
+    user32.ShowWindow(this.handle, windows.SW_RESTORE);
   }
 
   maximize() {
-    this.setState(windows.SW_MAXIMIZE);
+    user32.ShowWindow(this.handle, windows.SW_MAXIMIZE);
   }
 
   setAlwaysOnTop(toggle: boolean) {
-    const { left, top } = this.getBounds();
-    const width = this.getWidth();
-    const height = this.getHeight();
-
-    addon.setWindowPos(
+    user32.SetWindowPos(
       this.handle,
       toggle ? windows.HWND_TOPMOST : windows.HWND_NOTOPMOST,
-      left,
-      top,
-      width,
-      height,
-      windows.SWP_SHOWWINDOW
+      0,
+      0,
+      0,
+      0,
+      windows.SWP_NOMOVE | windows.SWP_NOSIZE
     );
   }
 }
