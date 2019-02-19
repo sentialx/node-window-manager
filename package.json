@@ -5,10 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build-win32": "node-gyp rebuild",
-    "install": "node install.js",
     "build": "tsc",
-    "prepare": "npm run build",
     "watch": "tsc --watch"
   },
   "repository": {
@@ -22,7 +19,7 @@
     "linux",
     "windows"
   ],
-  "author": "Sential",
+  "author": "sentialx",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Sential/node-window-manager/issues"
@@ -30,8 +27,11 @@
   "homepage": "https://github.com/Sential/node-window-manager#readme",
   "dependencies": {
     "@types/node": "10.7.1",
-    "bindings": "1.3.0",
+    "ffi": "2.3.0",
     "node-gyp": "3.8.0",
+    "ref": "1.3.5",
+    "ref-struct": "1.1.0",
+    "ref-wchar": "1.0.2",
     "typescript": "3.0.1"
   }
 }

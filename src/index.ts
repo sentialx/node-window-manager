@@ -1,13 +1,6 @@
-import { Window } from "../";
+import { Window } from "./classes/window";
 import { EventEmitter } from "events";
-
-const addon = require("bindings")("windows-window-manager");
-
-const createMouseUpHook = (callback: () => void) => {
-  addon.createMouseUpHook(() => {
-    callback();
-  });
-};
+import { getActiveWindowHandle, getWindowId } from "./bindings/windows";
 
 let interval: any = null;
 
@@ -17,17 +10,19 @@ class WindowManager extends EventEmitter {
   constructor() {
     super();
 
-    let win: number;
+    let lastId: number;
 
     this.on("newListener", (event, listener) => {
       if (registeredEvents.indexOf(event) !== -1) return;
 
       if (event === "window-activated") {
         interval = setInterval(() => {
-          const window = addon.getActiveWindow();
-          if (win !== window) {
-            win = window;
-            this.emit("window-activated", new Window(window));
+          const handle = getActiveWindowHandle();
+          const newId = getWindowId(handle);
+
+          if (lastId !== newId) {
+            lastId = newId;
+            this.emit("window-activated", new Window(handle));
           }
         }, 50);
       } else if (event === "mouse-up") {
@@ -51,6 +46,10 @@ class WindowManager extends EventEmitter {
   }
 
   getActiveWindow = () => {
-    return new Window(addon.getActiveWindow());
+    return new Window(getActiveWindowHandle());
   };
 }
+
+const windowManager = new WindowManager();
+
+export { windowManager, Window };
