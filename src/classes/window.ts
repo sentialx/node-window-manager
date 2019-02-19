@@ -1,4 +1,4 @@
-import { WindowStates, GWL, HWND, SWP } from "../constants";
+import { windows } from "../constants";
 
 const addon = require("bindings")("windows-window-manager");
 
@@ -28,7 +28,7 @@ export class Window {
   }
 
   getStyle() {
-    return addon.getWindowLong(this.handle, GWL.STYLE);
+    return addon.getWindowLong(this.handle, windows.GWL_STYLE);
   }
 
   move(x: number, y: number, width: number, height: number) {
@@ -40,58 +40,38 @@ export class Window {
   }
 
   show() {
-    this.setState(WindowStates.SHOW);
+    this.setState(windows.SW_SHOW);
   }
 
   hide() {
-    this.setState(WindowStates.HIDE);
+    this.setState(windows.SW_HIDE);
   }
 
   minimize() {
-    this.setState(WindowStates.MINIMIZE);
+    this.setState(windows.SW_MINIMIZE);
   }
 
   restore() {
-    this.setState(WindowStates.RESTORE);
+    this.setState(windows.SW_RESTORE);
   }
 
   maximize() {
-    this.setState(WindowStates.MAXIMIZE);
+    this.setState(windows.SW_MAXIMIZE);
   }
 
-  setTopMost(toggle: boolean, uFlags = 0) {
+  setAlwaysOnTop(toggle: boolean) {
     const { left, top } = this.getBounds();
     const width = this.getWidth();
     const height = this.getHeight();
 
     addon.setWindowPos(
       this.handle,
-      toggle ? HWND.TOPMOST : HWND.NOTOPMOST,
+      toggle ? windows.HWND_TOPMOST : windows.HWND_NOTOPMOST,
       left,
       top,
       width,
       height,
-      uFlags,
+      windows.SWP_SHOWWINDOW
     );
-  }
-
-  setStyle(style: number) {
-    const { left, top } = this.getBounds();
-    const width = this.getWidth();
-    const height = this.getHeight();
-
-    addon.setWindowLong(this.handle, GWL.STYLE, style);
-
-    setTimeout(() => {
-      addon.setWindowPos(
-        this.handle,
-        0,
-        left,
-        top,
-        width,
-        height,
-        SWP.SHOWWINDOW
-      );
-    }, 10);
   }
 }

@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
-    "baseUrl": "./src",
     "typeRoots": ["./node_modules/@types"],
     "noImplicitAny": true,
     "module": "commonjs",
