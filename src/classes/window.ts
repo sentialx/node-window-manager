@@ -17,6 +17,13 @@ interface Process {
   path: string;
 }
 
+interface Rectangle {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+}
+
 export class Window {
   public handle: Buffer;
   public process: Process;
@@ -37,16 +44,17 @@ export class Window {
     };
   }
 
-  getBounds() {
+  getBounds(): Rectangle {
     return getWindowBounds(this.handle);
+  }
+
+  setBounds(bounds: Rectangle) {
+    const { x, y, height, width } = { ...this.getBounds(), ...bounds };
+    user32.MoveWindow(this.handle, x, y, width, height, true);
   }
 
   getTitle() {
     return getWindowTitle(this.handle);
-  }
-
-  move(x: number, y: number, width: number, height: number) {
-    user32.MoveWindow(this.handle, x, y, width, height, true);
   }
 
   show() {

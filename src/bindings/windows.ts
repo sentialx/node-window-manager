@@ -30,7 +30,7 @@ export const user32 = new ffi.Library("User32.dll", {
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-setwindowpos
   SetWindowPos: [
     "bool",
-    ["pointer", "pointer", "int", "int", "int", "int", "uint32"]
+    ["pointer", "int", "int", "int", "int", "int", "uint32"]
   ],
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-movewindow
   MoveWindow: ["bool", ["pointer", "int", "int", "int", "int", "bool"]]
