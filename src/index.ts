@@ -29,7 +29,7 @@ class WindowManager extends EventEmitter {
           }
         }, 50);
       } else if (event === "mouse-up") {
-        mouseProcess = fork("./src/events/mouse.js");
+        mouseProcess = fork("./events/mouse.js");
 
         mouseProcess.on("message", msg => {
           if (msg === "mouse-up") {
