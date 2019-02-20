@@ -48,7 +48,16 @@ Emitted when a window has been activated.
 
 Emitted when a mouse button is released.
 
+## Object `Rectangle`
+
+- `x` number
+- `y` number
+- `width` number
+- `height` number
+
 ## Class `Window`
+
+This class is similar to Electron's [`BrowserWindow`](https://electronjs.org/docs/api/browser-window) class.
 
 ### `new Window(handle: Buffer)`
 
@@ -56,8 +65,7 @@ Emitted when a mouse button is released.
 
 #### `Window.getBounds()`
 
-- Returns:
-  - `Rectangle`
+- Returns `Rectangle`
 
 #### `Window.getTitle()`
 
