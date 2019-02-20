@@ -14,9 +14,9 @@ $ npm install window-manager
 The following example shows how to get the currently focused window's title and hide it.
 
 ```javascript
-const { getActiveWindow } = require('window-manager');
+const { windowManager } = require('window-manager');
 
-const window = getActiveWindow();
+const window = windowManager.getActiveWindow();
 
 // Prints the currently focused window title.
 console.log(window.getTitle());
@@ -27,53 +27,49 @@ window.hide();
 
 # Documentation
 
-## Class `WindowsManager`
+## Class `WindowManager`
 
 ### Methods
 
-`WindowsManager.getActive()`
+`WindowsManager.getActiveWindow()`
 
 - Returns [`Window`](#class-window)
 
-`createMouseUpHook(callback: Function)`
+### Events
 
-> NOTE: It's recommended to use this hook in another process, since it freezes current process.
+`window-activated`
 
-- `callback` Function - fires when system has received mouse up input
+Returns:
+- `Window`
+
+Emitted when a window has been activated.
+
+`mouse-up`
+
+Emitted when a mouse button is released.
 
 ## Class `Window`
 
-### `new Window(windowHandle: number)`
+### `new Window(handle: Buffer)`
 
 ### Methods
 
 `Window.getBounds()`
 
 - Returns:
-  - `left` number
-  - `top` number
-  - `right` number
-  - `bottom` number
+  - `Rectangle`
 
 `Window.getTitle()`
 
 - Returns string
 
-`Window.getWidth()`
+`Window.setBounds(bounds: Rectangle)`
 
-- Returns number
+Resizes and moves the window to the supplied bounds. Any properties that are not supplied will default to their current values.
 
-`Window.getHeight()`
-
-- Returns number
-
-`Window.move(x: number, y: number, width: number, height: number)`
-
-Moves the window to x, y position and sets new width and height.
-
-`Window.setState(state: [WindowState](#enum-windowstate))`
-
-Sets the window state, for example minimizes it.
+```javascript
+window.setBounds({ height: 50 });
+```
 
 `Window.show()`
 
@@ -95,27 +91,9 @@ Restores the window.
 
 Maximizes the window.
 
-`Window.setTopMost(toggle: boolean)`
+`Window.setAlwaysOnTop(toggle: boolean)`
 
-Toggles window top most setting.
+Sets whether the window should show always on top of other windows. 
 
-## Enum `WindowState`
-
-```javascript
-const { WindowState } = require('window-manager');
-```
-
-Windows states: 
-- `HIDE`
-- `SHOWNORMAL`
-- `SHOWMINIMIZED`
-- `MAXIMIZE`
-- `SHOWMAXIMIZED`
-- `SHOWNOACTIVATE`
-- `SHOW`
-- `MINIMIZE`
-- `SHOWMINNOACTIVE`
-- `SHOWNA`
-- `RESTORE`
-- `SHOWDEFAULT`
-- `FORCEMINIMIZE`
+# Projects using `node-window-manager`
+- [Multrin](https://github.com/sentialx/multrin)
