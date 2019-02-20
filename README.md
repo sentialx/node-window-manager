@@ -31,20 +31,20 @@ window.hide();
 
 ### Methods
 
-`WindowsManager.getActiveWindow()`
+#### `WindowsManager.getActiveWindow()`
 
 - Returns [`Window`](#class-window)
 
 ### Events
 
-`window-activated`
+#### Event 'window-activated'
 
 Returns:
 - `Window`
 
 Emitted when a window has been activated.
 
-`mouse-up`
+#### Event 'mouse-up'
 
 Emitted when a mouse button is released.
 
@@ -54,16 +54,16 @@ Emitted when a mouse button is released.
 
 ### Methods
 
-`Window.getBounds()`
+#### `Window.getBounds()`
 
 - Returns:
   - `Rectangle`
 
-`Window.getTitle()`
+#### `Window.getTitle()`
 
 - Returns string
 
-`Window.setBounds(bounds: Rectangle)`
+#### `Window.setBounds(bounds: Rectangle)`
 
 Resizes and moves the window to the supplied bounds. Any properties that are not supplied will default to their current values.
 
@@ -71,27 +71,27 @@ Resizes and moves the window to the supplied bounds. Any properties that are not
 window.setBounds({ height: 50 });
 ```
 
-`Window.show()`
+#### `Window.show()`
 
 Shows the window.
 
-`Window.hide()`
+#### `Window.hide()`
 
 Hides the window.
 
-`Window.minimize()`
+#### `Window.minimize()`
 
 Minimizes the window.
 
-`Window.restore()`
+#### `Window.restore()`
 
 Restores the window.
 
-`Window.maximize()`
+#### `Window.maximize()`
 
 Maximizes the window.
 
-`Window.setAlwaysOnTop(toggle: boolean)`
+#### `Window.setAlwaysOnTop(toggle: boolean)`
 
 Sets whether the window should show always on top of other windows. 
 
