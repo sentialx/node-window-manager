@@ -16,29 +16,28 @@ const PROCESS_QUERY_LIMITED_INFORMATION = 0x1000;
 
 export const user32 = new ffi.Library("User32.dll", {
   // https://msdn.microsoft.com/en-us/library/windows/desktop/ms633505(v=vs.85).aspx
-  GetForegroundWindow: ["pointer", []],
+  GetForegroundWindow: ["int64", []],
   // https://msdn.microsoft.com/en-us/library/windows/desktop/ms633520(v=vs.85).aspx
-  GetWindowTextW: ["int", ["pointer", "pointer", "int"]],
+  GetWindowTextW: ["int", ["int64", "pointer", "int"]],
   // https://msdn.microsoft.com/en-us/library/windows/desktop/ms633521(v=vs.85).aspx
-  GetWindowTextLengthW: ["int", ["pointer"]],
+  GetWindowTextLengthW: ["int", ["int64"]],
   // https://msdn.microsoft.com/en-us/library/windows/desktop/ms633522(v=vs.85).aspx
-  GetWindowThreadProcessId: ["uint32", ["pointer", "uint32 *"]],
+  GetWindowThreadProcessId: ["uint32", ["int64", "uint32 *"]],
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindowrect
-  GetWindowRect: ["bool", ["pointer", RectPointer]],
+  GetWindowRect: ["bool", ["int64", RectPointer]],
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-showwindow
-  ShowWindow: ["bool", ["pointer", "int"]],
+  ShowWindow: ["bool", ["int64", "int"]],
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-setwindowpos
   SetWindowPos: [
     "bool",
-    ["pointer", "int", "int", "int", "int", "int", "uint32"]
+    ["int64", "int", "int", "int", "int", "int", "uint32"]
   ],
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-movewindow
-  MoveWindow: ["bool", ["pointer", "int", "int", "int", "int", "bool"]],
+  MoveWindow: ["bool", ["int64", "int", "int", "int", "int", "bool"]],
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-setwindowlongptrw
-  SetWindowLongPtrA: ["long long", ["pointer", "int", "long long"]],
-  SetWindowLongPtrW: ["long long", ["pointer", "int", "pointer"]],
+  SetWindowLongPtrA: ["long long", ["int64", "int", "long long"]],
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindowlongptrw
-  GetWindowLongPtrA: ["long long", ["pointer", "int"]]
+  GetWindowLongPtrA: ["long long", ["int64", "int"]]
 });
 
 export const kernel32 = new ffi.Library("kernel32", {
@@ -53,7 +52,7 @@ export const kernel32 = new ffi.Library("kernel32", {
   ]
 });
 
-export const getProcessId = (handle: Buffer) => {
+export const getProcessId = (handle: number) => {
   const processIdBuffer = ref.alloc("uint32");
   user32.GetWindowThreadProcessId(handle, processIdBuffer);
   return ref.get(processIdBuffer);
@@ -91,7 +90,7 @@ export const getActiveWindowHandle = () => {
   return user32.GetForegroundWindow();
 };
 
-export const getWindowTitle = (handle: Buffer) => {
+export const getWindowTitle = (handle: number) => {
   const length = user32.GetWindowTextLengthW(handle);
   const buffer = Buffer.alloc(length * 2 + 4);
   user32.GetWindowTextW(handle, buffer, length + 2);
@@ -100,7 +99,7 @@ export const getWindowTitle = (handle: Buffer) => {
   return wchar.toString(bufferClean);
 };
 
-export const getWindowBounds = (handle: Buffer) => {
+export const getWindowBounds = (handle: number) => {
   const bounds = new Rect();
   user32.GetWindowRect(handle, bounds.ref());
 
@@ -110,8 +109,4 @@ export const getWindowBounds = (handle: Buffer) => {
     width: bounds.right - bounds.left,
     height: bounds.bottom - bounds.top
   };
-};
-
-export const getWindowId = (handle: Buffer) => {
-  return ref.address(handle);
 };

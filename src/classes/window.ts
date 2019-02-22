@@ -1,12 +1,10 @@
 import { windows } from "../constants";
 import {
   getProcessId,
-  getProcessHandle,
   getProcessPath,
   getWindowBounds,
   getWindowTitle,
-  user32,
-  getWindowId
+  user32
 } from "../bindings/windows";
 import { basename } from "path";
 
@@ -26,13 +24,11 @@ interface Rectangle {
 }
 
 export class Window {
-  public handle: Buffer;
+  public handle: number;
   public process: Process;
-  public id: number;
 
-  constructor(handle: Buffer) {
+  constructor(handle: number) {
     this.handle = handle;
-    this.id = getWindowId(handle);
 
     const processId = getProcessId(handle);
     const processPath = getProcessPath(processId);
