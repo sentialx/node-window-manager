@@ -1,5 +1,5 @@
 {
-  "name": "window-manager",
+  "name": "node-window-manager",
   "version": "0.1.0",
   "description": "Manage windows in macOS, Windows and Linux",
   "main": "dist/index.js",
@@ -39,10 +39,6 @@
     "typescript": "3.0.1"
   },
   "files": [
-    "events/",
-    "lib/",
-    "dist/",
-    "binding.gyp",
-    "install.js"
+    "dist/"
   ]
 }
