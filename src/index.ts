@@ -1,13 +1,10 @@
 import { Window } from "./classes/window";
 import { EventEmitter } from "events";
 import { getActiveWindowHandle, getWindowId } from "./bindings/windows";
-import { fork, ChildProcess } from "child_process";
 
 let interval: any = null;
 
 let registeredEvents: string[] = [];
-
-let mouseProcess: ChildProcess;
 
 class WindowManager extends EventEmitter {
   constructor() {
@@ -28,14 +25,6 @@ class WindowManager extends EventEmitter {
             this.emit("window-activated", new Window(handle));
           }
         }, 50);
-      } else if (event === "mouse-up") {
-        mouseProcess = fork("./events/mouse.js");
-
-        mouseProcess.on("message", msg => {
-          if (msg === "mouse-up") {
-            this.emit("mouse-up");
-          }
-        });
       } else {
         return;
       }
@@ -48,7 +37,6 @@ class WindowManager extends EventEmitter {
 
       if (event === "window-activated") {
         clearInterval(interval);
-      } else if (event === "mouse-up") {
       }
 
       registeredEvents = registeredEvents.filter(x => x !== event);
