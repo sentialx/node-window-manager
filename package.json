@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Sential/node-window-manager.git"
+    "url": "git+https://github.com/sentialx/node-window-manager.git"
   },
   "keywords": [
     "window-manager",
@@ -25,9 +25,9 @@
   "author": "sentialx",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Sential/node-window-manager/issues"
+    "url": "https://github.com/sentialx/node-window-manager/issues"
   },
-  "homepage": "https://github.com/Sential/node-window-manager#readme",
+  "homepage": "https://github.com/sentialx/node-window-manager#readme",
   "dependencies": {
     "@types/node": "10.7.1",
     "bindings": "1.4.0",
