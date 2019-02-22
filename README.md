@@ -1,10 +1,13 @@
 # node-window-manager
+
 > NOTE: The package works currently only on Windows.
 
 Manage windows in macOS, Windows and Linux
 
 # Install
+
 To install this package, just run
+
 ```bash
 $ npm install node-window-manager
 ```
@@ -14,7 +17,7 @@ $ npm install node-window-manager
 The following example shows how to get the currently focused window's title and hide it.
 
 ```javascript
-const { windowManager } = require('window-manager');
+const { windowManager } = require("window-manager");
 
 const window = windowManager.getActiveWindow();
 
@@ -40,13 +43,10 @@ window.hide();
 #### Event 'window-activated'
 
 Returns:
+
 - `Window`
 
 Emitted when a window has been activated.
-
-#### Event 'mouse-up'
-
-Emitted when a mouse button is released.
 
 ## Object `Rectangle`
 
@@ -55,11 +55,22 @@ Emitted when a mouse button is released.
 - `width` number
 - `height` number
 
+## Object `Process`
+
+- `id` number - the process id
+- `name` string - the process file name
+- `path` string - the process path
+
 ## Class `Window`
 
 This class is similar to Electron's [`BrowserWindow`](https://electronjs.org/docs/api/browser-window) class.
 
 ### `new Window(handle: Buffer)`
+
+### Instance properties
+
+- `handle` number - the window handle
+- `process` Process - the window owner process
 
 ### Methods
 
@@ -101,7 +112,8 @@ Maximizes the window.
 
 #### `Window.setAlwaysOnTop(toggle: boolean)`
 
-Sets whether the window should show always on top of other windows. 
+Sets whether the window should show always on top of other windows.
 
 # Projects using `node-window-manager`
+
 - [Multrin](https://github.com/sentialx/multrin)
