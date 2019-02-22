@@ -10,9 +10,10 @@ import {
 } from "../bindings/windows";
 import { basename } from "path";
 
+const ref = require("ref");
+
 interface Process {
   id: number;
-  handle: number;
   name: string;
   path: string;
 }
@@ -27,18 +28,17 @@ interface Rectangle {
 export class Window {
   public handle: Buffer;
   public process: Process;
-  public windowId: number;
+  public id: number;
 
   constructor(handle: Buffer) {
     this.handle = handle;
-    this.windowId = getWindowId(handle);
+    this.id = getWindowId(handle);
 
     const processId = getProcessId(handle);
     const processPath = getProcessPath(processId);
 
     this.process = {
       id: processId,
-      handle: getProcessHandle(processId),
       path: processPath,
       name: basename(processPath)
     };
@@ -86,6 +86,68 @@ export class Window {
       0,
       0,
       windows.SWP_NOMOVE | windows.SWP_NOSIZE
+    );
+  }
+
+  setFrameless(toggle: boolean) {
+    let style = user32.GetWindowLongPtrA(this.handle, windows.GWL_STYLE);
+    let exstyle = user32.GetWindowLongPtrA(this.handle, windows.GWL_EXSTYLE);
+
+    if (toggle) {
+      style &= ~(
+        windows.WS_CAPTION |
+        windows.WS_THICKFRAME |
+        windows.WS_MINIMIZEBOX |
+        windows.WS_MAXIMIZEBOX |
+        windows.WS_SYSMENU
+      );
+
+      exstyle &= ~(
+        windows.WS_EX_DLGMODALFRAME |
+        windows.WS_EX_CLIENTEDGE |
+        windows.WS_EX_STATICEDGE
+      );
+    } else {
+      style |=
+        windows.WS_CAPTION |
+        windows.WS_THICKFRAME |
+        windows.WS_MINIMIZEBOX |
+        windows.WS_MAXIMIZEBOX |
+        windows.WS_SYSMENU;
+
+      exstyle |=
+        windows.WS_EX_DLGMODALFRAME |
+        windows.WS_EX_CLIENTEDGE |
+        windows.WS_EX_STATICEDGE;
+    }
+
+    user32.SetWindowLongPtrA(this.handle, windows.GWL_STYLE, style);
+    user32.SetWindowLongPtrA(this.handle, windows.GWL_EXSTYLE, exstyle);
+
+    this.redraw();
+  }
+
+  setParent(window: Window) {
+    user32.SetWindowLongPtrW(
+      this.handle,
+      windows.GWLP_HWNDPARENT,
+      window.handle
+    );
+  }
+
+  redraw() {
+    user32.SetWindowPos(
+      this.handle,
+      null,
+      0,
+      0,
+      0,
+      0,
+      windows.SWP_FRAMECHANGED |
+        windows.SWP_NOMOVE |
+        windows.SWP_NOSIZE |
+        windows.SWP_NOZORDER |
+        windows.SWP_NOOWNERZORDER
     );
   }
 }
