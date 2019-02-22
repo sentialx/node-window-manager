@@ -124,7 +124,7 @@ export class Window {
   }
 
   setParent(window: Window) {
-    user32.SetWindowLongPtrW(
+    user32.SetWindowLongPtrA(
       this.handle,
       windows.GWLP_HWNDPARENT,
       window.handle
