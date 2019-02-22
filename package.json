@@ -37,5 +37,12 @@
     "ref-struct": "1.1.0",
     "ref-wchar": "1.0.2",
     "typescript": "3.0.1"
-  }
+  },
+  "files": [
+    "events/",
+    "lib/",
+    "dist/",
+    "binding.gyp",
+    "install.js"
+  ]
 }
