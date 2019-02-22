@@ -1,6 +1,6 @@
 import { Window } from "./classes/window";
 import { EventEmitter } from "events";
-import { getActiveWindowHandle, getWindowId } from "./bindings/windows";
+import { getActiveWindowHandle } from "./bindings/windows";
 
 let interval: any = null;
 
@@ -18,10 +18,9 @@ class WindowManager extends EventEmitter {
       if (event === "window-activated") {
         interval = setInterval(() => {
           const handle = getActiveWindowHandle();
-          const newId = getWindowId(handle);
 
-          if (lastId !== newId) {
-            lastId = newId;
+          if (lastId !== handle) {
+            lastId = handle;
             this.emit("window-activated", new Window(handle));
           }
         }, 50);
