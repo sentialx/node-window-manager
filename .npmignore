@@ -1,7 +1,0 @@
-.vscode
-build
-src
-example.js
-tslint.json
-tsconfig.json
-yarn.lock
