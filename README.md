@@ -1,6 +1,6 @@
 # node-window-manager
 
-> NOTE: The package works currently only on Windows.
+> NOTE: The package works currently only on Windows. Any pull request or issue is really appreciated.
 
 Manage windows in macOS, Windows and Linux
 
