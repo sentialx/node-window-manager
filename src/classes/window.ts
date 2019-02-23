@@ -166,14 +166,14 @@ export class Window {
     this.redraw();
   }
 
-  setMinimizable(toggle: boolean) {
-    toggleStyle(toggle, this.handle, windows.WS_MINIMIZEBOX);
-    this.redraw();
-  }
-
   isMaximizable() {
     let style = user32.GetWindowLongPtrA(this.handle, windows.GWL_STYLE);
     return (style & windows.WS_MAXIMIZEBOX) === windows.WS_MAXIMIZEBOX;
+  }
+
+  setMinimizable(toggle: boolean) {
+    toggleStyle(toggle, this.handle, windows.WS_MINIMIZEBOX);
+    this.redraw();
   }
 
   isMinimizable() {
@@ -184,5 +184,10 @@ export class Window {
   setResizable(toggle: boolean) {
     toggleStyle(toggle, this.handle, windows.WS_SIZEBOX);
     this.redraw();
+  }
+
+  isResizable() {
+    let style = user32.GetWindowLongPtrA(this.handle, windows.GWL_STYLE);
+    return (style & windows.WS_SIZEBOX) === windows.WS_SIZEBOX;
   }
 }
