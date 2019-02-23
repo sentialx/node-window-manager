@@ -122,6 +122,10 @@ Sets whether the window should be maximizable.
 
 Sets whether the window should be minimizable.
 
+#### `Window.setResizable(toggle: boolean)`
+
+Sets whether the window should be resizable.
+
 #### `Window.isMaximizable()`
 
 Determines whether the window is maximizable.
@@ -131,6 +135,12 @@ Returns `boolean`
 #### `Window.isMaximizable()`
 
 Determines whether the window is maximizable.
+
+Returns `boolean`
+
+#### `Window.isResizable()`
+
+Determines whether the window is resizable.
 
 Returns `boolean`
 
