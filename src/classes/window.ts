@@ -172,4 +172,14 @@ export class Window {
     toggleStyle(toggle, this.handle, windows.WS_MINIMIZEBOX);
     this.redraw();
   }
+
+  isMaximizable() {
+    let style = user32.GetWindowLongPtrA(this.handle, windows.GWL_STYLE);
+    return (style & windows.WS_MAXIMIZEBOX) === windows.WS_MAXIMIZEBOX;
+  }
+
+  isMinimizable() {
+    let style = user32.GetWindowLongPtrA(this.handle, windows.GWL_STYLE);
+    return (style & windows.WS_MINIMIZEBOX) === windows.WS_MINIMIZEBOX;
+  }
 }
