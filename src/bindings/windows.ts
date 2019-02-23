@@ -37,7 +37,9 @@ export const user32 = new ffi.Library("User32.dll", {
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-setwindowlongptrw
   SetWindowLongPtrA: ["long long", ["int64", "int", "long long"]],
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindowlongptrw
-  GetWindowLongPtrA: ["long long", ["int64", "int"]]
+  GetWindowLongPtrA: ["long long", ["int64", "int"]],
+  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-iswindow
+  IsWindow: ["bool", ["int64"]]
 });
 
 export const kernel32 = new ffi.Library("kernel32", {
