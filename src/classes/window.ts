@@ -180,4 +180,9 @@ export class Window {
     let style = user32.GetWindowLongPtrA(this.handle, windows.GWL_STYLE);
     return (style & windows.WS_MINIMIZEBOX) === windows.WS_MINIMIZEBOX;
   }
+
+  setResizable(toggle: boolean) {
+    toggleStyle(toggle, this.handle, windows.WS_SIZEBOX);
+    this.redraw();
+  }
 }
