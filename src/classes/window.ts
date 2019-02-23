@@ -65,8 +65,8 @@ export class Window {
     return getWindowTitle(this.handle);
   }
 
-  getIcon() {
-    return new Promise((resolve: (data: Buffer) => void, reject) => {
+  getIcon(): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
       getIconForPath(
         this.process.path,
         ICON_SIZE_MEDIUM,
