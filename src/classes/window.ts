@@ -146,4 +146,8 @@ export class Window {
         windows.SWP_NOOWNERZORDER
     );
   }
+
+  isWindow() {
+    return user32.IsWindow(this.handle);
+  }
 }
