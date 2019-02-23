@@ -167,4 +167,9 @@ export class Window {
     toggleStyle(toggle, this.handle, windows.WS_MAXIMIZEBOX);
     this.redraw();
   }
+
+  setMinimizable(toggle: boolean) {
+    toggleStyle(toggle, this.handle, windows.WS_MINIMIZEBOX);
+    this.redraw();
+  }
 }
