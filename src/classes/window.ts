@@ -23,6 +23,18 @@ interface Rectangle {
   height?: number;
 }
 
+const toggleStyle = (toggle: boolean, handle: number, style: number) => {
+  let long = user32.GetWindowLongPtrA(handle, windows.GWL_STYLE);
+
+  if (toggle) {
+    long |= style;
+  } else {
+    long &= ~style;
+  }
+
+  user32.SetWindowLongPtrA(handle, windows.GWL_STYLE, long);
+};
+
 export class Window {
   public handle: number;
   public process: Process;
@@ -149,5 +161,10 @@ export class Window {
 
   isWindow() {
     return user32.IsWindow(this.handle);
+  }
+
+  setMaximizable(toggle: boolean) {
+    toggleStyle(toggle, this.handle, windows.WS_MAXIMIZEBOX);
+    this.redraw();
   }
 }

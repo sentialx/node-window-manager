@@ -47,5 +47,6 @@ class WindowManager extends EventEmitter {
   };
 }
 
-export default new WindowManager();
-export { Window };
+const windowManager = new WindowManager();
+
+export { windowManager, Window };
