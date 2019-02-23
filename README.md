@@ -114,12 +114,6 @@ Maximizes the window.
 
 Sets whether the window should show always on top of other windows.
 
-#### `Window.getIcon()`
-
-Gets 32x32 icon png buffer associated with the window.
-
-Returns `Promise<Buffer>`
-
 #### `Window.setMaximizable(toggle: boolean)`
 
 Sets whether the window should be maximizable.
