@@ -16,6 +16,10 @@ bindings@~1.2.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.2.1.tgz#14ad6113812d2d37d72e67b4cacb4bb726505f11"
 
+bindings@~1.3.0:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.3.1.tgz#21fc7c6d67c18516ec5aaa2815b145ff77b26ea5"
+
 debug@2:
   version "2.6.9"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
@@ -51,6 +55,10 @@ nan@2, nan@^2.11.1:
   version "2.12.1"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.12.1.tgz#7b1aa193e9aa86057e3c7bbd0ac448e770925552"
 
+nan@~2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.8.0.tgz#ed715f3fe9de02b57a5e6252d90a96675e1f085a"
+
 ref-struct@1, ref-struct@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/ref-struct/-/ref-struct-1.1.0.tgz#5d5ee65ad41cefc3a5c5feb40587261e479edc13"
@@ -76,6 +84,13 @@ ref@1, ref@1.3.5, ref@^1.3.1:
 safer-buffer@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
+
+system-icon@0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/system-icon/-/system-icon-0.1.3.tgz#70fc0cf4bda400c4abc9d05b1e10346980c9acf8"
+  dependencies:
+    bindings "~1.3.0"
+    nan "~2.8.0"
 
 typescript@3.3.3333:
   version "3.3.3333"
