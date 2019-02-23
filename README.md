@@ -80,7 +80,7 @@ This class is similar to Electron's [`BrowserWindow`](https://electronjs.org/doc
 
 #### `Window.getTitle()`
 
-- Returns string
+- Returns `string`
 
 #### `Window.setBounds(bounds: Rectangle)`
 
@@ -113,6 +113,32 @@ Maximizes the window.
 #### `Window.setAlwaysOnTop(toggle: boolean)`
 
 Sets whether the window should show always on top of other windows.
+
+#### `Window.getIcon()`
+
+Gets 32x32 icon png buffer associated with the window.
+
+Returns `Promise<Buffer>`
+
+#### `Window.setMaximizable(toggle: boolean)`
+
+Sets whether the window should be maximizable.
+
+#### `Window.setMinimizable(toggle: boolean)`
+
+Sets whether the window should be minimizable.
+
+#### `Window.isMaximizable()`
+
+Determines whether the window is maximizable.
+
+Returns `boolean`
+
+#### `Window.isMaximizable()`
+
+Determines whether the window is maximizable.
+
+Returns `boolean`
 
 # Projects using `node-window-manager`
 
