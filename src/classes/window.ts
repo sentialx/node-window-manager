@@ -133,12 +133,16 @@ export class Window {
     this.redraw();
   }
 
-  setParent(window: Window) {
-    user32.SetWindowLongPtrA(
-      this.handle,
-      windows.GWLP_HWNDPARENT,
-      window.handle
-    );
+  setParent(window: Window | null | number) {
+    let handle = window;
+
+    if (window instanceof Window) {
+      handle = window.handle;
+    } else if (!window) {
+      handle = 0;
+    }
+
+    user32.SetWindowLongPtrA(this.handle, windows.GWLP_HWNDPARENT, handle);
   }
 
   redraw() {
