@@ -8,7 +8,7 @@ import {
 } from "../bindings/windows";
 import { basename } from "path";
 
-const ref = require("ref");
+const { getIconForPath, ICON_SIZE_MEDIUM } = require("system-icon");
 
 interface Process {
   id: number;
@@ -63,6 +63,22 @@ export class Window {
 
   getTitle() {
     return getWindowTitle(this.handle);
+  }
+
+  getIcon() {
+    return new Promise((resolve: (data: Buffer) => void, reject) => {
+      getIconForPath(
+        this.process.path,
+        ICON_SIZE_MEDIUM,
+        (err: any, result: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
   }
 
   show() {
