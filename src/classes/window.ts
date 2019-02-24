@@ -196,4 +196,8 @@ export class Window {
     let style = user32.GetWindowLongPtrA(this.handle, windows.GWL_STYLE);
     return (style & windows.WS_SIZEBOX) === windows.WS_SIZEBOX;
   }
+
+  bringToTop() {
+    user32.SetForegroundWindow(this.handle);
+  }
 }

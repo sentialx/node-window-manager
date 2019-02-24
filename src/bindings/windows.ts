@@ -43,7 +43,9 @@ export const user32 = new ffi.Library("User32.dll", {
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindow
   GetWindow: ["int64", ["int64", "uint"]],
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-enumwindows
-  EnumWindows: ["bool", ["pointer", "int64"]]
+  EnumWindows: ["bool", ["pointer", "int64"]],
+  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-bringwindowtotop
+  SetForegroundWindow: ["bool", ["int64"]]
 });
 
 export const kernel32 = new ffi.Library("kernel32", {
