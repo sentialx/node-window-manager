@@ -38,6 +38,10 @@ window.hide();
 
 - Returns [`Window`](#class-window)
 
+#### `WindowManager.getWindows()`
+
+- Returns [`Window`](#class-window)[]
+
 ### Events
 
 #### Event 'window-activated'
@@ -143,6 +147,10 @@ Returns `boolean`
 Determines whether the window is resizable.
 
 Returns `boolean`
+
+#### `Window.bringToTop()`
+
+Brings the window to top and focuses it.
 
 # Projects using `node-window-manager`
 
