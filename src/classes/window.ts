@@ -8,6 +8,8 @@ import {
 } from "../bindings/windows";
 import { basename } from "path";
 
+const ffi = require("ffi");
+
 interface Process {
   id: number;
   name: string;
