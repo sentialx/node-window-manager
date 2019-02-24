@@ -39,7 +39,11 @@ export const user32 = new ffi.Library("User32.dll", {
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindowlongptrw
   GetWindowLongPtrA: ["long long", ["int64", "int"]],
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-iswindow
-  IsWindow: ["bool", ["int64"]]
+  IsWindow: ["bool", ["int64"]],
+  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindow
+  GetWindow: ["int64", ["int64", "uint"]],
+  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-enumwindows
+  EnumWindows: ["bool", ["pointer", "int64"]]
 });
 
 export const kernel32 = new ffi.Library("kernel32", {

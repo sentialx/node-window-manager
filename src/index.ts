@@ -1,6 +1,8 @@
 import { Window } from "./classes/window";
 import { EventEmitter } from "events";
-import { getActiveWindowHandle } from "./bindings/windows";
+import { getActiveWindowHandle, user32 } from "./bindings/windows";
+
+const ffi = require("ffi");
 
 let interval: any = null;
 
@@ -44,6 +46,20 @@ class WindowManager extends EventEmitter {
 
   getActiveWindow = () => {
     return new Window(getActiveWindowHandle());
+  };
+
+  getWindows = () => {
+    const windows: Window[] = [];
+    const callback = ffi.Callback(
+      "bool",
+      ["int64", "int64"],
+      (hwnd: number, lParam: number) => {
+        windows.push(new Window(hwnd));
+      }
+    );
+
+    user32.EnumWindows(callback, 0);
+    return windows;
   };
 }
 
