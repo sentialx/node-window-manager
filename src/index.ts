@@ -1,8 +1,13 @@
 import { Window } from "./classes/window";
 import { EventEmitter } from "events";
-import { getActiveWindowHandle, user32 } from "./bindings/windows";
+import {
+  getActiveWindowHandle,
+  user32,
+  shellScaling
+} from "./bindings/windows";
 
 const ffi = require("ffi");
+const ref = require("ref");
 
 let interval: any = null;
 
@@ -60,6 +65,17 @@ class WindowManager extends EventEmitter {
 
     user32.EnumWindows(callback, 0);
     return windows;
+  };
+
+  getMonitorFromWindow = (window: Window) => {
+    return user32.MonitorFromWindow(window.handle, 0);
+  };
+
+  getScaleFactor = (monitor: number) => {
+    const sfRef = ref.alloc("int");
+    shellScaling.GetScaleFactorForMonitor(monitor, sfRef);
+
+    return sfRef.deref() / 100;
   };
 }
 
