@@ -65,11 +65,28 @@ export class Window {
     return getWindowTitle(this.handle);
   }
 
+  setOpacity(opacity: number) {
+    let long = user32.GetWindowLongPtrA(this.handle, windows.GWL_EXSTYLE);
+    user32.SetWindowLongPtrA(
+      this.handle,
+      windows.GWL_EXSTYLE,
+      long | windows.WS_EX_LAYERED
+    );
+    user32.SetLayeredWindowAttributes(
+      this.handle,
+      0,
+      opacity * 255,
+      windows.LWA_ALPHA
+    );
+  }
+
   show() {
+    this.setOpacity(1);
     user32.ShowWindow(this.handle, windows.SW_SHOW);
   }
 
   hide() {
+    this.setOpacity(0);
     user32.ShowWindow(this.handle, windows.SW_HIDE);
   }
 
@@ -150,7 +167,7 @@ export class Window {
   redraw() {
     user32.SetWindowPos(
       this.handle,
-      null,
+      0,
       0,
       0,
       0,
@@ -159,7 +176,10 @@ export class Window {
         windows.SWP_NOMOVE |
         windows.SWP_NOSIZE |
         windows.SWP_NOZORDER |
-        windows.SWP_NOOWNERZORDER
+        windows.SWP_NOOWNERZORDER |
+        windows.SWP_NOACTIVATE |
+        windows.SWP_DRAWFRAME |
+        windows.SWP_NOCOPYBITS
     );
   }
 
