@@ -47,7 +47,9 @@ export const user32 = new ffi.Library("User32.dll", {
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-bringwindowtotop
   SetForegroundWindow: ["bool", ["int64"]],
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-setlayeredwindowattributes
-  SetLayeredWindowAttributes: ["bool", ["int64", "int", "int", "int64"]]
+  SetLayeredWindowAttributes: ["bool", ["int64", "int", "int", "int64"]],
+  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-monitorfromwindow
+  MonitorFromWindow: ["int64", ["int64", "int64"]]
 });
 
 export const kernel32 = new ffi.Library("kernel32", {
@@ -60,6 +62,10 @@ export const kernel32 = new ffi.Library("kernel32", {
     "int",
     ["pointer", "uint32", "pointer", "pointer"]
   ]
+});
+
+export const shellScaling = new ffi.Library("SHCore.dll", {
+  GetScaleFactorForMonitor: ["int64", ["int64", "int*"]]
 });
 
 export const getProcessId = (handle: number) => {
@@ -120,3 +126,5 @@ export const getWindowBounds = (handle: number) => {
     height: bounds.bottom - bounds.top
   };
 };
+
+export const getScaleFactor = (handle: number) => {};

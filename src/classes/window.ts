@@ -4,9 +4,12 @@ import {
   getProcessPath,
   getWindowBounds,
   getWindowTitle,
-  user32
+  user32,
+  shellScaling,
+  getScaleFactor
 } from "../bindings/windows";
 import { basename } from "path";
+import { windowManager } from "..";
 
 const ffi = require("ffi");
 
@@ -58,6 +61,7 @@ export class Window {
 
   setBounds(bounds: Rectangle) {
     const { x, y, height, width } = { ...this.getBounds(), ...bounds };
+
     user32.MoveWindow(this.handle, x, y, width, height, true);
   }
 
