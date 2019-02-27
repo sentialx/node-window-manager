@@ -2,7 +2,7 @@
 
 > NOTE: The package works currently only on Windows. Any pull request or issue is really appreciated.
 
-Manage windows in macOS, Windows and Linux
+Manage windows in Windows, macOS and Linux
 
 # Install
 
