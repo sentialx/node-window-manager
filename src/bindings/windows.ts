@@ -11,6 +11,12 @@ const Rect = struct({
 });
 const RectPointer = ref.refType(Rect);
 
+const Point = struct({
+  x: "long",
+  y: "long"
+});
+const PointPointer = ref.refType(Point);
+
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms684880(v=vs.85).aspx
 const PROCESS_QUERY_LIMITED_INFORMATION = 0x1000;
 
@@ -49,7 +55,11 @@ export const user32 = new ffi.Library("User32.dll", {
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-setlayeredwindowattributes
   SetLayeredWindowAttributes: ["bool", ["int64", "int", "int", "int64"]],
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-monitorfromwindow
-  MonitorFromWindow: ["int64", ["int64", "int64"]]
+  MonitorFromWindow: ["int64", ["int64", "int64"]],
+  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getlayeredwindowattributes
+  GetLayeredWindowAttributes: ["bool", ["int64", "int*", "int*", "int*"]],
+
+  GetCursorPos: ["void", [PointPointer]]
 });
 
 export const kernel32 = new ffi.Library("kernel32", {
@@ -127,4 +137,8 @@ export const getWindowBounds = (handle: number) => {
   };
 };
 
-export const getScaleFactor = (handle: number) => {};
+export const getCursorPos = () => {
+  const pos = new Point();
+  user32.GetCursorPos(pos.ref());
+  return pos;
+};

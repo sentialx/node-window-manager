@@ -4,14 +4,13 @@ import {
   getProcessPath,
   getWindowBounds,
   getWindowTitle,
-  user32,
-  shellScaling,
-  getScaleFactor
+  user32
 } from "../bindings/windows";
 import { basename } from "path";
 import { windowManager } from "..";
 
 const ffi = require("ffi");
+const ref = require("ref");
 
 interface Process {
   id: number;
@@ -76,12 +75,28 @@ export class Window {
       windows.GWL_EXSTYLE,
       long | windows.WS_EX_LAYERED
     );
+
     user32.SetLayeredWindowAttributes(
       this.handle,
       0,
       opacity * 255,
       windows.LWA_ALPHA
     );
+  }
+
+  getOpacity() {
+    let long = user32.GetWindowLongPtrA(this.handle, windows.GWL_EXSTYLE);
+    user32.SetWindowLongPtrA(
+      this.handle,
+      windows.GWL_EXSTYLE,
+      long | windows.WS_EX_LAYERED
+    );
+
+    const opacityRef = ref.alloc("int");
+
+    user32.GetLayeredWindowAttributes(this.handle, null, opacityRef, null);
+
+    return opacityRef.deref() / 255;
   }
 
   show() {
@@ -166,6 +181,12 @@ export class Window {
     }
 
     user32.SetWindowLongPtrA(this.handle, windows.GWLP_HWNDPARENT, handle);
+  }
+
+  getParent() {
+    return new Window(
+      user32.GetWindowLongPtrA(this.handle, windows.GWLP_HWNDPARENT)
+    );
   }
 
   redraw() {

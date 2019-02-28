@@ -3,7 +3,8 @@ import { EventEmitter } from "events";
 import {
   getActiveWindowHandle,
   user32,
-  shellScaling
+  shellScaling,
+  getCursorPos
 } from "./bindings/windows";
 
 const ffi = require("ffi");
@@ -76,6 +77,10 @@ class WindowManager extends EventEmitter {
     shellScaling.GetScaleFactorForMonitor(monitor, sfRef);
 
     return sfRef.deref() / 100;
+  };
+
+  getMousePoint = () => {
+    return getCursorPos();
   };
 }
 
