@@ -30,28 +30,6 @@ window.hide();
 
 # Documentation
 
-## Class `WindowManager`
-
-### Methods
-
-#### `WindowsManager.getActiveWindow()`
-
-- Returns [`Window`](#class-window)
-
-#### `WindowManager.getWindows()`
-
-- Returns [`Window`](#class-window)[]
-
-### Events
-
-#### Event 'window-activated'
-
-Returns:
-
-- `Window`
-
-Emitted when a window has been activated.
-
 ## Object `Rectangle`
 
 - `x` number
@@ -64,6 +42,45 @@ Emitted when a window has been activated.
 - `id` number - the process id
 - `name` string - the process file name
 - `path` string - the process path
+
+## Object `Point`
+
+- `x` number
+- `y` number
+
+## Class `WindowManager`
+
+### Methods
+
+#### `WindowsManager.getActiveWindow()`
+
+- Returns [`Window`](#class-window)
+
+#### `WindowManager.getWindows()`
+
+- Returns [`Window`](#class-window)[]
+
+#### `WindowManager.getMonitorFromWindow(window: Window)`
+
+- Returns `number` - the monitor handle.
+
+#### `WindowManager.getScaleFactor(monitor: number)`
+
+- Returns `number` - the monitor scale factor.
+
+#### `WindowManager.getMousePoint()`
+
+- Returns `Point` - the mouse point.
+
+### Events
+
+#### Event 'window-activated'
+
+Returns:
+
+- `Window`
+
+Emitted when a window has been activated.
 
 ## Class `Window`
 
@@ -151,6 +168,18 @@ Returns `boolean`
 #### `Window.bringToTop()`
 
 Brings the window to top and focuses it.
+
+#### `Window.setOpacity(opacity: number)`
+
+- `opacity` - a value between 0 and 1.
+
+Sets the window opacity.
+
+#### `Window.getOpacity()`
+
+Gets the window opacity
+
+Returns `number` between 0 and 1.
 
 # Projects using `node-window-manager`
 
