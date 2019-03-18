@@ -1,3 +1,5 @@
+import { release } from "os";
+
 const ffi = require("ffi");
 const ref = require("ref");
 const struct = require("ref-struct");
@@ -74,9 +76,19 @@ export const kernel32 = new ffi.Library("kernel32", {
   ]
 });
 
-export const shellScaling = new ffi.Library("SHCore.dll", {
-  GetScaleFactorForMonitor: ["int64", ["int64", "int*"]]
-});
+let ss = null;
+
+const split = release().split(".");
+
+if (parseInt(split[0], 10) >= 8) {
+  if (parseInt(split[0], 10) === 8 && parseInt(split[1], 10) >= 1) {
+    ss = new ffi.Library("SHCore.dll", {
+      GetScaleFactorForMonitor: ["int64", ["int64", "int*"]]
+    });
+  }
+}
+
+export const shellScaling = ss;
 
 export const getProcessId = (handle: number) => {
   const processIdBuffer = ref.alloc("uint32");

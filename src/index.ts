@@ -73,6 +73,8 @@ class WindowManager extends EventEmitter {
   };
 
   getScaleFactor = (monitor: number) => {
+    if (!shellScaling) return 1;
+
     const sfRef = ref.alloc("int");
     shellScaling.GetScaleFactorForMonitor(monitor, sfRef);
 
