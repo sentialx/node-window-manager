@@ -4,7 +4,9 @@ import {
   getProcessPath,
   getWindowBounds,
   getWindowTitle,
-  user32
+  user32,
+  getWindowContentBounds,
+  Rect
 } from "../bindings/windows";
 import { basename } from "path";
 import { windowManager } from "..";
@@ -58,10 +60,37 @@ export class Window {
     return getWindowBounds(this.handle);
   }
 
+  getContentBounds(): Rectangle {
+    return getWindowContentBounds(this.handle);
+  }
+
   setBounds(bounds: Rectangle) {
     const { x, y, height, width } = { ...this.getBounds(), ...bounds };
 
     user32.MoveWindow(this.handle, x, y, width, height, true);
+  }
+
+  setContentBounds(bounds: Rectangle) {
+    const rect = new Rect({
+      left: bounds.x,
+      top: bounds.y,
+      right: bounds.x + bounds.width,
+      bottom: bounds.y + bounds.height
+    });
+    user32.AdjustWindowRect(
+      rect.ref(),
+      user32.GetWindowLongPtrA(this.handle, windows.GWL_STYLE),
+      false
+    );
+
+    user32.MoveWindow(
+      this.handle,
+      rect.left,
+      rect.top,
+      rect.right - rect.left,
+      rect.bottom - rect.top,
+      true
+    );
   }
 
   getTitle() {

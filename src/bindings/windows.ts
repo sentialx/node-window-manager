@@ -5,7 +5,7 @@ const ref = require("ref");
 const struct = require("ref-struct");
 const wchar = require("ref-wchar");
 
-const Rect = struct({
+export const Rect = struct({
   left: "long",
   top: "long",
   right: "long",
@@ -61,7 +61,13 @@ export const user32 = new ffi.Library("User32.dll", {
   // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getlayeredwindowattributes
   GetLayeredWindowAttributes: ["bool", ["int64", "int*", "int*", "int*"]],
 
-  GetCursorPos: ["void", [PointPointer]]
+  GetCursorPos: ["void", [PointPointer]],
+
+  ClientToScreen: ["void", ["int64", PointPointer]],
+
+  GetClientRect: ["bool", ["int64", RectPointer]],
+
+  AdjustWindowRect: ["void", [RectPointer, "int64", "bool"]]
 });
 
 export const kernel32 = new ffi.Library("kernel32", {
@@ -147,6 +153,21 @@ export const getWindowBounds = (handle: number) => {
     y: bounds.top,
     width: bounds.right - bounds.left,
     height: bounds.bottom - bounds.top
+  };
+};
+
+export const getWindowContentBounds = (handle: number) => {
+  const bounds = new Rect();
+  user32.GetClientRect(handle, bounds.ref());
+
+  const point = new Point({ x: bounds.left, y: bounds.top });
+  user32.ClientToScreen(handle, point.ref());
+
+  return {
+    x: point.x,
+    y: point.y,
+    width: bounds.right,
+    height: bounds.bottom
   };
 };
 

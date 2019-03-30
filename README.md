@@ -99,9 +99,9 @@ This class is similar to Electron's [`BrowserWindow`](https://electronjs.org/doc
 
 - Returns `Rectangle`
 
-#### `Window.getTitle()`
+#### `Window.getContentBounds()`
 
-- Returns `string`
+- Returns `Rectangle`
 
 #### `Window.setBounds(bounds: Rectangle)`
 
@@ -110,6 +110,18 @@ Resizes and moves the window to the supplied bounds. Any properties that are not
 ```javascript
 window.setBounds({ height: 50 });
 ```
+
+#### `Window.setContentBounds(bounds: Rectangle)`
+
+Resizes and moves the window content area to the supplied bounds. Any properties that are not supplied will default to their current values.
+
+```javascript
+window.setContentBounds({ height: 50 });
+```
+
+#### `Window.getTitle()`
+
+- Returns `string`
 
 #### `Window.show()`
 
