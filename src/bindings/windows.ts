@@ -80,12 +80,13 @@ let ss = null;
 
 const split = release().split(".");
 
-if (parseInt(split[0], 10) >= 8) {
-  if (parseInt(split[0], 10) === 8 && parseInt(split[1], 10) >= 1) {
-    ss = new ffi.Library("SHCore.dll", {
-      GetScaleFactorForMonitor: ["int64", ["int64", "int*"]]
-    });
-  }
+if (
+  parseInt(split[0], 10) > 8 ||
+  (parseInt(split[0], 10) === 8 && parseInt(split[1], 10) >= 1)
+) {
+  ss = new ffi.Library("SHCore.dll", {
+    GetScaleFactorForMonitor: ["int64", ["int64", "int*"]]
+  });
 }
 
 export const shellScaling = ss;
