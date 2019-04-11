@@ -6,6 +6,7 @@ import {
   shellScaling,
   getCursorPos
 } from "./bindings/windows";
+import { platform } from "os";
 
 const ffi = require("ffi");
 const ref = require("ref");
@@ -19,6 +20,8 @@ class WindowManager extends EventEmitter {
     super();
 
     let lastId: number;
+
+    if (platform() !== "win32") return;
 
     this.on("newListener", event => {
       if (registeredEvents.indexOf(event) !== -1) return;
@@ -51,10 +54,13 @@ class WindowManager extends EventEmitter {
   }
 
   getActiveWindow = () => {
+    if (platform() !== "win32") return;
     return new Window(getActiveWindowHandle());
   };
 
   getWindows = () => {
+    if (platform() !== "win32") return;
+
     const windows: Window[] = [];
     const callback = ffi.Callback(
       "bool",
@@ -69,10 +75,14 @@ class WindowManager extends EventEmitter {
   };
 
   getMonitorFromWindow = (window: Window) => {
+    if (platform() !== "win32") return;
+
     return user32.MonitorFromWindow(window.handle, 0);
   };
 
   getScaleFactor = (monitor: number) => {
+    if (platform() !== "win32") return;
+
     if (!shellScaling) return 1;
 
     const sfRef = ref.alloc("int");
@@ -82,6 +92,8 @@ class WindowManager extends EventEmitter {
   };
 
   getMousePoint = () => {
+    if (platform() !== "win32") return;
+
     return getCursorPos();
   };
 }

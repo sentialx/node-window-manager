@@ -1,4 +1,4 @@
-import { release } from "os";
+import { release, platform } from "os";
 
 const ffi = require("ffi");
 const ref = require("ref");
@@ -19,81 +19,89 @@ const Point = struct({
 });
 const PointPointer = ref.refType(Point);
 
+let u32: any;
+let k32: any;
+let ss = null;
+
+if (platform() === "win32") {
+  u32 = new ffi.Library("User32.dll", {
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms633505(v=vs.85).aspx
+    GetForegroundWindow: ["int64", []],
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms633520(v=vs.85).aspx
+    GetWindowTextW: ["int", ["int64", "pointer", "int"]],
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms633521(v=vs.85).aspx
+    GetWindowTextLengthW: ["int", ["int64"]],
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms633522(v=vs.85).aspx
+    GetWindowThreadProcessId: ["uint32", ["int64", "uint32 *"]],
+    // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindowrect
+    GetWindowRect: ["bool", ["int64", RectPointer]],
+    // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-showwindow
+    ShowWindow: ["bool", ["int64", "int"]],
+    // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-setwindowpos
+    SetWindowPos: [
+      "bool",
+      ["int64", "int", "int", "int", "int", "int", "uint32"]
+    ],
+    // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-movewindow
+    MoveWindow: ["bool", ["int64", "int", "int", "int", "int", "bool"]],
+    // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-setwindowlongptrw
+    SetWindowLongPtrA: ["long long", ["int64", "int", "long long"]],
+    // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindowlongptrw
+    GetWindowLongPtrA: ["long long", ["int64", "int"]],
+    // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-iswindow
+    IsWindow: ["bool", ["int64"]],
+    // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindow
+    GetWindow: ["int64", ["int64", "uint"]],
+    // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-enumwindows
+    EnumWindows: ["bool", ["pointer", "int64"]],
+    // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-bringwindowtotop
+    SetForegroundWindow: ["bool", ["int64"]],
+    // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-setlayeredwindowattributes
+    SetLayeredWindowAttributes: ["bool", ["int64", "int", "int", "int64"]],
+    // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-monitorfromwindow
+    MonitorFromWindow: ["int64", ["int64", "int64"]],
+    // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getlayeredwindowattributes
+    GetLayeredWindowAttributes: ["bool", ["int64", "int*", "int*", "int*"]],
+
+    GetCursorPos: ["void", [PointPointer]],
+
+    ClientToScreen: ["void", ["int64", PointPointer]],
+
+    GetClientRect: ["bool", ["int64", RectPointer]],
+
+    AdjustWindowRect: ["void", [RectPointer, "int64", "bool"]]
+  });
+
+  k32 = new ffi.Library("kernel32", {
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320(v=vs.85).aspx
+    OpenProcess: ["pointer", ["uint32", "int", "uint32"]],
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724211(v=vs.85).aspx
+    CloseHandle: ["int", ["pointer"]],
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms684919(v=vs.85).aspx
+    QueryFullProcessImageNameW: [
+      "int",
+      ["pointer", "uint32", "pointer", "pointer"]
+    ]
+  });
+
+  const split = release().split(".");
+
+  if (
+    parseInt(split[0], 10) > 8 ||
+    (parseInt(split[0], 10) === 8 && parseInt(split[1], 10) >= 1)
+  ) {
+    ss = new ffi.Library("SHCore.dll", {
+      GetScaleFactorForMonitor: ["int64", ["int64", "int*"]]
+    });
+  }
+}
+
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms684880(v=vs.85).aspx
 const PROCESS_QUERY_LIMITED_INFORMATION = 0x1000;
 
-export const user32 = new ffi.Library("User32.dll", {
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms633505(v=vs.85).aspx
-  GetForegroundWindow: ["int64", []],
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms633520(v=vs.85).aspx
-  GetWindowTextW: ["int", ["int64", "pointer", "int"]],
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms633521(v=vs.85).aspx
-  GetWindowTextLengthW: ["int", ["int64"]],
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms633522(v=vs.85).aspx
-  GetWindowThreadProcessId: ["uint32", ["int64", "uint32 *"]],
-  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindowrect
-  GetWindowRect: ["bool", ["int64", RectPointer]],
-  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-showwindow
-  ShowWindow: ["bool", ["int64", "int"]],
-  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-setwindowpos
-  SetWindowPos: [
-    "bool",
-    ["int64", "int", "int", "int", "int", "int", "uint32"]
-  ],
-  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-movewindow
-  MoveWindow: ["bool", ["int64", "int", "int", "int", "int", "bool"]],
-  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-setwindowlongptrw
-  SetWindowLongPtrA: ["long long", ["int64", "int", "long long"]],
-  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindowlongptrw
-  GetWindowLongPtrA: ["long long", ["int64", "int"]],
-  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-iswindow
-  IsWindow: ["bool", ["int64"]],
-  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getwindow
-  GetWindow: ["int64", ["int64", "uint"]],
-  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-enumwindows
-  EnumWindows: ["bool", ["pointer", "int64"]],
-  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-bringwindowtotop
-  SetForegroundWindow: ["bool", ["int64"]],
-  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-setlayeredwindowattributes
-  SetLayeredWindowAttributes: ["bool", ["int64", "int", "int", "int64"]],
-  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-monitorfromwindow
-  MonitorFromWindow: ["int64", ["int64", "int64"]],
-  // https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-getlayeredwindowattributes
-  GetLayeredWindowAttributes: ["bool", ["int64", "int*", "int*", "int*"]],
+export const user32 = u32;
 
-  GetCursorPos: ["void", [PointPointer]],
-
-  ClientToScreen: ["void", ["int64", PointPointer]],
-
-  GetClientRect: ["bool", ["int64", RectPointer]],
-
-  AdjustWindowRect: ["void", [RectPointer, "int64", "bool"]]
-});
-
-export const kernel32 = new ffi.Library("kernel32", {
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms684320(v=vs.85).aspx
-  OpenProcess: ["pointer", ["uint32", "int", "uint32"]],
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724211(v=vs.85).aspx
-  CloseHandle: ["int", ["pointer"]],
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms684919(v=vs.85).aspx
-  QueryFullProcessImageNameW: [
-    "int",
-    ["pointer", "uint32", "pointer", "pointer"]
-  ]
-});
-
-let ss = null;
-
-const split = release().split(".");
-
-if (
-  parseInt(split[0], 10) > 8 ||
-  (parseInt(split[0], 10) === 8 && parseInt(split[1], 10) >= 1)
-) {
-  ss = new ffi.Library("SHCore.dll", {
-    GetScaleFactorForMonitor: ["int64", ["int64", "int*"]]
-  });
-}
+export const kernel32 = k32;
 
 export const shellScaling = ss;
 

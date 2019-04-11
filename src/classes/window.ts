@@ -10,6 +10,7 @@ import {
 } from "../bindings/windows";
 import { basename } from "path";
 import { windowManager } from "..";
+import { platform } from "os";
 
 const ffi = require("ffi");
 const ref = require("ref");
@@ -57,20 +58,28 @@ export class Window {
   }
 
   getBounds(): Rectangle {
+    if (platform() !== "win32") return;
+
     return getWindowBounds(this.handle);
   }
 
   getContentBounds(): Rectangle {
+    if (platform() !== "win32") return;
+
     return getWindowContentBounds(this.handle);
   }
 
   setBounds(bounds: Rectangle) {
+    if (platform() !== "win32") return;
+
     const { x, y, height, width } = { ...this.getBounds(), ...bounds };
 
     user32.MoveWindow(this.handle, x, y, width, height, true);
   }
 
   setContentBounds(bounds: Rectangle) {
+    if (platform() !== "win32") return;
+
     const rect = new Rect({
       left: bounds.x,
       top: bounds.y,
@@ -94,10 +103,14 @@ export class Window {
   }
 
   getTitle() {
+    if (platform() !== "win32") return;
+
     return getWindowTitle(this.handle);
   }
 
   setOpacity(opacity: number) {
+    if (platform() !== "win32") return;
+
     let long = user32.GetWindowLongPtrA(this.handle, windows.GWL_EXSTYLE);
     user32.SetWindowLongPtrA(
       this.handle,
@@ -114,6 +127,8 @@ export class Window {
   }
 
   getOpacity() {
+    if (platform() !== "win32") return;
+
     let long = user32.GetWindowLongPtrA(this.handle, windows.GWL_EXSTYLE);
     user32.SetWindowLongPtrA(
       this.handle,
@@ -129,28 +144,40 @@ export class Window {
   }
 
   show() {
+    if (platform() !== "win32") return;
+
     this.setOpacity(1);
     user32.ShowWindow(this.handle, windows.SW_SHOW);
   }
 
   hide() {
+    if (platform() !== "win32") return;
+
     this.setOpacity(0);
     user32.ShowWindow(this.handle, windows.SW_HIDE);
   }
 
   minimize() {
+    if (platform() !== "win32") return;
+
     user32.ShowWindow(this.handle, windows.SW_MINIMIZE);
   }
 
   restore() {
+    if (platform() !== "win32") return;
+
     user32.ShowWindow(this.handle, windows.SW_RESTORE);
   }
 
   maximize() {
+    if (platform() !== "win32") return;
+
     user32.ShowWindow(this.handle, windows.SW_MAXIMIZE);
   }
 
   setAlwaysOnTop(toggle: boolean) {
+    if (platform() !== "win32") return;
+
     user32.SetWindowPos(
       this.handle,
       toggle ? windows.HWND_TOPMOST : windows.HWND_NOTOPMOST,
@@ -163,6 +190,8 @@ export class Window {
   }
 
   setFrameless(toggle: boolean) {
+    if (platform() !== "win32") return;
+
     let style = user32.GetWindowLongPtrA(this.handle, windows.GWL_STYLE);
     let exstyle = user32.GetWindowLongPtrA(this.handle, windows.GWL_EXSTYLE);
 
@@ -201,6 +230,8 @@ export class Window {
   }
 
   setParent(window: Window | null | number) {
+    if (platform() !== "win32") return;
+
     let handle = window;
 
     if (window instanceof Window) {
@@ -213,12 +244,16 @@ export class Window {
   }
 
   getParent() {
+    if (platform() !== "win32") return;
+
     return new Window(
       user32.GetWindowLongPtrA(this.handle, windows.GWLP_HWNDPARENT)
     );
   }
 
   redraw() {
+    if (platform() !== "win32") return;
+
     user32.SetWindowPos(
       this.handle,
       0,
@@ -238,40 +273,56 @@ export class Window {
   }
 
   isWindow() {
+    if (platform() !== "win32") return;
+
     return user32.IsWindow(this.handle);
   }
 
   setMaximizable(toggle: boolean) {
+    if (platform() !== "win32") return;
+
     toggleStyle(toggle, this.handle, windows.WS_MAXIMIZEBOX);
     this.redraw();
   }
 
   isMaximizable() {
+    if (platform() !== "win32") return;
+
     let style = user32.GetWindowLongPtrA(this.handle, windows.GWL_STYLE);
     return (style & windows.WS_MAXIMIZEBOX) === windows.WS_MAXIMIZEBOX;
   }
 
   setMinimizable(toggle: boolean) {
+    if (platform() !== "win32") return;
+
     toggleStyle(toggle, this.handle, windows.WS_MINIMIZEBOX);
     this.redraw();
   }
 
   isMinimizable() {
+    if (platform() !== "win32") return;
+
     let style = user32.GetWindowLongPtrA(this.handle, windows.GWL_STYLE);
     return (style & windows.WS_MINIMIZEBOX) === windows.WS_MINIMIZEBOX;
   }
 
   setResizable(toggle: boolean) {
+    if (platform() !== "win32") return;
+
     toggleStyle(toggle, this.handle, windows.WS_SIZEBOX);
     this.redraw();
   }
 
   isResizable() {
+    if (platform() !== "win32") return;
+
     let style = user32.GetWindowLongPtrA(this.handle, windows.GWL_STYLE);
     return (style & windows.WS_SIZEBOX) === windows.WS_SIZEBOX;
   }
 
   bringToTop() {
+    if (platform() !== "win32") return;
+
     user32.SetForegroundWindow(this.handle);
   }
 }
