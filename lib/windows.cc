@@ -142,7 +142,6 @@ Napi::Boolean bringWindowToTop(const Napi::CallbackInfo &info)
   Napi::Env env = info.Env();
 
   HWND handle = (HWND)info[0].As<Napi::Number>().Int64Value();
-
   BOOL b = SetForegroundWindow(handle);
 
   return Napi::Boolean::New(env, b);
@@ -153,10 +152,18 @@ Napi::Boolean redrawWindow(const Napi::CallbackInfo &info)
   Napi::Env env = info.Env();
 
   HWND handle = (HWND)info[0].As<Napi::Number>().Int64Value();
-
   BOOL b = SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOACTIVATE | SWP_DRAWFRAME | SWP_NOCOPYBITS);
 
   return Napi::Boolean::New(env, b);
+}
+
+Napi::Boolean isWindow(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  HWND handle = (HWND)info[0].As<Napi::Number>().Int64Value();
+
+  return Napi::Boolean::New(env, IsWindow(handle));
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
@@ -172,6 +179,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   exports.Set(Napi::String::New(env, "showWindow"), Napi::Function::New(env, getWindowTitle));
   exports.Set(Napi::String::New(env, "bringWindowToTop"), Napi::Function::New(env, bringWindowToTop));
   exports.Set(Napi::String::New(env, "redrawWindow"), Napi::Function::New(env, redrawWindow));
+  exports.Set(Napi::String::New(env, "isWindow"), Napi::Function::New(env, isWindow));
 
   return exports;
 }

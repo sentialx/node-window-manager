@@ -88,4 +88,9 @@ export class Window {
     if (platform() !== "win32") return;
     addon.redrawWindow(this.handle);
   }
+
+  isWindow() {
+    if (platform() !== "win32") return;
+    return addon.isWindow(this.handle);
+  }
 }
