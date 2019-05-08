@@ -102,14 +102,14 @@ Napi::Boolean setWindowBounds(const Napi::CallbackInfo &info)
 
   Napi::Object bounds = info[1].As<Napi::Object>();
 
-  MoveWindow(
+  BOOL b = MoveWindow(
       (HWND)info[0].As<Napi::Number>().Int64Value(),
       bounds.Get("x").ToNumber(), bounds.Get("y").ToNumber(),
       bounds.Get("width").ToNumber(),
       bounds.Get("height").ToNumber(),
       true);
 
-  return Napi::Boolean::New(env, true);
+  return Napi::Boolean::New(env, b);
 }
 
 Napi::Boolean showWindow(const Napi::CallbackInfo &info)
@@ -132,9 +132,9 @@ Napi::Boolean showWindow(const Napi::CallbackInfo &info)
   else if (type == "maximize")
     flag = SW_MAXIMIZE;
 
-  ShowWindow(handle, flag);
+  BOOL b = ShowWindow(handle, flag);
 
-  return Napi::Boolean::New(env, true);
+  return Napi::Boolean::New(env, b);
 }
 
 Napi::Boolean bringWindowToTop(const Napi::CallbackInfo &info)
@@ -143,9 +143,20 @@ Napi::Boolean bringWindowToTop(const Napi::CallbackInfo &info)
 
   HWND handle = (HWND)info[0].As<Napi::Number>().Int64Value();
 
-  SetForegroundWindow(handle);
+  BOOL b = SetForegroundWindow(handle);
 
-  return Napi::Boolean::New(env, true);
+  return Napi::Boolean::New(env, b);
+}
+
+Napi::Boolean redrawWindow(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  HWND handle = (HWND)info[0].As<Napi::Number>().Int64Value();
+
+  BOOL b = SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOACTIVATE | SWP_DRAWFRAME | SWP_NOCOPYBITS);
+
+  return Napi::Boolean::New(env, b);
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
@@ -160,6 +171,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   exports.Set(Napi::String::New(env, "getWindowTitle"), Napi::Function::New(env, getWindowTitle));
   exports.Set(Napi::String::New(env, "showWindow"), Napi::Function::New(env, getWindowTitle));
   exports.Set(Napi::String::New(env, "bringWindowToTop"), Napi::Function::New(env, bringWindowToTop));
+  exports.Set(Napi::String::New(env, "redrawWindow"), Napi::Function::New(env, redrawWindow));
+
   return exports;
 }
 
