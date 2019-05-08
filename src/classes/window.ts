@@ -39,6 +39,14 @@ export class Window {
     return addon.getWindowBounds(this.handle);
   }
 
+  setBounds(bounds: Rectangle) {
+    if (platform() !== "win32") return;
+
+    const newBounds = { ...this.getBounds(), ...bounds };
+
+    addon.setWindowBounds(this.handle, newBounds);
+  }
+
   getMonitor() {
     if (platform() !== "win32") return;
 
