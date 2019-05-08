@@ -112,6 +112,42 @@ Napi::Boolean setWindowBounds(const Napi::CallbackInfo &info)
   return Napi::Boolean::New(env, true);
 }
 
+Napi::Boolean showWindow(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  HWND handle = (HWND)info[0].As<Napi::Number>().Int64Value();
+  std::string type = info[1].As<Napi::String>();
+
+  DWORD flag = 0;
+
+  if (type == "show")
+    flag = SW_SHOW;
+  else if (type == "hide")
+    flag = SW_HIDE;
+  else if (type == "minimize")
+    flag = SW_MINIMIZE;
+  else if (type == "restore")
+    flag = SW_RESTORE;
+  else if (type == "maximize")
+    flag = SW_MAXIMIZE;
+
+  ShowWindow(handle, flag);
+
+  return Napi::Boolean::New(env, true);
+}
+
+Napi::Boolean bringWindowToTop(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  HWND handle = (HWND)info[0].As<Napi::Number>().Int64Value();
+
+  SetForegroundWindow(handle);
+
+  return Napi::Boolean::New(env, true);
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
   exports.Set(Napi::String::New(env, "getActiveWindow"), Napi::Function::New(env, getActiveWindow));
@@ -122,6 +158,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   exports.Set(Napi::String::New(env, "getWindowBounds"), Napi::Function::New(env, getWindowBounds));
   exports.Set(Napi::String::New(env, "setWindowBounds"), Napi::Function::New(env, setWindowBounds));
   exports.Set(Napi::String::New(env, "getWindowTitle"), Napi::Function::New(env, getWindowTitle));
+  exports.Set(Napi::String::New(env, "showWindow"), Napi::Function::New(env, getWindowTitle));
+  exports.Set(Napi::String::New(env, "bringWindowToTop"), Napi::Function::New(env, bringWindowToTop));
   return exports;
 }
 

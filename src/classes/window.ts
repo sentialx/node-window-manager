@@ -35,27 +35,52 @@ export class Window {
 
   getBounds() {
     if (platform() !== "win32") return;
-
     return addon.getWindowBounds(this.handle);
   }
 
   setBounds(bounds: Rectangle) {
     if (platform() !== "win32") return;
-
     const newBounds = { ...this.getBounds(), ...bounds };
-
     addon.setWindowBounds(this.handle, newBounds);
   }
 
   getTitle() {
     if (platform() !== "win32") return;
-
     return addon.getWindowTitle(this.handle);
   }
 
   getMonitor() {
     if (platform() !== "win32") return;
-
     return addon.getMonitorFromWindow(this.handle);
+  }
+
+  show() {
+    if (platform() !== "win32") return;
+    addon.showWindow(this.handle, "show");
+  }
+
+  hide() {
+    if (platform() !== "win32") return;
+    addon.showWindow(this.handle, "hide");
+  }
+
+  minimize() {
+    if (platform() !== "win32") return;
+    addon.showWindow(this.handle, "minimize");
+  }
+
+  restore() {
+    if (platform() !== "win32") return;
+    addon.showWindow(this.handle, "restore");
+  }
+
+  maximize() {
+    if (platform() !== "win32") return;
+    addon.showWindow(this.handle, "maximize");
+  }
+
+  bringToTop() {
+    if (platform() !== "win32") return;
+    addon.bringToTop(this.handle);
   }
 }
