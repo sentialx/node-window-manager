@@ -149,6 +149,27 @@ Napi::Boolean setWindowBounds(const Napi::CallbackInfo &info)
   return Napi::Boolean::New(env, b);
 }
 
+Napi::Boolean setWindowOwner(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  HWND handle = (HWND)info[0].As<Napi::Number>().Int64Value();
+  long newOwner = (long)info[1].As<Napi::Number>().Int64Value();
+
+  SetWindowLongPtrA(handle, GWLP_HWNDPARENT, newOwner);
+
+  return Napi::Boolean::New(env, true);
+}
+
+Napi::Number getWindowOwner(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  HWND handle = (HWND)info[0].As<Napi::Number>().Int64Value();
+
+  return Napi::Number::New(env, GetWindowLongPtrA(handle, GWLP_HWNDPARENT));
+}
+
 Napi::Boolean showWindow(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
@@ -220,6 +241,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   exports.Set(Napi::String::New(env, "setWindowOpacity"), Napi::Function::New(env, setWindowOpacity));
   exports.Set(Napi::String::New(env, "getWindowOpacity"), Napi::Function::New(env, getWindowOpacity));
   exports.Set(Napi::String::New(env, "toggleWindowTransparency"), Napi::Function::New(env, toggleWindowTransparency));
+  exports.Set(Napi::String::New(env, "getWindowOwner"), Napi::Function::New(env, getWindowOwner));
+  exports.Set(Napi::String::New(env, "setWindowOwner"), Napi::Function::New(env, setWindowOwner));
 
   return exports;
 }

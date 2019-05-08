@@ -108,4 +108,22 @@ export class Window {
     if (platform() !== "win32") return;
     return addon.getWindowOpacity(this.handle);
   }
+
+  setOwner(window: Window | null | number) {
+    if (platform() !== "win32") return;
+
+    let handle = window;
+
+    if (window instanceof Window) {
+      handle = window.handle;
+    } else if (!window) {
+      handle = 0;
+    }
+
+    addon.setWindowOwner(this.handle, handle);
+  }
+
+  getOwner() {
+    return new Window(addon.getWindowOwner(this.handle));
+  }
 }
