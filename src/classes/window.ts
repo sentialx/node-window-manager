@@ -47,6 +47,12 @@ export class Window {
     addon.setWindowBounds(this.handle, newBounds);
   }
 
+  getTitle() {
+    if (platform() !== "win32") return;
+
+    return addon.getWindowTitle(this.handle);
+  }
+
   getMonitor() {
     if (platform() !== "win32") return;
 

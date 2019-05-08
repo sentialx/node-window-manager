@@ -80,6 +80,22 @@ Napi::String getProcessPath(const Napi::CallbackInfo &info)
   return Napi::String::New(env, str);
 }
 
+Napi::String getWindowTitle(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  HWND handle = (HWND)info[0].As<Napi::Number>().Int64Value();
+
+  wchar_t title[256];
+
+  GetWindowTextW(handle, title, sizeof(title));
+
+  std::wstring ws(title);
+  std::string str(ws.begin(), ws.end());
+
+  return Napi::String::New(env, str);
+}
+
 Napi::Boolean setWindowBounds(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
@@ -105,6 +121,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   exports.Set(Napi::String::New(env, "getMonitorScaleFactor"), Napi::Function::New(env, getMonitorScaleFactor));
   exports.Set(Napi::String::New(env, "getWindowBounds"), Napi::Function::New(env, getWindowBounds));
   exports.Set(Napi::String::New(env, "setWindowBounds"), Napi::Function::New(env, setWindowBounds));
+  exports.Set(Napi::String::New(env, "getWindowTitle"), Napi::Function::New(env, getWindowTitle));
   return exports;
 }
 
