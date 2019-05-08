@@ -45,7 +45,7 @@ Napi::Number getMonitorScaleFactor(const Napi::CallbackInfo &info)
   DEVICE_SCALE_FACTOR sf;
   f((HMONITOR)info[0].As<Napi::Number>().Int64Value(), &sf);
 
-  return Napi::Number::New(env, sf / 100);
+  return Napi::Number::New(env, (double)sf / 100);
 }
 
 Napi::Number getWindowProcessId(const Napi::CallbackInfo &info)
