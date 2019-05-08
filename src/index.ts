@@ -1,15 +1,8 @@
 import { Window } from "./classes/window";
 import { EventEmitter } from "events";
-import {
-  getActiveWindowHandle,
-  user32,
-  shellScaling,
-  getCursorPos
-} from "./bindings/windows";
 import { platform } from "os";
 
-const ffi = require("ffi");
-const ref = require("ref");
+const addon = require("bindings")("addon");
 
 let interval: any = null;
 
@@ -28,7 +21,7 @@ class WindowManager extends EventEmitter {
 
       if (event === "window-activated") {
         interval = setInterval(() => {
-          const handle = getActiveWindowHandle();
+          const handle = addon.getActiveWindow();
 
           if (lastId !== handle) {
             lastId = handle;
@@ -55,46 +48,7 @@ class WindowManager extends EventEmitter {
 
   getActiveWindow = () => {
     if (platform() !== "win32") return;
-    return new Window(getActiveWindowHandle());
-  };
-
-  getWindows = () => {
-    if (platform() !== "win32") return;
-
-    const windows: Window[] = [];
-    const callback = ffi.Callback(
-      "bool",
-      ["int64", "int64"],
-      (hwnd: number, lParam: number) => {
-        windows.push(new Window(hwnd));
-      }
-    );
-
-    user32.EnumWindows(callback, 0);
-    return windows;
-  };
-
-  getMonitorFromWindow = (window: Window) => {
-    if (platform() !== "win32") return;
-
-    return user32.MonitorFromWindow(window.handle, 0);
-  };
-
-  getScaleFactor = (monitor: number) => {
-    if (platform() !== "win32") return;
-
-    if (!shellScaling) return 1;
-
-    const sfRef = ref.alloc("int");
-    shellScaling.GetScaleFactorForMonitor(monitor, sfRef);
-
-    return sfRef.deref() / 100;
-  };
-
-  getMousePoint = () => {
-    if (platform() !== "win32") return;
-
-    return getCursorPos();
+    return new Window(addon.getActiveWindow());
   };
 }
 

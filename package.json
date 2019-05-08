@@ -1,12 +1,14 @@
 {
   "name": "node-window-manager",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Manage windows in macOS, Windows and Linux",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
+    "build-win32": "node-gyp rebuild",
+    "install": "node install.js",
     "prepare": "npm run build"
   },
   "repository": {
@@ -27,17 +29,16 @@
   },
   "homepage": "https://github.com/sentialx/node-window-manager#readme",
   "devDependencies": {
-    "@types/node": "11.9.5",
-    "tslint": "5.13.0",
-    "typescript": "3.3.3333"
-  },
-  "dependencies": {
-    "ffi": "2.3.0",
-    "ref": "1.3.5",
-    "ref-struct": "1.1.0",
-    "ref-wchar": "1.0.2"
+    "@types/node": "12.0.0",
+    "bindings": "1.5.0",
+    "node-addon-api": "1.6.3",
+    "tslint": "5.16.0",
+    "typescript": "3.4.5"
   },
   "files": [
     "dist/"
-  ]
+  ],
+  "dependencies": {
+    "node-gyp": "4.0.0"
+  }
 }
