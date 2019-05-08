@@ -93,4 +93,19 @@ export class Window {
     if (platform() !== "win32") return;
     return addon.isWindow(this.handle);
   }
+
+  toggleTransparency(toggle: boolean) {
+    if (platform() !== "win32") return;
+    addon.toggleWindowTransparency(this.handle, toggle);
+  }
+
+  setOpacity(opacity: number) {
+    if (platform() !== "win32") return;
+    addon.setWindowOpacity(this.handle, opacity);
+  }
+
+  getOpacity() {
+    if (platform() !== "win32") return;
+    return addon.getWindowOpacity(this.handle);
+  }
 }

@@ -58,6 +58,43 @@ Napi::Number getWindowProcessId(const Napi::CallbackInfo &info)
   return Napi::Number::New(env, (int)pid);
 }
 
+Napi::Boolean toggleWindowTransparency(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  HWND handle = (HWND)info[0].As<Napi::Number>().Int64Value();
+  bool toggle = info[1].As<Napi::Boolean>();
+
+  long style = GetWindowLongPtrA(handle, GWL_EXSTYLE);
+  SetWindowLongPtrA(handle, GWL_EXSTYLE, ((toggle) ? (style | WS_EX_LAYERED) : (style & (~WS_EX_LAYERED))));
+
+  return Napi::Boolean::New(env, true);
+}
+
+Napi::Number getWindowOpacity(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  HWND handle = (HWND)info[0].As<Napi::Number>().Int64Value();
+
+  BYTE opacity;
+  GetLayeredWindowAttributes(handle, NULL, &opacity, NULL);
+
+  return Napi::Number::New(env, (double)opacity / 255);
+}
+
+Napi::Boolean setWindowOpacity(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  HWND handle = (HWND)info[0].As<Napi::Number>().Int64Value();
+  double opacity = info[1].As<Napi::Number>().DoubleValue();
+
+  SetLayeredWindowAttributes(handle, NULL, opacity * 255, LWA_ALPHA);
+
+  return Napi::Boolean::New(env, true);
+}
+
 Napi::String getProcessPath(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
@@ -180,6 +217,9 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   exports.Set(Napi::String::New(env, "bringWindowToTop"), Napi::Function::New(env, bringWindowToTop));
   exports.Set(Napi::String::New(env, "redrawWindow"), Napi::Function::New(env, redrawWindow));
   exports.Set(Napi::String::New(env, "isWindow"), Napi::Function::New(env, isWindow));
+  exports.Set(Napi::String::New(env, "setWindowOpacity"), Napi::Function::New(env, setWindowOpacity));
+  exports.Set(Napi::String::New(env, "getWindowOpacity"), Napi::Function::New(env, getWindowOpacity));
+  exports.Set(Napi::String::New(env, "toggleWindowTransparency"), Napi::Function::New(env, toggleWindowTransparency));
 
   return exports;
 }
