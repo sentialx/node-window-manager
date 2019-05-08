@@ -83,17 +83,6 @@ if (platform() === "win32") {
       ["pointer", "uint32", "pointer", "pointer"]
     ]
   });
-
-  const split = release().split(".");
-
-  if (
-    parseInt(split[0], 10) > 8 ||
-    (parseInt(split[0], 10) === 8 && parseInt(split[1], 10) >= 1)
-  ) {
-    ss = new ffi.Library("SHCore.dll", {
-      GetScaleFactorForMonitor: ["int64", ["int64", "int*"]]
-    });
-  }
 }
 
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms684880(v=vs.85).aspx

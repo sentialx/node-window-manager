@@ -1,4 +1,5 @@
 import { basename } from "path";
+import { platform } from "os";
 
 const addon = require("bindings")("addon");
 
@@ -30,5 +31,11 @@ export class Window {
       path: processPath,
       name: basename(processPath)
     };
+  }
+
+  getMonitor() {
+    if (platform() !== "win32") return;
+
+    return addon.getMonitorFromWindow(this.handle);
   }
 }
