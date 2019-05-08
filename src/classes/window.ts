@@ -33,6 +33,12 @@ export class Window {
     };
   }
 
+  getBounds() {
+    if (platform() !== "win32") return;
+
+    return addon.getWindowBounds(this.handle);
+  }
+
   getMonitor() {
     if (platform() !== "win32") return;
 

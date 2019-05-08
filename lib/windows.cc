@@ -18,6 +18,23 @@ Napi::Number getMonitorFromWindow(const Napi::CallbackInfo &info)
   return Napi::Number::New(env, (int64_t)MonitorFromWindow((HWND)info[0].As<Napi::Number>().Int64Value(), 0));
 }
 
+Napi::Object getWindowBounds(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+
+  RECT rect;
+  GetWindowRect((HWND)info[0].As<Napi::Number>().Int64Value(), &rect);
+
+  Napi::Object obj = Napi::Object::New(env);
+
+  obj.Set("x", rect.left);
+  obj.Set("y", rect.top);
+  obj.Set("width", rect.right - rect.left);
+  obj.Set("height", rect.bottom - rect.top);
+
+  return obj;
+}
+
 Napi::Number getMonitorScaleFactor(const Napi::CallbackInfo &info)
 {
   Napi::Env env = info.Env();
@@ -70,6 +87,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
   exports.Set(Napi::String::New(env, "getProcessPath"), Napi::Function::New(env, getProcessPath));
   exports.Set(Napi::String::New(env, "getMonitorFromWindow"), Napi::Function::New(env, getMonitorFromWindow));
   exports.Set(Napi::String::New(env, "getMonitorScaleFactor"), Napi::Function::New(env, getMonitorScaleFactor));
+  exports.Set(Napi::String::New(env, "getWindowBounds"), Napi::Function::New(env, getWindowBounds));
   return exports;
 }
 
