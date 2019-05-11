@@ -2,7 +2,11 @@ import { basename } from "path";
 import { platform } from "os";
 import { windowManager } from "..";
 
-const addon = require("bindings")("addon");
+let addon: any;
+
+if (platform() === "win32") {
+  addon = require("bindings")("addon");
+}
 
 interface Process {
   id: number;
@@ -23,6 +27,8 @@ export class Window {
 
   constructor(handle: number) {
     this.handle = handle;
+
+    if (platform() !== "win32") return;
 
     const processId = addon.getWindowProcessId(handle);
     const processPath = addon.getProcessPath(processId);

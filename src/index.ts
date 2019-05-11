@@ -2,7 +2,11 @@ import { Window } from "./classes/window";
 import { EventEmitter } from "events";
 import { platform, release } from "os";
 
-const addon = require("bindings")("addon");
+let addon: any;
+
+if (platform() === "win32") {
+  addon = require("bindings")("addon");
+}
 
 let interval: any = null;
 
