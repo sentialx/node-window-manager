@@ -1,5 +1,6 @@
 import { basename } from "path";
 import { platform } from "os";
+import { windowManager } from "..";
 
 const addon = require("bindings")("addon");
 
@@ -35,12 +36,29 @@ export class Window {
 
   getBounds() {
     if (platform() !== "win32") return;
-    return addon.getWindowBounds(this.handle);
+
+    const bounds = addon.getWindowBounds(this.handle);
+    const sf = windowManager.getScaleFactor(this.getMonitor());
+
+    bounds.x = Math.round(bounds.x / sf);
+    bounds.y = Math.round(bounds.y / sf);
+    bounds.width = Math.round(bounds.width / sf);
+    bounds.height = Math.round(bounds.height / sf);
+
+    return bounds;
   }
 
   setBounds(bounds: Rectangle) {
     if (platform() !== "win32") return;
+
     const newBounds = { ...this.getBounds(), ...bounds };
+    const sf = windowManager.getScaleFactor(this.getMonitor());
+
+    newBounds.x = Math.round(newBounds.x * sf);
+    newBounds.y = Math.round(newBounds.y * sf);
+    newBounds.width = Math.round(newBounds.width * sf);
+    newBounds.height = Math.round(newBounds.height * sf);
+
     addon.setWindowBounds(this.handle, newBounds);
   }
 
