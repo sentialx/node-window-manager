@@ -1,6 +1,6 @@
 {
   "name": "node-window-manager",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "Manage windows in macOS, Windows and Linux",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,7 +9,7 @@
     "watch": "tsc --watch",
     "build-win32": "node-gyp rebuild",
     "install": "node install.js",
-    "prepare": "npm run build"
+    "prepublishOnly": "npm run build && npm run build-win32"
   },
   "repository": {
     "type": "git",
