@@ -1,6 +1,6 @@
 {
   "name": "node-window-manager",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "Manage windows in macOS, Windows and Linux",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
