@@ -111,7 +111,7 @@ Napi::String getProcessPath(const Napi::CallbackInfo &info) {
   HANDLE handle{OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid)};
 
   DWORD dwSize{MAX_PATH};
-  wchar_t exeName[MAX_PATH];
+  wchar_t exeName[MAX_PATH]{};
 
   QueryFullProcessImageNameW(handle, 0, exeName, &dwSize);
 
@@ -126,7 +126,7 @@ Napi::String getWindowTitle(const Napi::CallbackInfo &info) {
 
   auto handle{getValueFromCallbackData<HWND>(info, 0)};
 
-  wchar_t title[256];
+  wchar_t title[256]{};
 
   GetWindowTextW(handle, title, sizeof(title));
 
