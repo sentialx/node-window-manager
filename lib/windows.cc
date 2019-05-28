@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdint>
 #include <iostream>
+#include <string>
 
 typedef int(__stdcall *lp_GetScaleFactorForMonitor)(HMONITOR,
                                                     DEVICE_SCALE_FACTOR *);
