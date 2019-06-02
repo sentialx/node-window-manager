@@ -80,8 +80,11 @@ export class Window {
   }
 
   getTitle() {
-    if (platform() !== "win32") return;
-    return addon.getWindowTitle(this.handle);
+    if (platform() === "win32") {
+      return addon.getWindowTitle(this.handle);
+    } else if (platform() === "darwin") {
+      return getWindowInfoById(this.handle).title;
+    }
   }
 
   getMonitor() {
