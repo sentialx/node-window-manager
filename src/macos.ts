@@ -44,3 +44,7 @@ export const setWindowBounds = (id: number, bounds: any) => {
     { encoding: "utf8" }
   );
 };
+
+export const bringToTop = (id: number) => {
+  execFileSync(bin, ["bringToTop", id.toString()], { encoding: "utf8" });
+};

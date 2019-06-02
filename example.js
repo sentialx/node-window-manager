@@ -1,7 +1,7 @@
-const { windowManager } = require("./dist/index");
+const { windowManager, Window } = require("./dist/index");
 
-const window = windowManager.getActiveWindow();
-console.log(window);
-console.log(window.getBounds());
-console.log(window.getTitle());
-window.setBounds({ x: 0, y: 0 });
+const window = new Window(14026);
+
+setInterval(() => {
+  window.bringToTop();
+}, 100);

@@ -1,7 +1,7 @@
 import { basename } from "path";
 import { platform } from "os";
 import { windowManager } from "..";
-import { getWindowInfoById, setWindowBounds } from "../macos";
+import { getWindowInfoById, setWindowBounds, bringToTop } from "../macos";
 
 let addon: any;
 
@@ -121,8 +121,8 @@ export class Window {
   }
 
   bringToTop() {
-    if (platform() !== "win32") return;
-    addon.bringToTop(this.handle);
+    if (platform() === "win32") addon.bringToTop(this.handle);
+    else if (platform() === "darwin") bringToTop(this.handle);
   }
 
   redraw() {

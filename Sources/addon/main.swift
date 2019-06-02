@@ -171,6 +171,13 @@ if (CommandLine.arguments[1] == "getActiveWindow") {
 
 	let window = getAXWindowById(id: id)
 	window?.setBounds(bounds: NSMakeRect(x, y, width, height))
+} else if (CommandLine.arguments[1] == "bringToTop") {
+	let id = Int(CommandLine.arguments[2])!
+	let info = getWindowInfoById(id)!
+	let process = (info["owner"] as? [String: Any])!
+
+	let appRef = AXUIElementCreateApplication(process["processId"] as! pid_t)
+	appRef.setAttribute(key: "Frontmost", value: true as CFBoolean)
 }
 
 let options = [
