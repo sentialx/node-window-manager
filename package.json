@@ -6,9 +6,9 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "build-darwin": "swift build --configuration=release --static-swift-stdlib && mv .build/release/addon build/macos",
     "watch": "tsc --watch",
-    "compile": "node-gyp rebuild",
-    "prepublishOnly": "npm run build && npm run compile"
+    "prepublishOnly": "npm run build && node-gyp rebuild && node compile"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,8 @@
     "dist/",
     "binding.gyp",
     "install.js",
-    "lib/"
+    "lib/",
+    "build/"
   ],
   "dependencies": {
     "bindings": "1.5.0",
