@@ -7,7 +7,7 @@ func toJson<T>(_ data: T) throws -> String {
 
 let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as! [[String: Any]]
 
-func getActiveWindow() {
+func getActiveWindow() -> Int {
 	let frontmostAppPID = NSWorkspace.shared.frontmostApplication!.processIdentifier
 
 	for window in windows {
@@ -30,17 +30,17 @@ func getActiveWindow() {
 			continue
 		}
 
-		return window[kCGWindowNumber as String] as! Int
+		return (window[kCGWindowNumber as String] as! Int)
 	}
+	return -1
 }
 
-func getWindowInfoById(_ id: Int) -> [String: Any] {
+func getWindowInfoById(_ id: Int) -> [String: Any]? {
 	for window in windows {
-		if (window[kCGWindowNumber] != id) {
+		if (window[kCGWindowNumber as String] as! Int != id) {
 			continue;
 		}
 
-		let windowOwnerPID = window[kCGWindowOwnerPID as String] as! Int
 		let bounds = CGRect(dictionaryRepresentation: window[kCGWindowBounds as String] as! CFDictionary)!
 		let appPid = window[kCGWindowOwnerPID as String] as! pid_t
 		let app = NSRunningApplication(processIdentifier: appPid)!
@@ -63,7 +63,15 @@ func getWindowInfoById(_ id: Int) -> [String: Any] {
 
 		return dict
 	}
+
+	return nil
 }
 
-print("null")
+if (CommandLine.arguments[1] == "getActiveWindow") {
+	print(getActiveWindow())
+} else if (CommandLine.arguments[1] == "getWindowInfoById") {
+	let id = Int(CommandLine.arguments[2])
+	print(try! toJson(getWindowInfoById(id!)))
+}
+
 exit(0)

@@ -1,19 +1,31 @@
-import { join } from 'path';
-import { execFileSync } from 'child_process';
+import { join } from "path";
+import { execFileSync } from "child_process";
 
-const bin = join(__dirname, '../build/macos');
+const bin = join(__dirname, "../build/macos");
+
+const parse = (stdout: any) => {
+  try {
+    const result = JSON.parse(stdout);
+    if (result !== null) {
+      return result;
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error parsing window data");
+  }
+};
 
 export const getActiveWindow = () => {
-  const process = execFileSync(bin, {encoding: 'utf8'})
+  return parseInt(
+    execFileSync(bin, ["getActiveWindow"], { encoding: "utf8" }),
+    10
+  );
+};
 
-  try {
-		const result = JSON.parse(process);
-		if (result !== null) {
-			result.platform = 'macos';
-			return result;
-		}
-	} catch (error) {
-		console.error(error);
-		throw new Error('Error parsing window data');
-	}
+export const getWindowInfoById = (id: number) => {
+  return parse(
+    execFileSync(bin, ["getWindowInfoById", id.toString()], {
+      encoding: "utf8"
+    })
+  );
 };

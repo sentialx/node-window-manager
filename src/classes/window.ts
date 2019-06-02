@@ -1,6 +1,7 @@
 import { basename } from "path";
 import { platform } from "os";
 import { windowManager } from "..";
+import { getWindowInfoById } from "../macos";
 
 let addon: any;
 
@@ -28,16 +29,24 @@ export class Window {
   constructor(handle: number) {
     this.handle = handle;
 
-    if (platform() !== "win32") return;
+    if (platform() === "win32") {
+      const processId = addon.getWindowProcessId(handle);
+      const processPath = addon.getProcessPath(processId);
 
-    const processId = addon.getWindowProcessId(handle);
-    const processPath = addon.getProcessPath(processId);
+      this.process = {
+        id: processId,
+        path: processPath,
+        name: basename(processPath)
+      };
+    } else if (platform() === "darwin") {
+      const windowData = getWindowInfoById(handle);
 
-    this.process = {
-      id: processId,
-      path: processPath,
-      name: basename(processPath)
-    };
+      this.process = {
+        id: windowData.owner.processId,
+        path: windowData.owner.path,
+        name: basename(windowData.owner.path)
+      };
+    }
   }
 
   getBounds() {
