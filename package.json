@@ -35,7 +35,7 @@
   "files": [
     "dist/",
     "binding.gyp",
-    "install.js",
+    "compile.js",
     "lib/",
     "build/"
   ],
