@@ -25,22 +25,22 @@ extension AXValue {
 
 extension AXUIElement {
 	func getAttribute<T>(key: String) -> T {
-			var ptr: AnyObject?
-			AXUIElementCopyAttributeValue(self, "AX\(key)" as CFString, &ptr)
-			if key == "Size" ||  key == "Position" {
-					let val = ptr as! AXValue
-					return val.convertTo()
-			}
-			return ptr as! T
+		var ptr: AnyObject?
+		AXUIElementCopyAttributeValue(self, "AX\(key)" as CFString, &ptr)
+		if key == "Size" ||  key == "Position" {
+				let val = ptr as! AXValue
+				return val.convertTo()
+		}
+		return ptr as! T
 	}
 
 	func setAttribute<T: AnyObject>(key: String, value: T) {
-			AXUIElementSetAttributeValue(self, "AX\(key)" as CFString, value)
+		AXUIElementSetAttributeValue(self, "AX\(key)" as CFString, value)
 	}
 
 	func setBounds(bounds: NSRect) {
-			setAttribute(key: "Position", value: AXValue.initWith(t: bounds.origin)!)
-			setAttribute(key: "Size", value: AXValue.initWith(t: bounds.size)!)
+		setAttribute(key: "Position", value: AXValue.initWith(t: bounds.origin)!)
+		setAttribute(key: "Size", value: AXValue.initWith(t: bounds.size)!)
 	}
 }
 
@@ -186,7 +186,7 @@ if (CommandLine.arguments[1] == "getActiveWindow") {
 }
 
 let options = [
-		kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: false as CFBoolean
+	kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: false as CFBoolean
 ]
 AXIsProcessTrustedWithOptions(options as CFDictionary)
 

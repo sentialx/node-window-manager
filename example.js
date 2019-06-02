@@ -1,7 +1,8 @@
 const { windowManager, Window } = require("./dist/index");
 
-const window = new Window(14026);
+const window = windowManager.getActiveWindow();
+window.minimize();
 
-setInterval(() => {
-  window.bringToTop();
-}, 100);
+setTimeout(() => {
+  window.restore();
+}, 3000);
