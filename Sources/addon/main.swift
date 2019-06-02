@@ -28,8 +28,8 @@ extension AXUIElement {
 		var ptr: AnyObject?
 		AXUIElementCopyAttributeValue(self, "AX\(key)" as CFString, &ptr)
 		if key == "Size" ||  key == "Position" {
-				let val = ptr as! AXValue
-				return val.convertTo()
+			let val = ptr as! AXValue
+			return val.convertTo()
 		}
 		return ptr as! T
 	}
@@ -100,9 +100,9 @@ func getWindowInfoById(_ id: Int) -> [String: Any]? {
 				"width": bounds.width,
 				"height": bounds.height
 			],
-			"owner": [
+			"process": [
 				"name": window[kCGWindowOwnerName as String] as! String,
-				"processId": appPid,
+				"id": appPid,
 				"path": app.bundleURL!.path
 			]
 		]
@@ -161,6 +161,7 @@ if (CommandLine.arguments[1] == "getActiveWindow") {
 	print(getActiveWindow())
 } else if (CommandLine.arguments[1] == "getWindowInfoById") {
 	let id = Int(CommandLine.arguments[2])
+
 	print(try! toJson(getWindowInfoById(id!)))
 } else if (CommandLine.arguments[1] == "setBounds") {
 	let id = Int(CommandLine.arguments[2])!
@@ -170,17 +171,20 @@ if (CommandLine.arguments[1] == "getActiveWindow") {
 	let height = CGFloat(Int(CommandLine.arguments[6])!)
 
 	let window = getAXWindowById(id: id)
+	
 	window?.setBounds(bounds: NSMakeRect(x, y, width, height))
 } else if (CommandLine.arguments[1] == "bringToTop") {
 	let id = Int(CommandLine.arguments[2])!
-	let info = getWindowInfoById(id)!
-	let process = (info["owner"] as? [String: Any])!
 
-	let appRef = AXUIElementCreateApplication(process["processId"] as! pid_t)
+	let info = getWindowInfoById(id)!
+	let process = (info["process"] as? [String: Any])!
+	let appRef = AXUIElementCreateApplication(process["id"] as! pid_t)
+
 	appRef.setAttribute(key: "Frontmost", value: true as CFBoolean)
 } else if (CommandLine.arguments[1] == "minimize") {
 	let id = Int(CommandLine.arguments[2])!
 	let b = Bool(CommandLine.arguments[3])!
+
 	let window = getAXWindowById(id: id)
 	window?.setAttribute(key: "Minimized", value: b as CFBoolean)
 }
@@ -188,6 +192,7 @@ if (CommandLine.arguments[1] == "getActiveWindow") {
 let options = [
 	kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: false as CFBoolean
 ]
+
 AXIsProcessTrustedWithOptions(options as CFDictionary)
 
 exit(0)
