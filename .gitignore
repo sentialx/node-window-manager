@@ -5,3 +5,4 @@ dist
 .vscode/ipch
 .vscode/c_cpp_properties.json
 .build
+macos
