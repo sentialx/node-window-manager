@@ -29,3 +29,18 @@ export const getWindowInfoById = (id: number) => {
     })
   );
 };
+
+export const setWindowBounds = (id: number, bounds: any) => {
+  execFileSync(
+    bin,
+    [
+      "setBounds",
+      id.toString(),
+      bounds.x,
+      bounds.y,
+      bounds.width,
+      bounds.height
+    ],
+    { encoding: "utf8" }
+  );
+};

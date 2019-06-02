@@ -1,7 +1,7 @@
 import { basename } from "path";
 import { platform } from "os";
 import { windowManager } from "..";
-import { getWindowInfoById } from "../macos";
+import { getWindowInfoById, setWindowBounds } from "../macos";
 
 let addon: any;
 
@@ -66,17 +66,20 @@ export class Window {
   }
 
   setBounds(bounds: Rectangle) {
-    if (platform() !== "win32") return;
-
     const newBounds = { ...this.getBounds(), ...bounds };
-    const sf = windowManager.getScaleFactor(this.getMonitor());
 
-    newBounds.x = Math.round(newBounds.x * sf);
-    newBounds.y = Math.round(newBounds.y * sf);
-    newBounds.width = Math.round(newBounds.width * sf);
-    newBounds.height = Math.round(newBounds.height * sf);
+    if (platform() === "win32") {
+      const sf = windowManager.getScaleFactor(this.getMonitor());
 
-    addon.setWindowBounds(this.handle, newBounds);
+      newBounds.x = Math.round(newBounds.x * sf);
+      newBounds.y = Math.round(newBounds.y * sf);
+      newBounds.width = Math.round(newBounds.width * sf);
+      newBounds.height = Math.round(newBounds.height * sf);
+
+      addon.setWindowBounds(this.handle, newBounds);
+    } else if (platform() === "darwin") {
+      setWindowBounds(this.handle, newBounds);
+    }
   }
 
   getTitle() {
