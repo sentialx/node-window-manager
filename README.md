@@ -24,8 +24,8 @@ const window = windowManager.getActiveWindow();
 // Prints the currently focused window title.
 console.log(window.getTitle());
 
-// Hide the window.
-window.hide();
+// Moves the window.
+window.setBounds({ x: 0, y: 0 });
 ```
 
 # Documentation
@@ -52,21 +52,17 @@ window.hide();
 
 ### Methods
 
-#### `WindowsManager.getActiveWindow()`
+#### `WindowsManager.getActiveWindow()` `Windows`
 
 - Returns [`Window`](#class-window)
 
-#### `WindowManager.getMonitorFromWindow(window: Window)`
-
-- Returns `number` - the monitor handle.
-
-#### `WindowManager.getScaleFactor(monitor: number)`
+#### `WindowManager.getScaleFactor(monitor: number)` `Windows`
 
 - Returns `number` - the monitor scale factor.
 
 ### Events
 
-#### Event 'window-activated'
+#### Event 'window-activated' `Windows`
 
 Returns:
 
@@ -87,11 +83,11 @@ This class is similar to Electron's [`BrowserWindow`](https://electronjs.org/doc
 
 ### Methods
 
-#### `Window.getBounds()`
+#### `Window.getBounds()` `Windows`
 
 - Returns `Rectangle`
 
-#### `Window.setBounds(bounds: Rectangle)`
+#### `Window.setBounds(bounds: Rectangle)` `Windows`
 
 Resizes and moves the window to the supplied bounds. Any properties that are not supplied will default to their current values.
 
@@ -99,45 +95,51 @@ Resizes and moves the window to the supplied bounds. Any properties that are not
 window.setBounds({ height: 50 });
 ```
 
-#### `Window.getTitle()`
+#### `Window.getTitle()` `Windows`
 
 - Returns `string`
 
-#### `Window.show()`
+#### `Window.show()` `Windows`
 
 Shows the window.
 
-#### `Window.hide()`
+#### `Window.hide()` `Windows`
 
 Hides the window.
 
-#### `Window.minimize()`
+#### `Window.minimize()` `Windows`
 
 Minimizes the window.
 
-#### `Window.restore()`
+#### `Window.restore()` `Windows`
 
 Restores the window.
 
-#### `Window.maximize()`
+#### `Window.maximize()` `Windows`
 
 Maximizes the window.
 
-#### `Window.bringToTop()`
+#### `Window.bringToTop()` `Windows`
 
 Brings the window to top and focuses it.
 
-#### `Window.setOpacity(opacity: number)`
+#### `Window.setOpacity(opacity: number)` `Windows`
 
 - `opacity` - a value between 0 and 1.
 
 Sets the window opacity.
 
-#### `Window.getOpacity()`
+#### `Window.getOpacity()` `Windows`
 
 Gets the window opacity
 
 Returns `number` between 0 and 1.
+
+#### `Window.getMonitor()` `Windows`
+
+Gets monitor by window.
+
+Returns `number` - monitor handle.
 
 # Projects using `node-window-manager`
 
