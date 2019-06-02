@@ -1,7 +1,12 @@
 import { basename } from "path";
 import { platform } from "os";
 import { windowManager } from "..";
-import { getWindowInfoById, setWindowBounds, bringToTop } from "../macos";
+import {
+  getWindowInfoById,
+  setWindowBounds,
+  bringToTop,
+  minimizeWindow
+} from "../macos";
 
 let addon: any;
 
@@ -106,13 +111,19 @@ export class Window {
   }
 
   minimize() {
-    if (platform() !== "win32") return;
-    addon.showWindow(this.handle, "minimize");
+    if (platform() === "win32") {
+      addon.showWindow(this.handle, "restore");
+    } else if (platform() === "darwin") {
+      minimizeWindow(this.handle, true);
+    }
   }
 
   restore() {
-    if (platform() !== "win32") return;
-    addon.showWindow(this.handle, "restore");
+    if (platform() === "win32") {
+      addon.showWindow(this.handle, "restore");
+    } else if (platform() === "darwin") {
+      minimizeWindow(this.handle, false);
+    }
   }
 
   maximize() {
@@ -128,11 +139,6 @@ export class Window {
   redraw() {
     if (platform() !== "win32") return;
     addon.redrawWindow(this.handle);
-  }
-
-  isWindow() {
-    if (platform() !== "win32") return;
-    return addon.isWindow(this.handle);
   }
 
   toggleTransparency(toggle: boolean) {

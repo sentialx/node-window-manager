@@ -48,3 +48,9 @@ export const setWindowBounds = (id: number, bounds: any) => {
 export const bringToTop = (id: number) => {
   execFileSync(bin, ["bringToTop", id.toString()], { encoding: "utf8" });
 };
+
+export const minimizeWindow = (id: number, toggle: boolean) => {
+  execFileSync(bin, ["minimize", id.toString(), toggle.toString()], {
+    encoding: "utf8"
+  });
+};

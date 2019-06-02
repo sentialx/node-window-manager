@@ -178,6 +178,11 @@ if (CommandLine.arguments[1] == "getActiveWindow") {
 
 	let appRef = AXUIElementCreateApplication(process["processId"] as! pid_t)
 	appRef.setAttribute(key: "Frontmost", value: true as CFBoolean)
+} else if (CommandLine.arguments[1] == "minimize") {
+	let id = Int(CommandLine.arguments[2])!
+	let b = Bool(CommandLine.arguments[3])!
+	let window = getAXWindowById(id: id)
+	window?.setAttribute(key: "Minimized", value: b as CFBoolean)
 }
 
 let options = [
