@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "build-darwin": "swift build --configuration=release --static-swift-stdlib && mv .build/release/addon build/macos",
+    "build-darwin": "swift build --configuration=release --static-swift-stdlib && mv .build/release/addon macos",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build && node-gyp rebuild && node compile"
   },

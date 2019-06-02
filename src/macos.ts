@@ -1,7 +1,7 @@
 import { join } from "path";
 import { execFileSync } from "child_process";
 
-const bin = join(__dirname, "../build/macos");
+const bin = join(__dirname, "../macos");
 
 const parse = (stdout: any) => {
   try {
