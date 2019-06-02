@@ -1,7 +1,5 @@
 # node-window-manager
 
-> NOTE: The package works currently only on Windows. Any pull request or issue is really appreciated.
-
 Manage windows in Windows, macOS and Linux
 
 # Install
@@ -52,7 +50,7 @@ window.setBounds({ x: 0, y: 0 });
 
 ### Methods
 
-#### WindowsManager.getActiveWindow() `Windows`
+#### WindowsManager.getActiveWindow() `Windows` `macOS`
 
 - Returns [`Window`](#class-window)
 
@@ -62,7 +60,7 @@ window.setBounds({ x: 0, y: 0 });
 
 ### Events
 
-#### Event 'window-activated' `Windows`
+#### Event 'window-activated' `Windows` `macOS`
 
 Returns:
 
@@ -83,11 +81,11 @@ This class is similar to Electron's [`BrowserWindow`](https://electronjs.org/doc
 
 ### Methods
 
-#### Window.getBounds() `Windows`
+#### Window.getBounds() `Windows` `macOS`
 
 - Returns `Rectangle`
 
-#### Window.setBounds(bounds: Rectangle) `Windows`
+#### Window.setBounds(bounds: Rectangle) `Windows` `macOS`
 
 Resizes and moves the window to the supplied bounds. Any properties that are not supplied will default to their current values.
 
@@ -95,7 +93,7 @@ Resizes and moves the window to the supplied bounds. Any properties that are not
 window.setBounds({ height: 50 });
 ```
 
-#### Window.getTitle() `Windows`
+#### Window.getTitle() `Windows` `macOS`
 
 - Returns `string`
 
@@ -107,11 +105,11 @@ Shows the window.
 
 Hides the window.
 
-#### Window.minimize() `Windows`
+#### Window.minimize() `Windows` `macOS`
 
 Minimizes the window.
 
-#### Window.restore() `Windows`
+#### Window.restore() `Windows` `macOS`
 
 Restores the window.
 
@@ -119,7 +117,7 @@ Restores the window.
 
 Maximizes the window.
 
-#### Window.bringToTop() `Windows`
+#### Window.bringToTop() `Windows` `macOS`
 
 Brings the window to top and focuses it.
 
@@ -140,6 +138,10 @@ Returns `number` between 0 and 1.
 Gets monitor by window.
 
 Returns `number` - monitor handle.
+
+#### Window.isWindow() `Windows` `macOS`
+
+Returns `boolean` - whether the window is a valid window.
 
 # Projects using `node-window-manager`
 
