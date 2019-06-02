@@ -19,7 +19,7 @@ class WindowManager extends EventEmitter {
 
     let lastId: number;
 
-    if (platform() !== "win32") return;
+    if (platform() !== "win32" && platform() !== "darwin") return;
 
     this.on("newListener", event => {
       if (registeredEvents.indexOf(event) !== -1) return;
