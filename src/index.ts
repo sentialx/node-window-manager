@@ -1,6 +1,7 @@
 import { Window } from "./classes/window";
 import { EventEmitter } from "events";
 import { platform, release } from "os";
+import { getActiveWindow } from "./macos";
 
 let addon: any;
 
@@ -51,8 +52,11 @@ class WindowManager extends EventEmitter {
   }
 
   getActiveWindow = () => {
-    if (platform() !== "win32") return;
-    return new Window(addon.getActiveWindow());
+    if (platform() === "win32") {
+      return new Window(addon.getActiveWindow());
+    } else if (platform() === "darwin") {
+      return new Window(getActiveWindow());
+    }
   };
 
   getScaleFactor = (monitor: number) => {
