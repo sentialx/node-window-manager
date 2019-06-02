@@ -50,17 +50,19 @@ export class Window {
   }
 
   getBounds() {
-    if (platform() !== "win32") return;
+    if (platform() === "win32") {
+      const bounds = addon.getWindowBounds(this.handle);
+      const sf = windowManager.getScaleFactor(this.getMonitor());
 
-    const bounds = addon.getWindowBounds(this.handle);
-    const sf = windowManager.getScaleFactor(this.getMonitor());
+      bounds.x = Math.round(bounds.x / sf);
+      bounds.y = Math.round(bounds.y / sf);
+      bounds.width = Math.round(bounds.width / sf);
+      bounds.height = Math.round(bounds.height / sf);
 
-    bounds.x = Math.round(bounds.x / sf);
-    bounds.y = Math.round(bounds.y / sf);
-    bounds.width = Math.round(bounds.width / sf);
-    bounds.height = Math.round(bounds.height / sf);
-
-    return bounds;
+      return bounds;
+    } else if (platform() === "darwin") {
+      return getWindowInfoById(this.handle).bounds;
+    }
   }
 
   setBounds(bounds: Rectangle) {
