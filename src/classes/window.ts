@@ -47,9 +47,9 @@ export class Window {
       const windowData = getWindowInfoById(handle);
 
       this.process = {
-        id: windowData.owner.id,
-        path: windowData.owner.path,
-        name: basename(windowData.owner.path)
+        id: windowData.process.id,
+        path: windowData.process.path,
+        name: basename(windowData.process.path)
       };
     }
   }
