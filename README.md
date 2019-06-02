@@ -52,11 +52,11 @@ window.setBounds({ x: 0, y: 0 });
 
 ### Methods
 
-#### `WindowsManager.getActiveWindow()` `Windows`
+#### WindowsManager.getActiveWindow() `Windows`
 
 - Returns [`Window`](#class-window)
 
-#### `WindowManager.getScaleFactor(monitor: number)` `Windows`
+#### WindowManager.getScaleFactor(monitor: number) `Windows`
 
 - Returns `number` - the monitor scale factor.
 
@@ -95,47 +95,47 @@ Resizes and moves the window to the supplied bounds. Any properties that are not
 window.setBounds({ height: 50 });
 ```
 
-#### `Window.getTitle()` `Windows`
+#### Window.getTitle() `Windows`
 
 - Returns `string`
 
-#### `Window.show()` `Windows`
+#### Window.show() `Windows`
 
 Shows the window.
 
-#### `Window.hide()` `Windows`
+#### Window.hide() `Windows`
 
 Hides the window.
 
-#### `Window.minimize()` `Windows`
+#### Window.minimize() `Windows`
 
 Minimizes the window.
 
-#### `Window.restore()` `Windows`
+#### Window.restore() `Windows`
 
 Restores the window.
 
-#### `Window.maximize()` `Windows`
+#### Window.maximize() `Windows`
 
 Maximizes the window.
 
-#### `Window.bringToTop()` `Windows`
+#### `indow.bringToTop() `Windows`
 
 Brings the window to top and focuses it.
 
-#### `Window.setOpacity(opacity: number)` `Windows`
+#### Window.setOpacity(opacity: number) `Windows`
 
 - `opacity` - a value between 0 and 1.
 
 Sets the window opacity.
 
-#### `Window.getOpacity()` `Windows`
+#### Window.getOpacity() `Windows`
 
 Gets the window opacity
 
 Returns `number` between 0 and 1.
 
-#### `Window.getMonitor()` `Windows`
+#### Window.getMonitor() `Windows`
 
 Gets monitor by window.
 
