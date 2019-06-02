@@ -176,6 +176,8 @@ export class Window {
   }
 
   getOwner() {
+    if (platform() !== "win32") return;
+
     return new Window(addon.getWindowOwner(this.handle));
   }
 }
