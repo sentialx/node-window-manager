@@ -141,6 +141,11 @@ export class Window {
     addon.redrawWindow(this.handle);
   }
 
+  isWindow() {
+    if (platform() !== "win32") return addon.isWindow(this.handle);
+    else if (platform() !== "darwin") return !!getWindowInfoById(this.handle);
+  }
+
   toggleTransparency(toggle: boolean) {
     if (platform() !== "win32") return;
     addon.toggleWindowTransparency(this.handle, toggle);
