@@ -83,11 +83,11 @@ This class is similar to Electron's [`BrowserWindow`](https://electronjs.org/doc
 
 ### Methods
 
-#### `Window.getBounds()` `Windows`
+#### Window.getBounds() `Windows`
 
 - Returns `Rectangle`
 
-#### `Window.setBounds(bounds: Rectangle)` `Windows`
+#### Window.setBounds(bounds: Rectangle) `Windows`
 
 Resizes and moves the window to the supplied bounds. Any properties that are not supplied will default to their current values.
 
