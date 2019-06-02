@@ -136,8 +136,8 @@ func AXUIWindowArray() -> [AXUIElement] {
 
 func getAXWindowById(id: Int) -> AXUIElement? {
 	let info = getWindowInfoById(id)!
-	let process = (info["owner"] as? [String: Any])!
-	let windows = AXUIWindowArray(processIdentifier: process["processId"] as! pid_t)
+	let process = (info["process"] as? [String: Any])!
+	let windows = AXUIWindowArray(processIdentifier: process["id"] as! pid_t)
 
 	for window in windows {
 		let pos: CGPoint = window.getAttribute(key: "Position")
