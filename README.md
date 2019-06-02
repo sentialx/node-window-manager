@@ -119,7 +119,7 @@ Restores the window.
 
 Maximizes the window.
 
-#### `indow.bringToTop() `Windows`
+#### Window.bringToTop() `Windows`
 
 Brings the window to top and focuses it.
 
