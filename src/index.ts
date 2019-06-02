@@ -26,7 +26,10 @@ class WindowManager extends EventEmitter {
 
       if (event === "window-activated") {
         interval = setInterval(() => {
-          const handle = addon.getActiveWindow();
+          let handle: number;
+
+          if (platform() === "win32") handle = addon.getActiveWindow();
+          else if (platform() === "darwin") handle = getActiveWindow();
 
           if (lastId !== handle) {
             lastId = handle;
