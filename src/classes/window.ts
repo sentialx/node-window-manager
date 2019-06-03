@@ -1,12 +1,8 @@
 import { basename } from "path";
 import { platform } from "os";
 import { windowManager } from "..";
-import {
-  getWindowInfoById,
-  setWindowBounds,
-  bringToTop,
-  minimizeWindow
-} from "../macos";
+import { EventEmitter } from "events";
+import { macOS } from "../macos";
 
 let addon: any;
 
@@ -31,30 +27,39 @@ export class Window {
   public handle: number;
   public process: Process;
 
-  constructor(handle: number) {
-    this.handle = handle;
+  static from(handle: number) {
+    return new Promise(async resolve => {
+      const window = new Window();
 
-    if (platform() === "win32") {
-      const processId = addon.getWindowProcessId(handle);
-      const processPath = addon.getProcessPath(processId);
+      window.handle = handle;
 
-      this.process = {
-        id: processId,
-        path: processPath,
-        name: basename(processPath)
-      };
-    } else if (platform() === "darwin") {
-      const windowData = getWindowInfoById(handle);
+      if (platform() === "win32") {
+        const processId = addon.getWindowProcessId(handle);
+        const processPath = addon.getProcessPath(processId);
 
-      this.process = {
-        id: windowData.process.id,
-        path: windowData.process.path,
-        name: basename(windowData.process.path)
-      };
-    }
+        window.process = {
+          id: processId,
+          path: processPath,
+          name: basename(processPath)
+        };
+      } else if (platform() === "darwin") {
+        const { id, path } = await macOS.initializeWindow(window.handle);
+
+        if (!id && !path) return;
+
+        window.process = {
+          id,
+          path,
+          name: basename(path)
+        };
+      }
+      resolve(window);
+    });
   }
 
-  getBounds() {
+  async _init() {}
+
+  async getBounds() {
     if (platform() === "win32") {
       const bounds = addon.getWindowBounds(this.handle);
       const sf = windowManager.getScaleFactor(this.getMonitor());
@@ -66,12 +71,12 @@ export class Window {
 
       return bounds;
     } else if (platform() === "darwin") {
-      return getWindowInfoById(this.handle).bounds;
+      return await macOS.getWindowBounds(this.handle);
     }
   }
 
-  setBounds(bounds: Rectangle) {
-    const newBounds = { ...this.getBounds(), ...bounds };
+  async setBounds(bounds: Rectangle) {
+    const newBounds = { ...(await this.getBounds()), ...bounds };
 
     if (platform() === "win32") {
       const sf = windowManager.getScaleFactor(this.getMonitor());
@@ -83,15 +88,15 @@ export class Window {
 
       addon.setWindowBounds(this.handle, newBounds);
     } else if (platform() === "darwin") {
-      setWindowBounds(this.handle, newBounds);
+      macOS.setWindowBounds(this.handle, newBounds);
     }
   }
 
-  getTitle() {
+  async getTitle() {
     if (platform() === "win32") {
       return addon.getWindowTitle(this.handle);
     } else if (platform() === "darwin") {
-      return getWindowInfoById(this.handle).title;
+      return await macOS.getWindowTitle(this.handle);
     }
   }
 
@@ -110,19 +115,19 @@ export class Window {
     addon.showWindow(this.handle, "hide");
   }
 
-  minimize() {
+  async minimize() {
     if (platform() === "win32") {
       addon.showWindow(this.handle, "restore");
     } else if (platform() === "darwin") {
-      minimizeWindow(this.handle, true);
+      macOS.setWindowMinimized(this.handle, true);
     }
   }
 
-  restore() {
+  async restore() {
     if (platform() === "win32") {
       addon.showWindow(this.handle, "restore");
     } else if (platform() === "darwin") {
-      minimizeWindow(this.handle, false);
+      macOS.setWindowMinimized(this.handle, false);
     }
   }
 
@@ -131,9 +136,9 @@ export class Window {
     addon.showWindow(this.handle, "maximize");
   }
 
-  bringToTop() {
+  async bringToTop() {
     if (platform() === "win32") addon.bringToTop(this.handle);
-    else if (platform() === "darwin") bringToTop(this.handle);
+    else if (platform() === "darwin") macOS.bringWindowToTop(this.handle);
   }
 
   redraw() {
@@ -141,9 +146,11 @@ export class Window {
     addon.redrawWindow(this.handle);
   }
 
-  isWindow() {
+  async isWindow() {
     if (platform() === "win32") return addon.isWindow(this.handle);
-    else if (platform() === "darwin") return !!getWindowInfoById(this.handle);
+    else if (platform() === "darwin") {
+      return await macOS.isWindow(this.handle);
+    }
   }
 
   toggleTransparency(toggle: boolean) {
@@ -175,9 +182,9 @@ export class Window {
     addon.setWindowOwner(this.handle, handle);
   }
 
-  getOwner() {
+  async getOwner() {
     if (platform() !== "win32") return;
 
-    return new Window(addon.getWindowOwner(this.handle));
+    return await Window.from(addon.getWindowOwner(this.handle));
   }
 }

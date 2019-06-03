@@ -1,56 +1,93 @@
 import { join } from "path";
-import { execFileSync } from "child_process";
+import { spawn } from "child_process";
+import { EventEmitter } from "events";
 
 const bin = join(__dirname, "../macos");
 
-const parse = (stdout: any) => {
-  try {
-    const result = JSON.parse(stdout);
-    if (result !== null) {
-      return result;
-    }
-  } catch (error) {
-    console.error(error);
-    throw new Error("Error parsing window data");
+const p = spawn(bin);
+
+export const makeId = (
+  length: number,
+  possible: string = "abcdefghijklmnopqrstuvwxyz"
+) => {
+  let id = "";
+  for (let i = 0; i < length; i++) {
+    id += possible.charAt(Math.floor(Math.random() * possible.length));
   }
+  return id;
 };
 
-export const getActiveWindow = () => {
-  return parseInt(
-    execFileSync(bin, ["getActiveWindow"], { encoding: "utf8" }),
-    10
-  );
-};
+class MacOS extends EventEmitter {
+  private _callStack: string[] = [];
+  private _pendingResponses = 0;
 
-export const getWindowInfoById = (id: number) => {
-  return parse(
-    execFileSync(bin, ["getWindowInfoById", id.toString()], {
-      encoding: "utf8"
-    })
-  );
-};
+  checkResponse() {
+    return new Promise(resolve => {
+      if (this._pendingResponses === 0) {
+        resolve();
+      } else {
+        const id = makeId(32);
+        this._callStack.push(id);
+        this.once(`gotResponse-${id}`, () => {
+          resolve();
+        });
+      }
+    });
+  }
 
-export const setWindowBounds = (id: number, bounds: any) => {
-  execFileSync(
-    bin,
-    [
-      "setBounds",
-      id.toString(),
-      bounds.x,
-      bounds.y,
-      bounds.width,
-      bounds.height
-    ],
-    { encoding: "utf8" }
-  );
-};
+  callSync(cmd: string): Promise<string> {
+    return new Promise(async resolve => {
+      await this.checkResponse();
 
-export const bringToTop = (id: number) => {
-  execFileSync(bin, ["bringToTop", id.toString()], { encoding: "utf8" });
-};
+      this._pendingResponses++;
 
-export const minimizeWindow = (id: number, toggle: boolean) => {
-  execFileSync(bin, ["minimize", id.toString(), toggle.toString()], {
-    encoding: "utf8"
-  });
-};
+      p.stdin.write(`${cmd}\n`);
+
+      p.stdout.once("data", data => {
+        this.emit(`gotResponse-${this._callStack[0]}`);
+        this._pendingResponses--;
+        resolve(data.toString());
+      });
+    });
+  }
+
+  async callAsync(cmd: string) {
+    await this.checkResponse();
+    p.stdin.write(`${cmd}\n`);
+  }
+
+  async getActiveWindow(): Promise<number> {
+    return parseInt(await this.callSync("getActiveWindow"), 10);
+  }
+
+  async getWindowTitle(id: number) {
+    return await this.callSync(`getTitle ${id}`);
+  }
+
+  async initializeWindow(id: number): Promise<any> {
+    return JSON.parse(await this.callSync(`initializeWindow ${id}`));
+  }
+
+  async getWindowBounds(id: number) {
+    return JSON.parse(await this.callSync(`getBounds ${id}`));
+  }
+
+  async isWindow(id: number): Promise<boolean> {
+    return (await this.callSync(`isWindow ${id}`)) == "true";
+  }
+
+  async setWindowBounds(id: number, { x, y, width, height }: any) {
+    this.callAsync(`setBounds ${id} ${x} ${y} ${width} ${height}`);
+  }
+
+  async bringWindowToTop(pid: number) {
+    this.callAsync(`bringToTop ${pid}`);
+  }
+
+  async setWindowMinimized(id: number, toggle: boolean) {
+    this.callAsync(`setMinimized ${id} ${toggle}`);
+  }
+}
+
+const macOS = new MacOS();
+export { macOS };

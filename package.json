@@ -9,6 +9,7 @@
     "build-darwin": "swift build --configuration=release --static-swift-stdlib && mv .build/release/addon macos",
     "watch": "tsc --watch",
     "install": "node-gyp rebuild && node compile",
+    "rebuild": "node-gyp rebuild && node compile",
     "prepublishOnly": "npm run build && node-gyp rebuild && node compile"
   },
   "repository": {
@@ -35,6 +36,7 @@
   },
   "dependencies": {
     "bindings": "1.5.0",
+    "deasync": "0.1.15",
     "node-addon-api": "1.6.3",
     "node-gyp": "4.0.0"
   },

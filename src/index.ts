@@ -1,7 +1,7 @@
 import { Window } from "./classes/window";
 import { EventEmitter } from "events";
 import { platform, release } from "os";
-import { getActiveWindow } from "./macos";
+import { macOS } from "./macos";
 
 let addon: any;
 
@@ -25,15 +25,17 @@ class WindowManager extends EventEmitter {
       if (registeredEvents.indexOf(event) !== -1) return;
 
       if (event === "window-activated") {
-        interval = setInterval(() => {
+        interval = setInterval(async () => {
           let handle: number;
 
           if (platform() === "win32") handle = addon.getActiveWindow();
-          else if (platform() === "darwin") handle = getActiveWindow();
+          else if (platform() === "darwin")
+            handle = await macOS.getActiveWindow();
 
           if (lastId !== handle) {
             lastId = handle;
-            this.emit("window-activated", new Window(handle));
+            const win = await Window.from(handle);
+            this.emit("window-activated", win);
           }
         }, 50);
       } else {
@@ -54,11 +56,11 @@ class WindowManager extends EventEmitter {
     });
   }
 
-  getActiveWindow = () => {
+  getActiveWindow = async () => {
     if (platform() === "win32") {
-      return new Window(addon.getActiveWindow());
+      return await Window.from(addon.getActiveWindow());
     } else if (platform() === "darwin") {
-      return new Window(getActiveWindow());
+      return await Window.from(await macOS.getActiveWindow());
     }
   };
 

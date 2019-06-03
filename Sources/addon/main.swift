@@ -23,6 +23,16 @@ extension AXValue {
 	}
 }
 
+extension String {
+  func CGFloatValue() -> CGFloat? {
+    guard let doubleValue = Double(self) else {
+      return nil
+    }
+
+    return CGFloat(doubleValue)
+  }
+}
+
 extension AXUIElement {
 	func getAttribute<T>(key: String) -> T {
 		var ptr: AnyObject?
@@ -38,7 +48,7 @@ extension AXUIElement {
 		AXUIElementSetAttributeValue(self, "AX\(key)" as CFString, value)
 	}
 
-	func setBounds(bounds: NSRect) {
+	func setBounds(_ bounds: NSRect) {
 		setAttribute(key: "Position", value: AXValue.initWith(t: bounds.origin)!)
 		setAttribute(key: "Size", value: AXValue.initWith(t: bounds.size)!)
 	}
@@ -79,7 +89,43 @@ func getActiveWindow() -> Int {
 	return -1
 }
 
-func getWindowInfoById(_ id: Int) -> [String: Any]? {
+var windowsMap: [Int: AXUIElement] = [:]
+
+func getAXWindowByInfo(pid: pid_t, bounds: CGRect, title: String) -> AXUIElement? {
+	let windows = AXUIWindowArray(processIdentifier: pid)
+
+	for window in windows {
+		let pos: CGPoint = window.getAttribute(key: "Position")
+		let size: CGSize = window.getAttribute(key: "Size")
+		let t: String = window.getAttribute(key: "Title")
+
+		if bounds.origin.x == pos.x && 
+			bounds.origin.y == pos.y && 
+			bounds.width == size.width && 
+			bounds.height == size.height && 
+			title == t {
+			return window
+		}
+	}
+	
+	return nil
+}
+
+func isWindow(_ id: Int) -> Bool {
+	let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as! [[String: Any]]
+
+	for window in windows {
+		if (window[kCGWindowNumber as String] as! Int != id) {
+			continue;
+		}
+
+		return true
+	}
+
+	return false
+}
+
+func initializeWindow(_ id: Int) -> [String: Any]? {
 	let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as! [[String: Any]]
 
 	for window in windows {
@@ -91,108 +137,104 @@ func getWindowInfoById(_ id: Int) -> [String: Any]? {
 		let appPid = window[kCGWindowOwnerPID as String] as! pid_t
 		let app = NSRunningApplication(processIdentifier: appPid)!
 
-		let dict: [String: Any] = [
-			"title": window[kCGWindowName as String] as? String ?? "",
-			"id": window[kCGWindowNumber as String] as! Int,
-			"bounds": [
-				"x": bounds.origin.x,
-				"y": bounds.origin.y,
-				"width": bounds.width,
-				"height": bounds.height
-			],
-			"process": [
-				"name": window[kCGWindowOwnerName as String] as! String,
-				"id": appPid,
-				"path": app.bundleURL!.path
-			]
-		]
+		windowsMap[window[kCGWindowNumber as String] as! Int] = getAXWindowByInfo(pid: appPid, bounds: bounds, title: window[kCGWindowName as String] as? String ?? "")
 
-		return dict
+		return [
+			"id": appPid,
+			"path": app.bundleURL!.path
+		]
 	}
 
-	return nil
+	return [
+		"id": "",
+		"path": ""
+	]
 }
 
 func AXUIWindowArray(processIdentifier pid:pid_t) -> [AXUIElement] {
-	let windowList : UnsafeMutablePointer<AnyObject?> = UnsafeMutablePointer<AnyObject?>.allocate(capacity: 1)
 	let appRef = AXUIElementCreateApplication(pid)
-	AXUIElementCopyAttributeValue(appRef, "AXWindows" as CFString, windowList)
-	return windowList.pointee as! [AXUIElement]
+	return appRef.getAttribute(key: "Windows")
 }
 
-func AXUIWindowArray() -> [AXUIElement] {
-	let runningApplications = NSWorkspace.shared.runningApplications
-
-	var elements: [AXUIElement] = [];
-
-	for app in runningApplications {
-		let windows = AXUIWindowArray(processIdentifier: app.processIdentifier)
-		elements = elements + windows
+func getTitle(_ id: Int) -> String {
+	if let window = windowsMap[id] {
+		return window.getAttribute(key: "Title");
 	}
-
-	return elements
+	return ""
 }
 
-
-func getAXWindowById(id: Int) -> AXUIElement? {
-	let info = getWindowInfoById(id)!
-	let process = (info["process"] as? [String: Any])!
-	let windows = AXUIWindowArray(processIdentifier: process["id"] as! pid_t)
-
-	for window in windows {
+func getBounds(_ id: Int) -> [String: CGFloat] {
+	if let window = windowsMap[id] {
 		let pos: CGPoint = window.getAttribute(key: "Position")
 		let size: CGSize = window.getAttribute(key: "Size")
-		let title: String = window.getAttribute(key: "Title")
-		let bounds = (info["bounds"] as? [String: Any])!
 
-		if bounds["x"] as? CGFloat == pos.x && 
-			bounds["y"] as? CGFloat == pos.y && 
-			bounds["width"] as? CGFloat == size.width && 
-			bounds["height"] as? CGFloat == size.height && 
-			info["title"] as? String == title {
-			return window
-		}
+		return [
+			"x": pos.x,
+			"y": pos.y,
+			"width": size.width,
+			"height": size.height
+		]
 	}
-	
-	return nil
+
+	return [
+		"x": 0,
+		"y": 0,
+		"width": 0,
+		"height": 0
+	]
 }
 
-if (CommandLine.arguments[1] == "getActiveWindow") {
-	print(getActiveWindow())
-} else if (CommandLine.arguments[1] == "getWindowInfoById") {
-	let id = Int(CommandLine.arguments[2])
+func setBounds(id: Int, x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat) {
+	if let window = windowsMap[id] {
+		window.setBounds(NSMakeRect(x, y, width, height))
+	}
+}
 
-	print(try! toJson(getWindowInfoById(id!)))
-} else if (CommandLine.arguments[1] == "setBounds") {
-	let id = Int(CommandLine.arguments[2])!
-	let x = CGFloat(Int(CommandLine.arguments[3])!)
-	let y = CGFloat(Int(CommandLine.arguments[4])!)
-	let width = CGFloat(Int(CommandLine.arguments[5])!)
-	let height = CGFloat(Int(CommandLine.arguments[6])!)
-
-	let window = getAXWindowById(id: id)
-	
-	window?.setBounds(bounds: NSMakeRect(x, y, width, height))
-} else if (CommandLine.arguments[1] == "bringToTop") {
-	let id = Int(CommandLine.arguments[2])!
-
-	let info = getWindowInfoById(id)!
-	let process = (info["process"] as? [String: Any])!
-	let appRef = AXUIElementCreateApplication(process["id"] as! pid_t)
-
+func bringToTop(_ pid: pid_t) {
+	let appRef = AXUIElementCreateApplication(pid)
 	appRef.setAttribute(key: "Frontmost", value: true as CFBoolean)
-} else if (CommandLine.arguments[1] == "minimize") {
-	let id = Int(CommandLine.arguments[2])!
-	let b = Bool(CommandLine.arguments[3])!
+}
 
-	let window = getAXWindowById(id: id)
-	window?.setAttribute(key: "Minimized", value: b as CFBoolean)
+func setMinimized(id: Int, toggle: Bool) {
+	if let window = windowsMap[id] {
+		window.setAttribute(key: "Minimized", value: toggle as CFBoolean)
+	}
 }
 
 let options = [
-	kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: false as CFBoolean
+	kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true as CFBoolean
 ]
 
 AXIsProcessTrustedWithOptions(options as CFDictionary)
 
-exit(0)
+setbuf(__stdoutp, nil);
+
+while (true) {
+	let line = readLine()
+	let args = line!.components(separatedBy: " ")
+
+	if (args[0] == "getActiveWindow") {
+		print(getActiveWindow())
+	} else if (args[0] == "getBounds") {
+		print(try! toJson(getBounds(Int(args[1])!)))
+	} else if (args[0] == "bringToTop") {
+		bringToTop(pid_t(Int(args[1])!))
+	} else if (args[0] == "setMinimized") {
+		setMinimized(id: Int(args[1])!, toggle: Bool(args[2])!)
+	} else if (args[0] == "setBounds") {
+		setBounds(
+			id: Int(args[1])!, 
+			x: CGFloat(Int(args[2])!), 
+			y: CGFloat(Int(args[3])!), 
+			width: CGFloat(Int(args[4])!),
+			height: CGFloat(Int(args[5])!)
+		)
+	} else if (args[0] == "getTitle") {
+		print(getTitle(Int(args[1])!))
+	} else if (args[0] == "initializeWindow") {
+		print(try! toJson(initializeWindow(Int(args[1])!)))
+	} else if (args[0] == "isWindow") {
+		let b = isWindow(Int(args[1])!)
+		print("\(b)")
+	}
+}
