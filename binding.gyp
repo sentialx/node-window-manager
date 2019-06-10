@@ -7,6 +7,10 @@
       "conditions":[
         ["OS=='win'", {
       	  "sources": [ "lib/windows.cc" ]
+      	}],
+        ["OS=='mac'", {
+      	  "sources": [ "lib/macos.mm" ],
+          "libraries": [ '-framework AppKit' ]
       	}]
       ], 
       "include_dirs": [

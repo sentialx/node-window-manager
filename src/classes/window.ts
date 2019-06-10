@@ -27,39 +27,30 @@ export class Window {
   public handle: number;
   public process: Process;
 
-  static from(handle: number) {
-    return new Promise(async resolve => {
-      const window = new Window();
+  constructor(handle: number) {
+    if (platform() === "win32") {
+      const processId = addon.getWindowProcessId(handle);
+      const processPath = addon.getProcessPath(processId);
 
-      window.handle = handle;
+      this.process = {
+        id: processId,
+        path: processPath,
+        name: basename(processPath)
+      };
+    } else if (platform() === "darwin") {
+      const { id, path } = macOS.initializeWindow(this.handle);
 
-      if (platform() === "win32") {
-        const processId = addon.getWindowProcessId(handle);
-        const processPath = addon.getProcessPath(processId);
+      if (!id && !path) return;
 
-        window.process = {
-          id: processId,
-          path: processPath,
-          name: basename(processPath)
-        };
-      } else if (platform() === "darwin") {
-        const { id, path } = await macOS.initializeWindow(window.handle);
-
-        if (!id && !path) return;
-
-        window.process = {
-          id,
-          path,
-          name: basename(path)
-        };
-      }
-      resolve(window);
-    });
+      this.process = {
+        id,
+        path,
+        name: basename(path)
+      };
+    }
   }
 
-  async _init() {}
-
-  async getBounds() {
+  getBounds() {
     if (platform() === "win32") {
       const bounds = addon.getWindowBounds(this.handle);
       const sf = windowManager.getScaleFactor(this.getMonitor());
@@ -71,12 +62,12 @@ export class Window {
 
       return bounds;
     } else if (platform() === "darwin") {
-      return await macOS.getWindowBounds(this.handle);
+      return macOS.getWindowBounds(this.handle);
     }
   }
 
-  async setBounds(bounds: Rectangle) {
-    const newBounds = { ...(await this.getBounds()), ...bounds };
+  setBounds(bounds: Rectangle) {
+    const newBounds = { ...this.getBounds(), ...bounds };
 
     if (platform() === "win32") {
       const sf = windowManager.getScaleFactor(this.getMonitor());
@@ -92,11 +83,11 @@ export class Window {
     }
   }
 
-  async getTitle() {
+  getTitle() {
     if (platform() === "win32") {
       return addon.getWindowTitle(this.handle);
     } else if (platform() === "darwin") {
-      return await macOS.getWindowTitle(this.handle);
+      return macOS.getWindowTitle(this.handle);
     }
   }
 
@@ -115,7 +106,7 @@ export class Window {
     addon.showWindow(this.handle, "hide");
   }
 
-  async minimize() {
+  minimize() {
     if (platform() === "win32") {
       addon.showWindow(this.handle, "restore");
     } else if (platform() === "darwin") {
@@ -123,7 +114,7 @@ export class Window {
     }
   }
 
-  async restore() {
+  restore() {
     if (platform() === "win32") {
       addon.showWindow(this.handle, "restore");
     } else if (platform() === "darwin") {
@@ -136,9 +127,9 @@ export class Window {
     addon.showWindow(this.handle, "maximize");
   }
 
-  async bringToTop() {
+  bringToTop() {
     if (platform() === "win32") addon.bringToTop(this.handle);
-    else if (platform() === "darwin") macOS.bringWindowToTop(this.handle);
+    else if (platform() === "darwin") macOS.bringWindowToTop(this.process.id);
   }
 
   redraw() {
@@ -146,10 +137,10 @@ export class Window {
     addon.redrawWindow(this.handle);
   }
 
-  async isWindow() {
+  isWindow() {
     if (platform() === "win32") return addon.isWindow(this.handle);
     else if (platform() === "darwin") {
-      return await macOS.isWindow(this.handle);
+      return macOS.isWindow(this.handle);
     }
   }
 
@@ -182,9 +173,9 @@ export class Window {
     addon.setWindowOwner(this.handle, handle);
   }
 
-  async getOwner() {
+  getOwner() {
     if (platform() !== "win32") return;
 
-    return await Window.from(addon.getWindowOwner(this.handle));
+    return new Window(addon.getWindowOwner(this.handle));
   }
 }

@@ -1,10 +1,11 @@
 import { join } from "path";
-import { spawn } from "child_process";
+import { spawn, execFileSync } from "child_process";
 import { EventEmitter } from "events";
 
 const bin = join(__dirname, "../macos");
-
 const p = spawn(bin);
+
+const deasync = require("deasync");
 
 export const makeId = (
   length: number,
@@ -35,56 +36,54 @@ class MacOS extends EventEmitter {
     });
   }
 
-  callSync(cmd: string): Promise<string> {
-    return new Promise(async resolve => {
-      await this.checkResponse();
+  callSync(cmd: string) {
+    p.stdin.write(`${cmd}\n`);
 
-      this._pendingResponses++;
+    let data: string;
 
-      p.stdin.write(`${cmd}\n`);
-
-      p.stdout.once("data", data => {
-        this.emit(`gotResponse-${this._callStack[0]}`);
-        this._pendingResponses--;
-        resolve(data.toString());
-      });
+    p.stdout.once("data", d => {
+      data = d.toString();
     });
+
+    while (!data) deasync.roo;
+    deasync.loopWhile(() => !data);
+
+    return data;
   }
 
-  async callAsync(cmd: string) {
-    await this.checkResponse();
+  callAsync(cmd: string) {
     p.stdin.write(`${cmd}\n`);
   }
 
-  async getActiveWindow(): Promise<number> {
-    return parseInt(await this.callSync("getActiveWindow"), 10);
+  getActiveWindow() {
+    return parseInt(this.callSync("getActiveWindow"), 10);
   }
 
-  async getWindowTitle(id: number) {
-    return await this.callSync(`getTitle ${id}`);
+  getWindowTitle(id: number) {
+    return this.callSync(`getTitle ${id}`);
   }
 
-  async initializeWindow(id: number): Promise<any> {
-    return JSON.parse(await this.callSync(`initializeWindow ${id}`));
+  initializeWindow(id: number) {
+    return JSON.parse(this.callSync(`initializeWindow ${id}`));
   }
 
-  async getWindowBounds(id: number) {
-    return JSON.parse(await this.callSync(`getBounds ${id}`));
+  getWindowBounds(id: number) {
+    return JSON.parse(this.callSync(`getBounds ${id}`));
   }
 
-  async isWindow(id: number): Promise<boolean> {
-    return (await this.callSync(`isWindow ${id}`)) == "true";
+  isWindow(id: number) {
+    return this.callSync(`isWindow ${id}`) == "true";
   }
 
-  async setWindowBounds(id: number, { x, y, width, height }: any) {
+  setWindowBounds(id: number, { x, y, width, height }: any) {
     this.callAsync(`setBounds ${id} ${x} ${y} ${width} ${height}`);
   }
 
-  async bringWindowToTop(pid: number) {
+  bringWindowToTop(pid: number) {
     this.callAsync(`bringToTop ${pid}`);
   }
 
-  async setWindowMinimized(id: number, toggle: boolean) {
+  setWindowMinimized(id: number, toggle: boolean) {
     this.callAsync(`setMinimized ${id} ${toggle}`);
   }
 }

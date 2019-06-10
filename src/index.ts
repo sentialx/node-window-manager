@@ -29,12 +29,11 @@ class WindowManager extends EventEmitter {
           let handle: number;
 
           if (platform() === "win32") handle = addon.getActiveWindow();
-          else if (platform() === "darwin")
-            handle = await macOS.getActiveWindow();
+          else if (platform() === "darwin") handle = macOS.getActiveWindow();
 
           if (lastId !== handle) {
             lastId = handle;
-            const win = await Window.from(handle);
+            const win = new Window(handle);
             this.emit("window-activated", win);
           }
         }, 50);
@@ -58,9 +57,9 @@ class WindowManager extends EventEmitter {
 
   getActiveWindow = async () => {
     if (platform() === "win32") {
-      return await Window.from(addon.getActiveWindow());
+      return await new Window(addon.getActiveWindow());
     } else if (platform() === "darwin") {
-      return await Window.from(await macOS.getActiveWindow());
+      return await new Window(macOS.getActiveWindow());
     }
   };
 

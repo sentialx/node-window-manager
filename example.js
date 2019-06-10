@@ -1,5 +1,3 @@
-const { windowManager, Window } = require("./dist/index");
+const addon = require("bindings")("addon");
 
-windowManager.on("window-activated", window => {
-  console.log(window);
-});
+console.log(addon.getActiveWindow());

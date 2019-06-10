@@ -207,6 +207,14 @@ let options = [
 
 AXIsProcessTrustedWithOptions(options as CFDictionary)
 
+if (CommandLine.arguments.count > 1) {
+	if (CommandLine.arguments[1] == "getActiveWindow") {
+		print(getActiveWindow())
+	}
+
+	exit(0)
+}
+
 setbuf(__stdoutp, nil);
 
 while (true) {
