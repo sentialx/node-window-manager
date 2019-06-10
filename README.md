@@ -56,6 +56,10 @@ window.hide();
 
 - Returns [`Window`](#class-window)
 
+#### `WindowManager.getWindows()`
+
+- Returns [`Window`](#class-window)[]
+
 #### `WindowManager.getMonitorFromWindow(window: Window)`
 
 - Returns `number` - the monitor handle.
@@ -63,6 +67,10 @@ window.hide();
 #### `WindowManager.getScaleFactor(monitor: number)`
 
 - Returns `number` - the monitor scale factor.
+
+#### `WindowManager.getMousePoint()`
+
+- Returns `Point` - the mouse point.
 
 ### Events
 
@@ -78,7 +86,7 @@ Emitted when a window has been activated.
 
 This class is similar to Electron's [`BrowserWindow`](https://electronjs.org/docs/api/browser-window) class.
 
-### `new Window(handle: number)`
+### `new Window(handle: Buffer)`
 
 ### Instance properties
 
@@ -91,12 +99,24 @@ This class is similar to Electron's [`BrowserWindow`](https://electronjs.org/doc
 
 - Returns `Rectangle`
 
+#### `Window.getContentBounds()`
+
+- Returns `Rectangle`
+
 #### `Window.setBounds(bounds: Rectangle)`
 
 Resizes and moves the window to the supplied bounds. Any properties that are not supplied will default to their current values.
 
 ```javascript
 window.setBounds({ height: 50 });
+```
+
+#### `Window.setContentBounds(bounds: Rectangle)`
+
+Resizes and moves the window content area to the supplied bounds. Any properties that are not supplied will default to their current values.
+
+```javascript
+window.setContentBounds({ height: 50 });
 ```
 
 #### `Window.getTitle()`
@@ -122,6 +142,40 @@ Restores the window.
 #### `Window.maximize()`
 
 Maximizes the window.
+
+#### `Window.setAlwaysOnTop(toggle: boolean)`
+
+Sets whether the window should show always on top of other windows.
+
+#### `Window.setMaximizable(toggle: boolean)`
+
+Sets whether the window should be maximizable.
+
+#### `Window.setMinimizable(toggle: boolean)`
+
+Sets whether the window should be minimizable.
+
+#### `Window.setResizable(toggle: boolean)`
+
+Sets whether the window should be resizable.
+
+#### `Window.isMaximizable()`
+
+Determines whether the window is maximizable.
+
+Returns `boolean`
+
+#### `Window.isMaximizable()`
+
+Determines whether the window is maximizable.
+
+Returns `boolean`
+
+#### `Window.isResizable()`
+
+Determines whether the window is resizable.
+
+Returns `boolean`
 
 #### `Window.bringToTop()`
 

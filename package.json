@@ -1,20 +1,51 @@
 {
-  "name": "node-window-manager",
-  "version": "0.8.5",
+  "_from": "node-window-manager@0.7.0",
+  "_id": "node-window-manager@0.7.0",
+  "_inBundle": false,
+  "_integrity": "sha512-01zuRScKC8O0eVLJa5iIuGXtQTSdT5pjltbCEAbFmFB8zytevvf5t1xzjbeTU97Z5VLCIYfLqacy30iP4xAr8g==",
+  "_location": "/node-window-manager",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "node-window-manager@0.7.0",
+    "name": "node-window-manager",
+    "escapedName": "node-window-manager",
+    "rawSpec": "0.7.0",
+    "saveSpec": null,
+    "fetchSpec": "0.7.0"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/node-window-manager/-/node-window-manager-0.7.0.tgz",
+  "_shasum": "0be0e580bca2f15dca46a49a07cbdef383028b32",
+  "_spec": "node-window-manager@0.7.0",
+  "_where": "C:\\Users\\Preinstalled\\go\\src\\bitbucket.org\\varwin\\rms",
+  "author": {
+    "name": "sentialx"
+  },
+  "bugs": {
+    "url": "https://github.com/sentialx/node-window-manager/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "ffi": "2.3.0",
+    "ref": "1.3.5",
+    "ref-struct": "1.1.0",
+    "ref-wchar": "1.0.2"
+  },
+  "deprecated": false,
   "description": "Manage windows in macOS, Windows and Linux",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
-    "build-win32": "node-gyp rebuild",
-    "install": "node install.js",
-    "prepublishOnly": "npm run build && npm run build-win32"
+  "devDependencies": {
+    "@types/node": "11.9.5",
+    "tslint": "5.13.0",
+    "typescript": "3.3.3333"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sentialx/node-window-manager.git"
-  },
+  "files": [
+    "dist/"
+  ],
+  "homepage": "https://github.com/sentialx/node-window-manager#readme",
   "keywords": [
     "window-manager",
     "native",
@@ -22,26 +53,18 @@
     "linux",
     "windows"
   ],
-  "author": "sentialx",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/sentialx/node-window-manager/issues"
+  "main": "dist/index.js",
+  "name": "node-window-manager",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sentialx/node-window-manager.git"
   },
-  "homepage": "https://github.com/sentialx/node-window-manager#readme",
-  "devDependencies": {
-    "@types/node": "12.0.0",
-    "tslint": "5.16.0",
-    "typescript": "3.4.5"
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "watch": "tsc --watch"
   },
-  "files": [
-    "dist/",
-    "binding.gyp",
-    "install.js",
-    "lib/"
-  ],
-  "dependencies": {
-    "bindings": "1.5.0",
-    "node-addon-api": "^1.6.3",
-    "node-gyp": "4.0.0"
-  }
+  "types": "dist/index.d.ts",
+  "version": "0.7.0"
 }
