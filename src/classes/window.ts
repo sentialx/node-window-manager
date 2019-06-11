@@ -78,7 +78,7 @@ export class Window {
 
       addon.setWindowBounds(this.handle, newBounds);
     } else if (platform() === "darwin") {
-      // macOS.setWindowBounds(this.handle, newBounds);
+      addon.setWindowBounds(this.handle, this.process.id, newBounds);
     }
   }
 
@@ -124,7 +124,7 @@ export class Window {
 
   bringToTop() {
     if (platform() === "win32") addon.bringToTop(this.handle);
-    else if (platform() === "darwin") addon.bringToTop(this.process.id);
+    else if (platform() === "darwin") addon.bringWindowToTop(this.process.id);
   }
 
   redraw() {
@@ -134,9 +134,7 @@ export class Window {
 
   isWindow(): boolean {
     if (platform() === "win32") return addon.isWindow(this.handle);
-    else if (platform() === "darwin") {
-      return addon.isWindow(this.handle);
-    }
+    else if (platform() === "darwin") return !!addon.getWindowInfo(this.handle);
   }
 
   toggleTransparency(toggle: boolean) {

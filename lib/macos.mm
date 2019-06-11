@@ -3,8 +3,12 @@
 #import <ApplicationServices/ApplicationServices.h>
 #include <napi.h>
 #include <string>
+#include <iostream>
 
+extern "C" AXError _AXUIElementGetWindow(AXUIElementRef, CGWindowID* out);
 
+NSDictionary* opts = @{static_cast<id> (kAXTrustedCheckOptionPrompt): @YES};
+BOOL a = AXIsProcessTrustedWithOptions(static_cast<CFDictionaryRef> (opts));
 
 Napi::Array getWindows(const Napi::CallbackInfo &info) {
   Napi::Env env{info.Env()};
@@ -103,6 +107,65 @@ Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
   return Napi::Object::New(env);
 }
 
+AXUIElementRef getAXWindow(int pid, int handle) {
+  auto app = AXUIElementCreateApplication(pid);
+
+  NSArray *windows;
+  AXUIElementCopyAttributeValues(app, kAXWindowsAttribute, 0, 100, (CFArrayRef *) &windows);
+
+  for (id child in windows) {
+    auto window = (AXUIElementRef) child;
+
+    CGWindowID windowId;
+    _AXUIElementGetWindow(window, &windowId);
+
+    if (windowId == handle) {
+      return window;
+    }
+  }
+
+  return NULL;
+}
+
+Napi::Boolean setWindowBounds(const Napi::CallbackInfo &info) {
+  Napi::Env env{info.Env()};
+
+  auto handle = info[0].As<Napi::Number>().Int32Value();
+  auto pid = info[1].As<Napi::Number>().Int32Value();
+  auto bounds = info[2].As<Napi::Object>();
+
+  auto x = bounds.Get("x").As<Napi::Number>().DoubleValue();
+  auto y = bounds.Get("y").As<Napi::Number>().DoubleValue();
+  auto width = bounds.Get("width").As<Napi::Number>().DoubleValue();
+  auto height = bounds.Get("height").As<Napi::Number>().DoubleValue();
+
+  auto win = getAXWindow(pid, handle);
+
+  if (win) {
+    NSPoint point = NSMakePoint((CGFloat) x, (CGFloat) y);
+    NSSize size = NSMakeSize((CGFloat) width, (CGFloat) height);
+
+    CFTypeRef positionStorage = (CFTypeRef)(AXValueCreate((AXValueType)kAXValueCGPointType, (const void *)&point));
+    AXUIElementSetAttributeValue(win, kAXPositionAttribute, positionStorage);
+
+    CFTypeRef sizeStorage = (CFTypeRef)(AXValueCreate((AXValueType)kAXValueCGSizeType, (const void *)&size));
+    AXUIElementSetAttributeValue(win, kAXSizeAttribute, sizeStorage);
+  }
+  
+  return Napi::Boolean::New(env, true);
+}
+
+Napi::Boolean bringWindowToTop(const Napi::CallbackInfo &info) {
+  Napi::Env env{info.Env()};
+
+  auto pid = info[0].As<Napi::Number>().Int32Value();
+  auto app = AXUIElementCreateApplication(pid);
+
+  AXUIElementSetAttributeValue(app, kAXFrontmostAttribute, kCFBooleanTrue);
+
+  return Napi::Boolean::New(env, true);
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
     exports.Set(Napi::String::New(env, "getWindows"),
                 Napi::Function::New(env, getWindows));
@@ -110,6 +173,10 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
                 Napi::Function::New(env, getActiveWindow));
     exports.Set(Napi::String::New(env, "getWindowInfo"),
                 Napi::Function::New(env, getWindowInfo));
+    exports.Set(Napi::String::New(env, "setWindowBounds"),
+                Napi::Function::New(env, setWindowBounds));
+    exports.Set(Napi::String::New(env, "bringWindowToTop"),
+                Napi::Function::New(env, bringWindowToTop));
 
     return exports;
 }
