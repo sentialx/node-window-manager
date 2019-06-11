@@ -1,11 +1,10 @@
 import { Window } from "./classes/window";
 import { EventEmitter } from "events";
 import { platform, release } from "os";
-import { macOS } from "./macos";
 
 let addon: any;
 
-if (platform() === "win32") {
+if (platform() === "win32" || platform() === "darwin") {
   addon = require("bindings")("addon");
 }
 
@@ -26,15 +25,11 @@ class WindowManager extends EventEmitter {
 
       if (event === "window-activated") {
         interval = setInterval(async () => {
-          let handle: number;
+          const win = addon.getActiveWindow();
 
-          if (platform() === "win32") handle = addon.getActiveWindow();
-          else if (platform() === "darwin") handle = macOS.getActiveWindow();
-
-          if (lastId !== handle) {
-            lastId = handle;
-            const win = new Window(handle);
-            this.emit("window-activated", win);
+          if (lastId !== win.id) {
+            lastId = win.id;
+            this.emit("window-activated", new Window(win));
           }
         }, 50);
       } else {
@@ -55,12 +50,8 @@ class WindowManager extends EventEmitter {
     });
   }
 
-  getActiveWindow = async () => {
-    if (platform() === "win32") {
-      return await new Window(addon.getActiveWindow());
-    } else if (platform() === "darwin") {
-      return await new Window(macOS.getActiveWindow());
-    }
+  getActiveWindow = () => {
+    return new Window(addon.getActiveWindow());
   };
 
   getScaleFactor = (monitor: number) => {

@@ -10,7 +10,7 @@
       	}],
         ["OS=='mac'", {
       	  "sources": [ "lib/macos.mm" ],
-          "libraries": [ '-framework AppKit' ]
+          "libraries": [ '-framework AppKit', '-framework ApplicationServices' ]
       	}]
       ], 
       "include_dirs": [
