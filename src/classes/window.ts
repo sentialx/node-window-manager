@@ -40,6 +40,7 @@ export class Window {
         path: arg.path
       };
     } else {
+      this.handle = arg;
       const info = addon.getWindowInfo(this.handle);
 
       this.process = {
