@@ -104,7 +104,7 @@ export class Window {
 
   minimize() {
     if (platform() === "win32") {
-      addon.showWindow(this.handle, "restore");
+      addon.showWindow(this.handle, "minimize");
     } else if (platform() === "darwin") {
       addon.setWindowMinimized(this.handle, this.process.id, true);
     }
