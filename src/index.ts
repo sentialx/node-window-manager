@@ -5,7 +5,7 @@ import { platform, release } from "os";
 let addon: any;
 
 if (platform() === "win32" || platform() === "darwin") {
-  addon = require("bindings")("addon");
+  addon = require("../build/Release/addon.node");
 }
 
 let interval: any = null;
