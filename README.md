@@ -35,28 +35,29 @@ window.setBounds({ x: 0, y: 0 });
 - `width` number
 - `height` number
 
-## Object `Process`
+## Object `WindowInfo`
 
-- `id` number - the process id
-- `name` string - the process file name
-- `path` string - the process path
-
-## Object `Point`
-
-- `x` number
-- `y` number
+- `id` number
+- `title` string
+- `processId` string
+- `path` string - path to executable associated with the window
+- `bounds` [`Rectangle`](#object-rectangle)
+- `opacity` number (`Windows`)
+- `owner` [`Window`](#class-window) (`Windows`) - owner window of the current window
 
 ## Class `WindowManager`
 
 ### Methods
 
-#### WindowsManager.getActiveWindow() `Windows` `macOS`
+#### getActiveWindow() `Windows` `macOS`
 
 - Returns [`Window`](#class-window)
 
-#### WindowManager.getScaleFactor(monitor: number) `Windows`
+#### getScaleFactor(monitor: number) `Windows`
 
 - Returns `number` - the monitor scale factor.
+
+#### getWindows(monitor: number) `Windows` `macOS`
 
 ### Events
 
@@ -64,26 +65,27 @@ window.setBounds({ x: 0, y: 0 });
 
 Returns:
 
-- `Window`
+- [`Window`](#class-window)
 
 Emitted when a window has been activated.
 
 ## Class `Window`
 
-This class is similar to Electron's [`BrowserWindow`](https://electronjs.org/docs/api/browser-window) class.
+We try to keep this class similar to Electron's known [`BrowserWindow`](https://electronjs.org/docs/api/browser-window) class, to keep it simple to use.
 
 ### `new Window(handle: number)`
 
 ### Instance properties
 
-- `handle` number - the window handle
-- `process` Process - the window owner process
+- `id` number
+- `processId` number - process id associated with the window
+- `path` string - path to executable associated with the window
 
 ### Methods
 
-#### Window.getBounds() `Windows` `macOS`
+#### Window.getBounds(): [`Rectangle`](#object-rectangle) `Windows` `macOS`
 
-- Returns `Rectangle`
+- Returns [`Rectangle`](#object-rectangle)
 
 #### Window.setBounds(bounds: Rectangle) `Windows` `macOS`
 
@@ -93,7 +95,11 @@ Resizes and moves the window to the supplied bounds. Any properties that are not
 window.setBounds({ height: 50 });
 ```
 
-#### Window.getTitle() `Windows` `macOS`
+#### Window.getInfo(): [`WindowInfo`](#object-windowinfo) `Windows` `macOS`
+
+Returns [`WindowInfo`](#object-windowinfo)
+
+#### Window.getTitle(): string `Windows` `macOS`
 
 - Returns `string`
 
@@ -127,18 +133,18 @@ Brings the window to top and focuses it.
 
 Sets the window opacity.
 
-#### Window.getOpacity() `Windows`
+#### Window.getOpacity(): number `Windows`
 
 Gets the window opacity
 
 Returns `number` between 0 and 1.
 
-#### Window.getMonitor() `Windows`
+#### Window.getMonitor(): number `Windows`
 
 Gets monitor by window.
 
 Returns `number` - monitor handle.
 
-#### Window.isWindow() `Windows` `macOS`
+#### Window.isWindow(): boolean `Windows` `macOS`
 
 Returns `boolean` - whether the window is a valid window.
