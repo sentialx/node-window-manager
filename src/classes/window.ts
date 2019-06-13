@@ -1,4 +1,3 @@
-import { basename } from "path";
 import { platform } from "os";
 import { windowManager } from "..";
 
@@ -83,7 +82,7 @@ export class Window {
   }
 
   getTitle(): string {
-    if (platform() !== "win32" || platform() !== "darwin") return;
+    if (platform() !== "win32" && platform() !== "darwin") return;
     return addon.getWindowInfo(this.handle).title;
   }
 
@@ -169,7 +168,6 @@ export class Window {
 
   getOwner() {
     if (platform() !== "win32") return;
-
     return new Window(addon.getWindowOwner(this.handle));
   }
 }
