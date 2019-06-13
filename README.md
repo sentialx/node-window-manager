@@ -142,7 +142,3 @@ Returns `number` - monitor handle.
 #### Window.isWindow() `Windows` `macOS`
 
 Returns `boolean` - whether the window is a valid window.
-
-# Projects using `node-window-manager`
-
-- [Multrin](https://github.com/sentialx/multrin)
