@@ -8,7 +8,7 @@
     "build": "tsc",
     "build-darwin": "swift build --configuration=release --static-swift-stdlib && mv .build/release/addon macos",
     "watch": "tsc --watch",
-    "install": "node-gyp rebuild",
+    "install": "npm run rebuild",
     "rebuild": "node-gyp rebuild",
     "prepublishOnly": "npm run build && node-gyp rebuild"
   },
@@ -44,8 +44,6 @@
     "dist/",
     "binding.gyp",
     "compile.js",
-    "Sources/",
-    "Package.swift",
     "lib/"
   ]
 }
