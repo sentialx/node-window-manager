@@ -31,18 +31,50 @@ Napi::Number getMonitorFromWindow(const Napi::CallbackInfo &info) {
                                  getValueFromCallbackData<HWND>(info, 0), 0)));
 }
 
-Napi::Object getWindowBounds(const Napi::CallbackInfo &info) {
+Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
     Napi::Env env{info.Env()};
-
-    RECT rect{};
-    GetWindowRect(getValueFromCallbackData<HWND>(info, 0), &rect);
 
     Napi::Object obj{Napi::Object::New(env)};
 
-    obj.Set("x", rect.left);
-    obj.Set("y", rect.top);
-    obj.Set("width", rect.right - rect.left);
-    obj.Set("height", rect.bottom - rect.top);
+    auto handle{getValueFromCallbackData<HWND>(info, 0)};
+
+    BYTE opacity{};
+    GetLayeredWindowAttributes(handle, NULL, &opacity, NULL);
+
+    DWORD pid{0};
+    GetWindowThreadProcessId(handle, &pid);
+
+    DWORD dwSize{MAX_PATH};
+    wchar_t exeName[MAX_PATH]{};
+
+    QueryFullProcessImageNameW(handle, 0, exeName, &dwSize);
+
+    std::wstring wspath(exeName);
+    std::string path(wspath.begin(), wspath.end());
+
+    wchar_t titlew[256]{};
+
+    GetWindowTextW(handle, titlew, sizeof(titlew));
+
+    std::wstring wstitle(titlew);
+    std::string title(wstitle.begin(), wstitle.end());
+
+    RECT rect{};
+    GetWindowRect(handle, &rect);
+
+    Napi::Object bounds{Napi::Object::New(env)};
+
+    bounds.Set("x", rect.left);
+    bounds.Set("y", rect.top);
+    bounds.Set("width", rect.right - rect.left);
+    bounds.Set("height", rect.bottom - rect.top);
+
+    obj.Set("bounds", bounds);
+    obj.Set("processId", static_cast<int>(pid));
+    obj.Set("path", path);
+    obj.Set("opacity", static_cast<double>(opacity) / 255.);
+    obj.Set("title", title);
+    obj.Set("owner", GetWindowLongPtrA(handle, GWLP_HWNDPARENT));
 
     return obj;
 }
@@ -60,15 +92,6 @@ Napi::Number getMonitorScaleFactor(const Napi::CallbackInfo &info) {
     return Napi::Number::New(env, static_cast<double>(sf) / 100.);
 }
 
-Napi::Number getWindowProcessId(const Napi::CallbackInfo &info) {
-    Napi::Env env{info.Env()};
-
-    DWORD pid{0};
-    GetWindowThreadProcessId(getValueFromCallbackData<HWND>(info, 0), &pid);
-
-    return Napi::Number::New(env, static_cast<int>(pid));
-}
-
 Napi::Boolean toggleWindowTransparency(const Napi::CallbackInfo &info) {
     Napi::Env env{info.Env()};
 
@@ -83,17 +106,6 @@ Napi::Boolean toggleWindowTransparency(const Napi::CallbackInfo &info) {
     return Napi::Boolean::New(env, true);
 }
 
-Napi::Number getWindowOpacity(const Napi::CallbackInfo &info) {
-    Napi::Env env{info.Env()};
-
-    auto handle{getValueFromCallbackData<HWND>(info, 0)};
-
-    BYTE opacity{};
-    GetLayeredWindowAttributes(handle, NULL, &opacity, NULL);
-
-    return Napi::Number::New(env, static_cast<double>(opacity) / 255.);
-}
-
 Napi::Boolean setWindowOpacity(const Napi::CallbackInfo &info) {
     Napi::Env env{info.Env()};
 
@@ -103,38 +115,6 @@ Napi::Boolean setWindowOpacity(const Napi::CallbackInfo &info) {
     SetLayeredWindowAttributes(handle, NULL, opacity * 255., LWA_ALPHA);
 
     return Napi::Boolean::New(env, true);
-}
-
-Napi::String getProcessPath(const Napi::CallbackInfo &info) {
-    Napi::Env env{info.Env()};
-
-    auto pid{static_cast<DWORD>(info[0].As<Napi::Number>().Int64Value())};
-    HANDLE handle{OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid)};
-
-    DWORD dwSize{MAX_PATH};
-    wchar_t exeName[MAX_PATH]{};
-
-    QueryFullProcessImageNameW(handle, 0, exeName, &dwSize);
-
-    std::wstring ws(exeName);
-    std::string str(ws.begin(), ws.end());
-
-    return Napi::String::New(env, str);
-}
-
-Napi::String getWindowTitle(const Napi::CallbackInfo &info) {
-    Napi::Env env{info.Env()};
-
-    auto handle{getValueFromCallbackData<HWND>(info, 0)};
-
-    wchar_t title[256]{};
-
-    GetWindowTextW(handle, title, sizeof(title));
-
-    std::wstring ws(title);
-    std::string str(ws.begin(), ws.end());
-
-    return Napi::String::New(env, str);
 }
 
 Napi::Boolean setWindowBounds(const Napi::CallbackInfo &info) {
@@ -160,14 +140,6 @@ Napi::Boolean setWindowOwner(const Napi::CallbackInfo &info) {
     SetWindowLongPtrA(handle, GWLP_HWNDPARENT, newOwner);
 
     return Napi::Boolean::New(env, true);
-}
-
-Napi::Number getWindowOwner(const Napi::CallbackInfo &info) {
-    Napi::Env env{info.Env()};
-
-    auto handle{getValueFromCallbackData<HWND>(info, 0)};
-
-    return Napi::Number::New(env, GetWindowLongPtrA(handle, GWLP_HWNDPARENT));
 }
 
 Napi::Boolean showWindow(const Napi::CallbackInfo &info) {
@@ -224,20 +196,12 @@ Napi::Boolean isWindow(const Napi::CallbackInfo &info) {
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
     exports.Set(Napi::String::New(env, "getActiveWindow"),
                 Napi::Function::New(env, getActiveWindow));
-    exports.Set(Napi::String::New(env, "getWindowProcessId"),
-                Napi::Function::New(env, getWindowProcessId));
-    exports.Set(Napi::String::New(env, "getProcessPath"),
-                Napi::Function::New(env, getProcessPath));
     exports.Set(Napi::String::New(env, "getMonitorFromWindow"),
                 Napi::Function::New(env, getMonitorFromWindow));
     exports.Set(Napi::String::New(env, "getMonitorScaleFactor"),
                 Napi::Function::New(env, getMonitorScaleFactor));
-    exports.Set(Napi::String::New(env, "getWindowBounds"),
-                Napi::Function::New(env, getWindowBounds));
     exports.Set(Napi::String::New(env, "setWindowBounds"),
                 Napi::Function::New(env, setWindowBounds));
-    exports.Set(Napi::String::New(env, "getWindowTitle"),
-                Napi::Function::New(env, getWindowTitle));
     exports.Set(Napi::String::New(env, "showWindow"),
                 Napi::Function::New(env, showWindow));
     exports.Set(Napi::String::New(env, "bringWindowToTop"),
@@ -248,12 +212,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
                 Napi::Function::New(env, isWindow));
     exports.Set(Napi::String::New(env, "setWindowOpacity"),
                 Napi::Function::New(env, setWindowOpacity));
-    exports.Set(Napi::String::New(env, "getWindowOpacity"),
-                Napi::Function::New(env, getWindowOpacity));
     exports.Set(Napi::String::New(env, "toggleWindowTransparency"),
                 Napi::Function::New(env, toggleWindowTransparency));
-    exports.Set(Napi::String::New(env, "getWindowOwner"),
-                Napi::Function::New(env, getWindowOwner));
     exports.Set(Napi::String::New(env, "setWindowOwner"),
                 Napi::Function::New(env, setWindowOwner));
 

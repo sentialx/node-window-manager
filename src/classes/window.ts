@@ -149,7 +149,7 @@ export class Window {
 
   getOpacity() {
     if (platform() !== "win32") return;
-    return addon.getWindowOpacity(this.handle);
+    return addon.getWindowInfo(this.handle).opacity;
   }
 
   setOwner(window: Window | null | number) {
@@ -168,6 +168,6 @@ export class Window {
 
   getOwner() {
     if (platform() !== "win32") return;
-    return new Window(addon.getWindowOwner(this.handle));
+    return new Window(addon.getWindowInfo(this.handle).owner);
   }
 }
