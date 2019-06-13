@@ -216,6 +216,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
                 Napi::Function::New(env, toggleWindowTransparency));
     exports.Set(Napi::String::New(env, "setWindowOwner"),
                 Napi::Function::New(env, setWindowOwner));
+    exports.Set(Napi::String::New(env, "getWindowInfo"),
+                Napi::Function::New(env, getWindowInfo));
 
     return exports;
 }
