@@ -173,17 +173,13 @@ export class Window {
 
   getOwner() {
     if (!addon || platform() !== "win32") return;
-    return this.getInfo().owner;
+    return new Window(this.getInfo().owner);
   }
 
   getInfo(): WindowInfo {
     if (!addon) return;
 
     const info = addon.getWindowInfo(this.id);
-
-    if (platform() === "win32") {
-      info.owner = new Window(info.owner);
-    }
 
     return info;
   }

@@ -28,10 +28,12 @@ T getValueFromCallbackData(const Napi::CallbackInfo &info,
 
 std::string toUtf8(const std::wstring &str) {
     std::string ret;
-    int len = WideCharToMultiByte(CP_UTF8, 0, str.c_str(), str.length(), NULL, 0, NULL, NULL);
+    int len = WideCharToMultiByte(CP_UTF8, 0, str.c_str(), str.length(), NULL,
+                                  0, NULL, NULL);
     if (len > 0) {
         ret.resize(len);
-        WideCharToMultiByte(CP_UTF8, 0, str.c_str(), str.length(), &ret[0], len, NULL, NULL);
+        WideCharToMultiByte(CP_UTF8, 0, str.c_str(), str.length(), &ret[0], len,
+                            NULL, NULL);
     }
     return ret;
 }
@@ -50,7 +52,6 @@ Process getWindowProcess(HWND handle) {
 
     return {static_cast<int>(pid), path};
 }
-
 
 Napi::Object getActiveWindow(const Napi::CallbackInfo &info) {
     Napi::Env env{info.Env()};
@@ -85,7 +86,7 @@ Napi::Array getWindows(const Napi::CallbackInfo &info) {
 
     for (int i = 0; i < _windows.size(); i++) {
         auto obj{Napi::Object::New(env)};
-        
+
         obj.Set("id", _windows[i].id);
         obj.Set("processId", _windows[i].process.pid);
         obj.Set("path", _windows[i].process.path);
@@ -95,7 +96,6 @@ Napi::Array getWindows(const Napi::CallbackInfo &info) {
 
     return arr;
 }
-
 
 Napi::Number getMonitorFromWindow(const Napi::CallbackInfo &info) {
     Napi::Env env{info.Env()};
@@ -234,6 +234,9 @@ Napi::Boolean bringWindowToTop(const Napi::CallbackInfo &info) {
 
     auto handle{getValueFromCallbackData<HWND>(info, 0)};
     BOOL b{SetForegroundWindow(handle)};
+    SetActiveWindow(handle);
+    SetWindowPos(handle, HWND_TOP, 0, 0, 0, 0,
+                 SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
 
     return Napi::Boolean::New(env, b);
 }
