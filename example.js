@@ -1,5 +1,25 @@
-const { windowManager, Window } = require("./dist/index");
+const { windowManager } = require("./dist/index");
 
-windowManager.on("window-activated", window => {
-  console.log(window);
-});
+console.time("getActiveWindow");
+const window = windowManager.getActiveWindow();
+console.timeEnd("getActiveWindow");
+
+console.time("getTitle");
+console.log(window.getTitle());
+console.timeEnd("getTitle");
+
+console.time("getBounds");
+console.log(window.getBounds());
+console.timeEnd("getBounds");
+
+console.time("setBounds");
+window.setBounds({ x: 0, y: 0 });
+console.timeEnd("setBounds");
+
+console.time("minimize");
+window.minimize();
+console.timeEnd("minimize");
+
+console.time("restore");
+window.restore();
+console.timeEnd("restore");
