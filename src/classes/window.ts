@@ -22,6 +22,7 @@ interface WindowInfo {
   bounds?: Rectangle;
   opacity?: number;
   owner?: Window;
+  axRef?: number;
 }
 
 export class Window {
@@ -77,7 +78,7 @@ export class Window {
 
       addon.setWindowBounds(this.id, newBounds);
     } else if (platform() === "darwin") {
-      addon.setWindowBounds(this.id, this.processId, newBounds);
+      addon.setWindowBounds(this.id, newBounds);
     }
   }
 

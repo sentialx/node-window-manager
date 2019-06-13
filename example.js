@@ -15,9 +15,3 @@ console.timeEnd("getBounds");
 console.time("setBounds");
 window.setBounds({ x: 0, y: 0 });
 console.timeEnd("setBounds");
-
-windowManager.on("window-activated", window => {
-  console.log(window.getTitle());
-});
-
-console.log(windowManager.getWindows());
