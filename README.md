@@ -1,6 +1,6 @@
 # node-window-manager
 
-Manage windows in Windows, macOS and Linux
+Manage windows in Windows, macOS and ~~Linux~~(WIP)
 
 # Install
 
@@ -47,17 +47,17 @@ window.setBounds({ x: 0, y: 0 });
 
 ## Class `WindowManager`
 
-### Methods
+### Instance methods
 
-#### getActiveWindow() `Windows` `macOS`
+#### windowManager.getActiveWindow() `Windows` `macOS`
 
 - Returns [`Window`](#class-window)
 
-#### getScaleFactor(monitor: number) `Windows`
+#### windowManager.getScaleFactor(monitor: number) `Windows`
 
 - Returns `number` - the monitor scale factor.
 
-#### getWindows(monitor: number) `Windows` `macOS`
+#### windowManager.getWindows(monitor: number) `Windows` `macOS`
 
 ### Events
 
@@ -81,13 +81,13 @@ We try to keep this class similar to Electron's known [`BrowserWindow`](https://
 - `processId` number - process id associated with the window
 - `path` string - path to executable associated with the window
 
-### Methods
+### Instance methods
 
-#### Window.getBounds(): [`Rectangle`](#object-rectangle) `Windows` `macOS`
+#### win.getBounds(): [`Rectangle`](#object-rectangle) `Windows` `macOS`
 
 - Returns [`Rectangle`](#object-rectangle)
 
-#### Window.setBounds(bounds: Rectangle) `Windows` `macOS`
+#### win.setBounds(bounds: Rectangle) `Windows` `macOS`
 
 Resizes and moves the window to the supplied bounds. Any properties that are not supplied will default to their current values.
 
@@ -95,56 +95,56 @@ Resizes and moves the window to the supplied bounds. Any properties that are not
 window.setBounds({ height: 50 });
 ```
 
-#### Window.getInfo(): [`WindowInfo`](#object-windowinfo) `Windows` `macOS`
+#### win.getInfo(): [`WindowInfo`](#object-windowinfo) `Windows` `macOS`
 
 Returns [`WindowInfo`](#object-windowinfo)
 
-#### Window.getTitle(): string `Windows` `macOS`
+#### win.getTitle(): string `Windows` `macOS`
 
 - Returns `string`
 
-#### Window.show() `Windows`
+#### win.show() `Windows`
 
 Shows the window.
 
-#### Window.hide() `Windows`
+#### win.hide() `Windows`
 
 Hides the window.
 
-#### Window.minimize() `Windows` `macOS`
+#### win.minimize() `Windows` `macOS`
 
 Minimizes the window.
 
-#### Window.restore() `Windows` `macOS`
+#### win.restore() `Windows` `macOS`
 
 Restores the window.
 
-#### Window.maximize() `Windows`
+#### win.maximize() `Windows`
 
 Maximizes the window.
 
-#### Window.bringToTop() `Windows` `macOS`
+#### win.bringToTop() `Windows` `macOS`
 
 Brings the window to top and focuses it.
 
-#### Window.setOpacity(opacity: number) `Windows`
+#### win.setOpacity(opacity: number) `Windows`
 
 - `opacity` - a value between 0 and 1.
 
 Sets the window opacity.
 
-#### Window.getOpacity(): number `Windows`
+#### win.getOpacity(): number `Windows`
 
 Gets the window opacity
 
 Returns `number` between 0 and 1.
 
-#### Window.getMonitor(): number `Windows`
+#### win.getMonitor(): number `Windows`
 
 Gets monitor by window.
 
 Returns `number` - monitor handle.
 
-#### Window.isWindow(): boolean `Windows` `macOS`
+#### win.isWindow(): boolean `Windows` `macOS`
 
 Returns `boolean` - whether the window is a valid window.
