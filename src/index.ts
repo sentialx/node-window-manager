@@ -68,6 +68,11 @@ class WindowManager extends EventEmitter {
 
     return 1;
   };
+
+  getWindows = () => {
+    if (!addon || !addon.getWindows) return;
+    return addon.getWindows().map((win: any) => new Window(win));
+  };
 }
 
 const windowManager = new WindowManager();
