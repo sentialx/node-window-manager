@@ -18,7 +18,7 @@ class WindowManager extends EventEmitter {
 
     let lastId: number;
 
-    if (platform() !== "win32" && platform() !== "darwin") return;
+    if (!addon) return;
 
     this.on("newListener", event => {
       if (registeredEvents.indexOf(event) !== -1) return;
@@ -51,6 +51,7 @@ class WindowManager extends EventEmitter {
   }
 
   getActiveWindow = () => {
+    if (!addon) return;
     return new Window(addon.getActiveWindow());
   };
 

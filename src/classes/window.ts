@@ -32,6 +32,8 @@ export class Window {
   public process: Process;
 
   constructor(arg: number | WindowInfo) {
+    if (!addon) return;
+
     if (typeof arg === "object") {
       this.handle = arg.id;
       this.process = {
@@ -50,6 +52,8 @@ export class Window {
   }
 
   getBounds(): Rectangle {
+    if (!addon) return;
+
     const { bounds } = addon.getWindowInfo(this.handle);
 
     if (platform() === "win32") {
@@ -65,6 +69,8 @@ export class Window {
   }
 
   setBounds(bounds: Rectangle) {
+    if (!addon) return;
+
     const newBounds = { ...this.getBounds(), ...bounds };
 
     if (platform() === "win32") {
@@ -82,26 +88,28 @@ export class Window {
   }
 
   getTitle(): string {
-    if (platform() !== "win32" && platform() !== "darwin") return;
+    if (!addon) return;
     return addon.getWindowInfo(this.handle).title;
   }
 
   getMonitor(): number {
-    if (platform() !== "win32") return;
+    if (!addon || !addon.getMonitorFromWindow) return;
     return addon.getMonitorFromWindow(this.handle);
   }
 
   show() {
-    if (platform() !== "win32") return;
+    if (!addon || !addon.showWindow) return;
     addon.showWindow(this.handle, "show");
   }
 
   hide() {
-    if (platform() !== "win32") return;
+    if (!addon || !addon.showWindow) return;
     addon.showWindow(this.handle, "hide");
   }
 
   minimize() {
+    if (!addon) return;
+
     if (platform() === "win32") {
       addon.showWindow(this.handle, "minimize");
     } else if (platform() === "darwin") {
@@ -110,6 +118,8 @@ export class Window {
   }
 
   restore() {
+    if (!addon) return;
+
     if (platform() === "win32") {
       addon.showWindow(this.handle, "restore");
     } else if (platform() === "darwin") {
@@ -118,42 +128,45 @@ export class Window {
   }
 
   maximize() {
-    if (platform() !== "win32") return;
+    if (!addon || !addon.showWindow) return;
     addon.showWindow(this.handle, "maximize");
   }
 
   bringToTop() {
-    if (platform() === "win32") addon.bringWindowToTop(this.handle);
-    else if (platform() === "darwin") addon.bringWindowToTop(this.process.id);
+    if (!addon) return;
+    addon.bringWindowToTop(
+      platform() === "darwin" ? this.process.id : this.handle
+    );
   }
 
   redraw() {
-    if (platform() !== "win32") return;
+    if (!addon || !addon.redrawWindow) return;
     addon.redrawWindow(this.handle);
   }
 
   isWindow(): boolean {
+    if (!addon) return;
     if (platform() === "win32") return addon.isWindow(this.handle);
     else if (platform() === "darwin") return !!addon.getWindowInfo(this.handle);
   }
 
   toggleTransparency(toggle: boolean) {
-    if (platform() !== "win32") return;
+    if (!addon || !addon.toggleWindowTransparency) return;
     addon.toggleWindowTransparency(this.handle, toggle);
   }
 
   setOpacity(opacity: number) {
-    if (platform() !== "win32") return;
+    if (!addon || !addon.setWindowOpacity) return;
     addon.setWindowOpacity(this.handle, opacity);
   }
 
   getOpacity() {
-    if (platform() !== "win32") return;
+    if (!addon || platform() !== "win32") return;
     return addon.getWindowInfo(this.handle).opacity;
   }
 
   setOwner(window: Window | null | number) {
-    if (platform() !== "win32") return;
+    if (!addon || platform() !== "win32") return;
 
     let handle = window;
 
@@ -167,7 +180,7 @@ export class Window {
   }
 
   getOwner() {
-    if (platform() !== "win32") return;
+    if (!addon || platform() !== "win32") return;
     return new Window(addon.getWindowInfo(this.handle).owner);
   }
 }
