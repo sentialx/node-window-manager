@@ -1,12 +1,11 @@
 {
   "name": "node-window-manager",
-  "version": "0.9.5",
+  "version": "1.0.0",
   "description": "Manage windows in macOS, Windows and Linux",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "build-darwin": "swift build --configuration=release --static-swift-stdlib && mv .build/release/addon macos",
     "watch": "tsc --watch",
     "install": "npm run rebuild",
     "rebuild": "node-gyp rebuild",
