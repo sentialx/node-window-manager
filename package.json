@@ -10,7 +10,7 @@
     "watch": "tsc --watch",
     "install": "npm run rebuild",
     "rebuild": "node-gyp rebuild",
-    "prepublishOnly": "npm run build && node-gyp rebuild"
+    "prepublishOnly": "npm run build && npm run rebuild"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,6 @@
   },
   "dependencies": {
     "bindings": "1.5.0",
-    "deasync": "0.1.15",
     "node-addon-api": "1.6.3",
     "node-gyp": "4.0.0"
   },
