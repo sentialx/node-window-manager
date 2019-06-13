@@ -7,11 +7,6 @@ if (platform() === "win32" || platform() === "darwin") {
   addon = require("../../build/Release/addon.node");
 }
 
-interface Process {
-  id: number;
-  path: string;
-}
-
 interface Rectangle {
   x?: number;
   y?: number;
@@ -25,36 +20,35 @@ interface WindowInfo {
   processId: number;
   title?: string;
   bounds?: Rectangle;
+  opacity?: number;
+  owner?: Window;
 }
 
 export class Window {
-  public handle: number;
-  public process: Process;
+  public id: number;
+
+  public processId: number;
+  public path: string;
 
   constructor(arg: number | WindowInfo) {
     if (!addon) return;
 
     if (typeof arg === "object") {
-      this.handle = arg.id;
-      this.process = {
-        id: arg.processId,
-        path: arg.path
-      };
+      this.id = arg.id;
+      this.processId = arg.processId;
+      this.path = arg.path;
     } else {
-      this.handle = arg;
-      const info = addon.getWindowInfo(this.handle);
-
-      this.process = {
-        id: info.processId,
-        path: info.path
-      };
+      this.id = arg;
+      const { processId, path } = this.getInfo();
+      this.processId = processId;
+      this.path = path;
     }
   }
 
   getBounds(): Rectangle {
     if (!addon) return;
 
-    const { bounds } = addon.getWindowInfo(this.handle);
+    const { bounds } = this.getInfo();
 
     if (platform() === "win32") {
       const sf = windowManager.getScaleFactor(this.getMonitor());
@@ -81,39 +75,39 @@ export class Window {
       newBounds.width = Math.round(newBounds.width * sf);
       newBounds.height = Math.round(newBounds.height * sf);
 
-      addon.setWindowBounds(this.handle, newBounds);
+      addon.setWindowBounds(this.id, newBounds);
     } else if (platform() === "darwin") {
-      addon.setWindowBounds(this.handle, this.process.id, newBounds);
+      addon.setWindowBounds(this.id, this.processId, newBounds);
     }
   }
 
   getTitle(): string {
     if (!addon) return;
-    return addon.getWindowInfo(this.handle).title;
+    return this.getInfo().title;
   }
 
   getMonitor(): number {
     if (!addon || !addon.getMonitorFromWindow) return;
-    return addon.getMonitorFromWindow(this.handle);
+    return addon.getMonitorFromWindow(this.id);
   }
 
   show() {
     if (!addon || !addon.showWindow) return;
-    addon.showWindow(this.handle, "show");
+    addon.showWindow(this.id, "show");
   }
 
   hide() {
     if (!addon || !addon.showWindow) return;
-    addon.showWindow(this.handle, "hide");
+    addon.showWindow(this.id, "hide");
   }
 
   minimize() {
     if (!addon) return;
 
     if (platform() === "win32") {
-      addon.showWindow(this.handle, "minimize");
+      addon.showWindow(this.id, "minimize");
     } else if (platform() === "darwin") {
-      addon.setWindowMinimized(this.handle, this.process.id, true);
+      addon.setWindowMinimized(this.id, this.processId, true);
     }
   }
 
@@ -121,48 +115,46 @@ export class Window {
     if (!addon) return;
 
     if (platform() === "win32") {
-      addon.showWindow(this.handle, "restore");
+      addon.showWindow(this.id, "restore");
     } else if (platform() === "darwin") {
-      addon.setWindowMinimized(this.handle, this.process.id, false);
+      addon.setWindowMinimized(this.id, this.processId, false);
     }
   }
 
   maximize() {
     if (!addon || !addon.showWindow) return;
-    addon.showWindow(this.handle, "maximize");
+    addon.showWindow(this.id, "maximize");
   }
 
   bringToTop() {
     if (!addon) return;
-    addon.bringWindowToTop(
-      platform() === "darwin" ? this.process.id : this.handle
-    );
+    addon.bringWindowToTop(platform() === "darwin" ? this.processId : this.id);
   }
 
   redraw() {
     if (!addon || !addon.redrawWindow) return;
-    addon.redrawWindow(this.handle);
+    addon.redrawWindow(this.id);
   }
 
   isWindow(): boolean {
     if (!addon) return;
-    if (platform() === "win32") return addon.isWindow(this.handle);
-    else if (platform() === "darwin") return !!addon.getWindowInfo(this.handle);
+    if (platform() === "win32") return addon.isWindow(this.id);
+    else if (platform() === "darwin") return !!this.getInfo();
   }
 
   toggleTransparency(toggle: boolean) {
     if (!addon || !addon.toggleWindowTransparency) return;
-    addon.toggleWindowTransparency(this.handle, toggle);
+    addon.toggleWindowTransparency(this.id, toggle);
   }
 
   setOpacity(opacity: number) {
     if (!addon || !addon.setWindowOpacity) return;
-    addon.setWindowOpacity(this.handle, opacity);
+    addon.setWindowOpacity(this.id, opacity);
   }
 
   getOpacity() {
-    if (!addon || platform() !== "win32") return;
-    return addon.getWindowInfo(this.handle).opacity;
+    if (platform() !== "win32") return;
+    return this.getInfo().opacity;
   }
 
   setOwner(window: Window | null | number) {
@@ -171,16 +163,21 @@ export class Window {
     let handle = window;
 
     if (window instanceof Window) {
-      handle = window.handle;
+      handle = window.id;
     } else if (!window) {
       handle = 0;
     }
 
-    addon.setWindowOwner(this.handle, handle);
+    addon.setWindowOwner(this.id, handle);
   }
 
   getOwner() {
     if (!addon || platform() !== "win32") return;
-    return new Window(addon.getWindowInfo(this.handle).owner);
+    return new Window(this.getInfo().owner);
+  }
+
+  getInfo(): WindowInfo {
+    if (!addon) return;
+    return addon.getWindowInfo(this.id);
   }
 }
