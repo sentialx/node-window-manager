@@ -51,19 +51,18 @@ export class Window {
   }
 
   getBounds(): Rectangle {
+    const { bounds } = addon.getWindowInfo(this.handle);
+
     if (platform() === "win32") {
-      const bounds = addon.getWindowBounds(this.handle);
       const sf = windowManager.getScaleFactor(this.getMonitor());
 
       bounds.x = Math.round(bounds.x / sf);
       bounds.y = Math.round(bounds.y / sf);
       bounds.width = Math.round(bounds.width / sf);
       bounds.height = Math.round(bounds.height / sf);
-
-      return bounds;
-    } else if (platform() === "darwin") {
-      return addon.getWindowInfo(this.handle).bounds;
     }
+
+    return bounds;
   }
 
   setBounds(bounds: Rectangle) {
@@ -84,6 +83,7 @@ export class Window {
   }
 
   getTitle(): string {
+    if (platform() !== "win32" || platform() !== "darwin") return;
     return addon.getWindowInfo(this.handle).title;
   }
 
@@ -106,7 +106,7 @@ export class Window {
     if (platform() === "win32") {
       addon.showWindow(this.handle, "restore");
     } else if (platform() === "darwin") {
-      addon.setWindowMinimized(this.handle, true);
+      addon.setWindowMinimized(this.handle, this.process.id, true);
     }
   }
 
@@ -114,7 +114,7 @@ export class Window {
     if (platform() === "win32") {
       addon.showWindow(this.handle, "restore");
     } else if (platform() === "darwin") {
-      addon.setWindowMinimized(this.handle, false);
+      addon.setWindowMinimized(this.handle, this.process.id, false);
     }
   }
 

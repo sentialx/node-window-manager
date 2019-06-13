@@ -166,6 +166,22 @@ Napi::Boolean bringWindowToTop(const Napi::CallbackInfo &info) {
   return Napi::Boolean::New(env, true);
 }
 
+Napi::Boolean setWindowMinimized(const Napi::CallbackInfo &info) {
+  Napi::Env env{info.Env()};
+
+  auto handle = info[0].As<Napi::Number>().Int32Value();
+  auto pid = info[1].As<Napi::Number>().Int32Value();
+  auto toggle = info[2].As<Napi::Boolean>();
+
+  auto win = getAXWindow(pid, handle);
+
+  if (win) {
+    AXUIElementSetAttributeValue(win, kAXMinimizedAttribute, toggle ? kCFBooleanTrue : kCFBooleanFalse);
+  }
+
+  return Napi::Boolean::New(env, true);
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
     exports.Set(Napi::String::New(env, "getWindows"),
                 Napi::Function::New(env, getWindows));
@@ -177,6 +193,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
                 Napi::Function::New(env, setWindowBounds));
     exports.Set(Napi::String::New(env, "bringWindowToTop"),
                 Napi::Function::New(env, bringWindowToTop));
+    exports.Set(Napi::String::New(env, "setWindowMinimized"),
+                Napi::Function::New(env, setWindowMinimized));
 
     return exports;
 }

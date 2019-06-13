@@ -15,3 +15,11 @@ console.timeEnd("getBounds");
 console.time("setBounds");
 window.setBounds({ x: 0, y: 0 });
 console.timeEnd("setBounds");
+
+console.time("minimize");
+window.minimize();
+console.timeEnd("minimize");
+
+console.time("restore");
+window.restore();
+console.timeEnd("restore");
