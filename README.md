@@ -59,6 +59,8 @@ window.setBounds({ x: 0, y: 0 });
 
 #### windowManager.getWindows(monitor: number) `Windows` `macOS`
 
+- Returns [`Window[]`](#class-window)
+
 ### Events
 
 #### Event 'window-activated' `Windows` `macOS`
@@ -73,7 +75,9 @@ Emitted when a window has been activated.
 
 We try to keep this class similar to Electron's known [`BrowserWindow`](https://electronjs.org/docs/api/browser-window) class, to keep it simple to use.
 
-### `new Window(handle: number)`
+### `new Window(id: number | [`WindowInfo`](#object-windowinfo))`
+
+- `id` - this can be either a `number` or a [`WindowInfo`](#object-windowinfo) object.
 
 ### Instance properties
 
@@ -83,7 +87,7 @@ We try to keep this class similar to Electron's known [`BrowserWindow`](https://
 
 ### Instance methods
 
-#### win.getBounds(): [`Rectangle`](#object-rectangle) `Windows` `macOS`
+#### win.getBounds() `Windows` `macOS`
 
 - Returns [`Rectangle`](#object-rectangle)
 
@@ -95,11 +99,11 @@ Resizes and moves the window to the supplied bounds. Any properties that are not
 window.setBounds({ height: 50 });
 ```
 
-#### win.getInfo(): [`WindowInfo`](#object-windowinfo) `Windows` `macOS`
+#### win.getInfo() `Windows` `macOS`
 
 Returns [`WindowInfo`](#object-windowinfo)
 
-#### win.getTitle(): string `Windows` `macOS`
+#### win.getTitle() `Windows` `macOS`
 
 - Returns `string`
 
@@ -133,18 +137,27 @@ Brings the window to top and focuses it.
 
 Sets the window opacity.
 
-#### win.getOpacity(): number `Windows`
+#### win.getOpacity() `Windows`
 
 Gets the window opacity
 
 Returns `number` between 0 and 1.
 
-#### win.getMonitor(): number `Windows`
+#### win.getMonitor() `Windows`
 
 Gets monitor by window.
 
 Returns `number` - monitor handle.
 
-#### win.isWindow(): boolean `Windows` `macOS`
+#### win.isWindow() `Windows` `macOS`
 
 Returns `boolean` - whether the window is a valid window.
+
+#### win.getOwner() `Windows`
+
+Returns [`Window`](#class-window)
+
+#### win.setOwner(win: [`Window`](#class-window) | number | null) `Windows`
+
+- `win` [Window](#class-window) | number | null
+  - pass null to unset window owner.
