@@ -21,6 +21,32 @@ T getValueFromCallbackData(const Napi::CallbackInfo &info,
         info[handleIndex].As<Napi::Number>().Int64Value());
 }
 
+std::string toUtf8(const std::wstring &str) {
+    std::string ret;
+    int len = WideCharToMultiByte(CP_UTF8, 0, str.c_str(), str.length(), NULL, 0, NULL, NULL);
+    if (len > 0)
+    {
+        ret.resize(len);
+        WideCharToMultiByte(CP_UTF8, 0, str.c_str(), str.length(), &ret[0], len, NULL, NULL);
+    }
+    return ret;
+}
+
+Process getWindowProcess(HWND handle) {
+    DWORD pid{0};
+    GetWindowThreadProcessId(handle, &pid);
+
+    DWORD dwSize{MAX_PATH};
+    wchar_t exeName[MAX_PATH]{};
+
+    QueryFullProcessImageNameW(handle, 0, exeName, &dwSize);
+
+    std::wstring wspath(exeName);
+    std::string path(wspath.begin(), wspath.end());
+
+    return {static_cast<int>(pid), path};
+}
+
 Napi::Object getActiveWindow(const Napi::CallbackInfo &info) {
     Napi::Env env{info.Env()};
 
@@ -45,21 +71,6 @@ Napi::Number getMonitorFromWindow(const Napi::CallbackInfo &info) {
         env, reinterpret_cast<int64_t>(MonitorFromWindow(handle, 0)));
 }
 
-Process getWindowProcess(HWND handle) {
-    DWORD pid{0};
-    GetWindowThreadProcessId(handle, &pid);
-
-    DWORD dwSize{MAX_PATH};
-    wchar_t exeName[MAX_PATH]{};
-
-    QueryFullProcessImageNameW(handle, 0, exeName, &dwSize);
-
-    std::wstring wspath(exeName);
-    std::string path(wspath.begin(), wspath.end());
-
-    return {static_cast<int>(pid), path};
-}
-
 Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
     Napi::Env env{info.Env()};
 
@@ -69,12 +80,12 @@ Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
     BYTE opacity{};
     GetLayeredWindowAttributes(handle, NULL, &opacity, NULL);
 
-    wchar_t titlew[256]{};
+    int bufsize = GetWindowTextLengthW(handle) + 1;
+    LPWSTR t = new WCHAR[bufsize];
+    GetWindowTextW(handle, t, bufsize);
 
-    GetWindowTextW(handle, titlew, sizeof(titlew));
-
-    std::wstring wstitle(titlew);
-    std::string title(wstitle.begin(), wstitle.end());
+    std::wstring ws(t);
+    std::string title = toUtf8(ws);
 
     RECT rect{};
     GetWindowRect(handle, &rect);
