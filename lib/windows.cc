@@ -9,6 +9,11 @@
 typedef int(__stdcall *lp_GetScaleFactorForMonitor)(HMONITOR,
                                                     DEVICE_SCALE_FACTOR *);
 
+struct Process {
+    int pid;
+    std::string path;
+};
+
 template <typename T>
 T getValueFromCallbackData(const Napi::CallbackInfo &info,
                            unsigned handleIndex) {
@@ -16,31 +21,31 @@ T getValueFromCallbackData(const Napi::CallbackInfo &info,
         info[handleIndex].As<Napi::Number>().Int64Value());
 }
 
-Napi::Number getActiveWindow(const Napi::CallbackInfo &info) {
+Napi::Object getActiveWindow(const Napi::CallbackInfo &info) {
     Napi::Env env{info.Env()};
 
-    return Napi::Number::New(env,
-                             reinterpret_cast<int64_t>(GetForegroundWindow()));
+    auto handle = GetForegroundWindow();
+    auto process = getWindowProcess(handle);
+
+    Napi::Object obj{Napi::Object::New(env)};
+
+    obj.Set("processId", process.pid);
+    obj.Set("path", process.path);
+    obj.Set("id", reinterpret_cast<int64_t>(handle));
+
+    return obj;
 }
 
 Napi::Number getMonitorFromWindow(const Napi::CallbackInfo &info) {
     Napi::Env env{info.Env()};
 
-    return Napi::Number::New(env,
-                             reinterpret_cast<int64_t>(MonitorFromWindow(
-                                 getValueFromCallbackData<HWND>(info, 0), 0)));
+    auto handle = getValueFromCallbackData<HWND>(info, 0);
+
+    return Napi::Number::New(
+        env, reinterpret_cast<int64_t>(MonitorFromWindow(handle, 0)));
 }
 
-Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
-    Napi::Env env{info.Env()};
-
-    Napi::Object obj{Napi::Object::New(env)};
-
-    auto handle{getValueFromCallbackData<HWND>(info, 0)};
-
-    BYTE opacity{};
-    GetLayeredWindowAttributes(handle, NULL, &opacity, NULL);
-
+Process getWindowProcess(HWND handle) {
     DWORD pid{0};
     GetWindowThreadProcessId(handle, &pid);
 
@@ -51,6 +56,18 @@ Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
 
     std::wstring wspath(exeName);
     std::string path(wspath.begin(), wspath.end());
+
+    return {static_cast<int>(pid), path};
+}
+
+Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
+    Napi::Env env{info.Env()};
+
+    auto handle{getValueFromCallbackData<HWND>(info, 0)};
+    auto process = getWindowProcess(handle);
+
+    BYTE opacity{};
+    GetLayeredWindowAttributes(handle, NULL, &opacity, NULL);
 
     wchar_t titlew[256]{};
 
@@ -69,9 +86,11 @@ Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
     bounds.Set("width", rect.right - rect.left);
     bounds.Set("height", rect.bottom - rect.top);
 
+    Napi::Object obj{Napi::Object::New(env)};
+
     obj.Set("bounds", bounds);
-    obj.Set("processId", static_cast<int>(pid));
-    obj.Set("path", path);
+    obj.Set("processId", process.pid);
+    obj.Set("path", process.path);
     obj.Set("opacity", static_cast<double>(opacity) / 255.);
     obj.Set("title", title);
     obj.Set("owner", GetWindowLongPtrA(handle, GWLP_HWNDPARENT));
