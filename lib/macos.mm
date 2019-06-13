@@ -176,8 +176,10 @@ Napi::Boolean setWindowMinimized(const Napi::CallbackInfo &info) {
   auto handle = info[0].As<Napi::Number>().Int32Value();
   auto toggle = info[1].As<Napi::Boolean>();
 
+  auto win = m[handle];
+
   if (win) {
-    AXUIElementSetAttributeValue(m[handle], kAXMinimizedAttribute, toggle ? kCFBooleanTrue : kCFBooleanFalse);
+    AXUIElementSetAttributeValue(win, kAXMinimizedAttribute, toggle ? kCFBooleanTrue : kCFBooleanFalse);
   }
 
   return Napi::Boolean::New(env, true);
