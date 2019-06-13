@@ -124,7 +124,7 @@ export class Window {
   }
 
   bringToTop() {
-    if (platform() === "win32") addon.bringToTop(this.handle);
+    if (platform() === "win32") addon.bringWindowToTop(this.handle);
     else if (platform() === "darwin") addon.bringWindowToTop(this.process.id);
   }
 
