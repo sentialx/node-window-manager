@@ -19,3 +19,5 @@ console.timeEnd("setBounds");
 windowManager.on("window-activated", window => {
   console.log(window.getTitle());
 });
+
+console.log(windowManager.getWindows());
