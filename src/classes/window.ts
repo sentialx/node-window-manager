@@ -53,10 +53,10 @@ export class Window {
     if (platform() === "win32") {
       const sf = windowManager.getScaleFactor(this.getMonitor());
 
-      bounds.x = Math.round(bounds.x / sf);
-      bounds.y = Math.round(bounds.y / sf);
-      bounds.width = Math.round(bounds.width / sf);
-      bounds.height = Math.round(bounds.height / sf);
+      bounds.x = Math.floor(bounds.x / sf);
+      bounds.y = Math.floor(bounds.y / sf);
+      bounds.width = Math.floor(bounds.width / sf);
+      bounds.height = Math.floor(bounds.height / sf);
     }
 
     return bounds;
@@ -70,10 +70,10 @@ export class Window {
     if (platform() === "win32") {
       const sf = windowManager.getScaleFactor(this.getMonitor());
 
-      newBounds.x = Math.round(newBounds.x * sf);
-      newBounds.y = Math.round(newBounds.y * sf);
-      newBounds.width = Math.round(newBounds.width * sf);
-      newBounds.height = Math.round(newBounds.height * sf);
+      newBounds.x = Math.floor(newBounds.x * sf);
+      newBounds.y = Math.floor(newBounds.y * sf);
+      newBounds.width = Math.floor(newBounds.width * sf);
+      newBounds.height = Math.floor(newBounds.height * sf);
 
       addon.setWindowBounds(this.id, newBounds);
     } else if (platform() === "darwin") {

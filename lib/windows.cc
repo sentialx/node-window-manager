@@ -42,13 +42,15 @@ Process getWindowProcess(HWND handle) {
     DWORD pid{0};
     GetWindowThreadProcessId(handle, &pid);
 
+    HANDLE pHandle{OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid)};
+
     DWORD dwSize{MAX_PATH};
     wchar_t exeName[MAX_PATH]{};
 
-    QueryFullProcessImageNameW(handle, 0, exeName, &dwSize);
+    QueryFullProcessImageNameW(pHandle, 0, exeName, &dwSize);
 
-    std::wstring wspath(exeName);
-    std::string path(wspath.begin(), wspath.end());
+    auto wspath(exeName);
+    auto path = toUtf8(wspath);
 
     return {static_cast<int>(pid), path};
 }
@@ -186,11 +188,11 @@ Napi::Boolean setWindowBounds(const Napi::CallbackInfo &info) {
     Napi::Env env{info.Env()};
 
     Napi::Object bounds{info[1].As<Napi::Object>()};
+    auto handle{getValueFromCallbackData<HWND>(info, 0)};
 
-    BOOL b{MoveWindow(getValueFromCallbackData<HWND>(info, 0),
-                      bounds.Get("x").ToNumber(), bounds.Get("y").ToNumber(),
-                      bounds.Get("width").ToNumber(),
-                      bounds.Get("height").ToNumber(), true)};
+    BOOL b{MoveWindow(
+        handle, bounds.Get("x").ToNumber(), bounds.Get("y").ToNumber(),
+        bounds.Get("width").ToNumber(), bounds.Get("height").ToNumber(), true)};
 
     return Napi::Boolean::New(env, b);
 }
