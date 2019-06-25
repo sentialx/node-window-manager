@@ -57,7 +57,7 @@ window.setBounds({ x: 0, y: 0 });
 
 - Returns `number` - the monitor scale factor.
 
-#### windowManager.getWindows(monitor: number) `Windows` `macOS`
+#### windowManager.getWindows() `Windows` `macOS`
 
 - Returns [`Window[]`](#class-window)
 
