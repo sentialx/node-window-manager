@@ -204,7 +204,7 @@ Napi::Boolean setWindowOwner(const Napi::CallbackInfo &info) {
     auto newOwner{
         static_cast<LONG_PTR>(info[1].As<Napi::Number>().Int64Value())};
 
-    SetWindowLongPtrA(handle, GWLP_HWNDPARENT, newOwner);
+    SetParent(handle, (HWND)newOwner);
 
     return Napi::Boolean::New(env, true);
 }
