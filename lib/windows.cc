@@ -9,28 +9,33 @@
 typedef int(__stdcall *lp_GetScaleFactorForMonitor)(HMONITOR,
                                                     DEVICE_SCALE_FACTOR *);
 
-struct Process {
+struct Process
+{
     int pid;
     std::string path;
 };
 
-struct Window {
+struct Window
+{
     Process process;
     int64_t id;
 };
 
 template <typename T>
 T getValueFromCallbackData(const Napi::CallbackInfo &info,
-                           unsigned handleIndex) {
+                           unsigned handleIndex)
+{
     return reinterpret_cast<T>(
         info[handleIndex].As<Napi::Number>().Int64Value());
 }
 
-std::string toUtf8(const std::wstring &str) {
+std::string toUtf8(const std::wstring &str)
+{
     std::string ret;
     int len = WideCharToMultiByte(CP_UTF8, 0, str.c_str(), str.length(), NULL,
                                   0, NULL, NULL);
-    if (len > 0) {
+    if (len > 0)
+    {
         ret.resize(len);
         WideCharToMultiByte(CP_UTF8, 0, str.c_str(), str.length(), &ret[0], len,
                             NULL, NULL);
@@ -38,7 +43,8 @@ std::string toUtf8(const std::wstring &str) {
     return ret;
 }
 
-Process getWindowProcess(HWND handle) {
+Process getWindowProcess(HWND handle)
+{
     DWORD pid{0};
     GetWindowThreadProcessId(handle, &pid);
 
@@ -55,7 +61,8 @@ Process getWindowProcess(HWND handle) {
     return {static_cast<int>(pid), path};
 }
 
-Napi::Object getActiveWindow(const Napi::CallbackInfo &info) {
+Napi::Object getActiveWindow(const Napi::CallbackInfo &info)
+{
     Napi::Env env{info.Env()};
 
     auto handle = GetForegroundWindow();
@@ -72,34 +79,35 @@ Napi::Object getActiveWindow(const Napi::CallbackInfo &info) {
 
 std::vector<Window> _windows;
 
-BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lparam) {
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lparam)
+{
     auto process = getWindowProcess(hwnd);
     _windows.push_back({process, reinterpret_cast<int64_t>(hwnd)});
     return TRUE;
 }
 
-Napi::Array getWindows(const Napi::CallbackInfo &info) {
+Napi::Array getWindows(const Napi::CallbackInfo &info)
+{
     Napi::Env env{info.Env()};
 
     _windows.clear();
     EnumWindows(&EnumWindowsProc, NULL);
 
-    auto arr = Napi::Array::New(env, _windows.size());
+    auto arr = Napi::Array::New(env);
+    for (auto _win : _windows)
+    {
 
-    for (int i = 0; i < _windows.size(); i++) {
         auto obj{Napi::Object::New(env)};
-
-        obj.Set("id", _windows[i].id);
-        obj.Set("processId", _windows[i].process.pid);
-        obj.Set("path", _windows[i].process.path);
-
-        arr[i] = obj;
+        obj.Set("id", _win.id);
+        obj.Set("processId", _win.process.pid);
+        obj.Set("path", _win.process.path);
+        arr.Set(_win.id, obj);
     }
-
     return arr;
 }
 
-Napi::Number getMonitorFromWindow(const Napi::CallbackInfo &info) {
+Napi::Number getMonitorFromWindow(const Napi::CallbackInfo &info)
+{
     Napi::Env env{info.Env()};
 
     auto handle = getValueFromCallbackData<HWND>(info, 0);
@@ -108,7 +116,8 @@ Napi::Number getMonitorFromWindow(const Napi::CallbackInfo &info) {
         env, reinterpret_cast<int64_t>(MonitorFromWindow(handle, 0)));
 }
 
-Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
+Napi::Object getWindowInfo(const Napi::CallbackInfo &info)
+{
     Napi::Env env{info.Env()};
 
     auto handle{getValueFromCallbackData<HWND>(info, 0)};
@@ -146,7 +155,8 @@ Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
     return obj;
 }
 
-Napi::Number getMonitorScaleFactor(const Napi::CallbackInfo &info) {
+Napi::Number getMonitorScaleFactor(const Napi::CallbackInfo &info)
+{
     Napi::Env env{info.Env()};
 
     HMODULE hShcore{LoadLibraryA("SHcore.dll")};
@@ -159,7 +169,8 @@ Napi::Number getMonitorScaleFactor(const Napi::CallbackInfo &info) {
     return Napi::Number::New(env, static_cast<double>(sf) / 100.);
 }
 
-Napi::Boolean toggleWindowTransparency(const Napi::CallbackInfo &info) {
+Napi::Boolean toggleWindowTransparency(const Napi::CallbackInfo &info)
+{
     Napi::Env env{info.Env()};
 
     auto handle{getValueFromCallbackData<HWND>(info, 0)};
@@ -173,7 +184,8 @@ Napi::Boolean toggleWindowTransparency(const Napi::CallbackInfo &info) {
     return Napi::Boolean::New(env, true);
 }
 
-Napi::Boolean setWindowOpacity(const Napi::CallbackInfo &info) {
+Napi::Boolean setWindowOpacity(const Napi::CallbackInfo &info)
+{
     Napi::Env env{info.Env()};
 
     auto handle{getValueFromCallbackData<HWND>(info, 0)};
@@ -184,7 +196,8 @@ Napi::Boolean setWindowOpacity(const Napi::CallbackInfo &info) {
     return Napi::Boolean::New(env, true);
 }
 
-Napi::Boolean setWindowBounds(const Napi::CallbackInfo &info) {
+Napi::Boolean setWindowBounds(const Napi::CallbackInfo &info)
+{
     Napi::Env env{info.Env()};
 
     Napi::Object bounds{info[1].As<Napi::Object>()};
@@ -197,7 +210,8 @@ Napi::Boolean setWindowBounds(const Napi::CallbackInfo &info) {
     return Napi::Boolean::New(env, b);
 }
 
-Napi::Boolean setWindowOwner(const Napi::CallbackInfo &info) {
+Napi::Boolean setWindowOwner(const Napi::CallbackInfo &info)
+{
     Napi::Env env{info.Env()};
 
     auto handle{getValueFromCallbackData<HWND>(info, 0)};
@@ -209,7 +223,8 @@ Napi::Boolean setWindowOwner(const Napi::CallbackInfo &info) {
     return Napi::Boolean::New(env, true);
 }
 
-Napi::Boolean showWindow(const Napi::CallbackInfo &info) {
+Napi::Boolean showWindow(const Napi::CallbackInfo &info)
+{
     Napi::Env env{info.Env()};
 
     auto handle{getValueFromCallbackData<HWND>(info, 0)};
@@ -231,7 +246,8 @@ Napi::Boolean showWindow(const Napi::CallbackInfo &info) {
     return Napi::Boolean::New(env, ShowWindow(handle, flag));
 }
 
-Napi::Boolean bringWindowToTop(const Napi::CallbackInfo &info) {
+Napi::Boolean bringWindowToTop(const Napi::CallbackInfo &info)
+{
     Napi::Env env{info.Env()};
 
     auto handle{getValueFromCallbackData<HWND>(info, 0)};
@@ -243,7 +259,8 @@ Napi::Boolean bringWindowToTop(const Napi::CallbackInfo &info) {
     return Napi::Boolean::New(env, b);
 }
 
-Napi::Boolean redrawWindow(const Napi::CallbackInfo &info) {
+Napi::Boolean redrawWindow(const Napi::CallbackInfo &info)
+{
     Napi::Env env{info.Env()};
 
     auto handle{getValueFromCallbackData<HWND>(info, 0)};
@@ -255,7 +272,8 @@ Napi::Boolean redrawWindow(const Napi::CallbackInfo &info) {
     return Napi::Boolean::New(env, b);
 }
 
-Napi::Boolean isWindow(const Napi::CallbackInfo &info) {
+Napi::Boolean isWindow(const Napi::CallbackInfo &info)
+{
     Napi::Env env{info.Env()};
 
     auto handle{getValueFromCallbackData<HWND>(info, 0)};
@@ -263,7 +281,8 @@ Napi::Boolean isWindow(const Napi::CallbackInfo &info) {
     return Napi::Boolean::New(env, IsWindow(handle));
 }
 
-Napi::Object Init(Napi::Env env, Napi::Object exports) {
+Napi::Object Init(Napi::Env env, Napi::Object exports)
+{
     exports.Set(Napi::String::New(env, "getActiveWindow"),
                 Napi::Function::New(env, getActiveWindow));
     exports.Set(Napi::String::New(env, "getMonitorFromWindow"),

@@ -3,7 +3,7 @@ const { windowManager } = require("./dist/index");
 console.time("getActiveWindow");
 const window = windowManager.getActiveWindow();
 console.timeEnd("getActiveWindow");
-
+console.log(windowManager.getWindows());
 console.time("getTitle");
 console.log(window.getTitle());
 console.timeEnd("getTitle");

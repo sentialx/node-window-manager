@@ -8,7 +8,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "install": "npm run rebuild",
-    "rebuild": "node-gyp rebuild",
+    "rebuild": "node-gyp rebuild --debug",
     "prepublishOnly": "npm run build && npm run rebuild"
   },
   "repository": {
