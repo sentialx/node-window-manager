@@ -84,16 +84,15 @@ Napi::Array getWindows(const Napi::CallbackInfo &info) {
     _windows.clear();
     EnumWindows(&EnumWindowsProc, NULL);
 
-    auto arr = Napi::Array::New(env, _windows.size());
-
-    for (int i = 0; i < _windows.size(); i++) {
-        auto obj{Napi::Object::New(env)};
-
-        obj.Set("id", _windows[i].id);
-        obj.Set("processId", _windows[i].process.pid);
-        obj.Set("path", _windows[i].process.path);
-
-        arr[i] = obj;
+    auto arr = Napi::Array::New (env);
+    auto i = 0;
+    for (auto _win : _windows) {
+        if (_win.process.path.empty ()) continue;
+        auto obj{ Napi::Object::New (env) };
+        obj.Set("id", _win.id);
+        obj.Set("processId", _win.process.pid);
+        obj.Set("path", _win.process.path);
+        arr.Set(i++, obj);
     }
 
     return arr;

@@ -5,7 +5,8 @@ import { platform, release } from "os";
 let addon: any;
 
 if (platform() === "win32" || platform() === "darwin") {
-  addon = require("../build/Release/addon.node");
+  let path_addon: string = (process.env.NODE_ENV != "dev") ? "Release" : "Debug";
+  addon = require(`../build/${path_addon}/addon.node`);
 }
 
 let interval: any = null;
