@@ -4,7 +4,7 @@ import { windowManager } from "..";
 let addon: any;
 
 if (platform() === "win32" || platform() === "darwin") {
-  addon = require("../../build/Debug/addon.node");
+  addon = require("../../build/Release/addon.node");
 }
 
 interface Rectangle {
