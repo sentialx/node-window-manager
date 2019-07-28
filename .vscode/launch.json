@@ -9,8 +9,8 @@
             "request": "launch",
             "name": "Debug",
             "program": "C://nodejs/node.exe",
-            "preLaunchTask": "npm: prepublishOnly",
-            "args": "C://dev//node-window-manager//example.js",
+            "preLaunchTask": "npm: prepublishOnly-dev",
+            "args": ".//example.js",
             "cwd": "${workspaceFolder}"
         }
     ]
