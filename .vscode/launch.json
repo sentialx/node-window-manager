@@ -11,6 +11,9 @@
             "program": "C://nodejs/node.exe",
             "preLaunchTask": "npm: prepublishOnly-dev",
             "args": ".//example.js",
+            "env": {
+                "NODE_ENV": "dev"
+            },
             "cwd": "${workspaceFolder}"
         }
     ]
