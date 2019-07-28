@@ -38,9 +38,4 @@
     "node-addon-api": "1.6.3",
     "node-gyp": "5.0.0"
   },
-  "files": [
-    "dist/",
-    "binding.gyp",
-    "lib/"
-  ]
 }
