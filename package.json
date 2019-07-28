@@ -37,5 +37,5 @@
   "dependencies": {
     "node-addon-api": "1.6.3",
     "node-gyp": "5.0.0"
-  },
+  }
 }
