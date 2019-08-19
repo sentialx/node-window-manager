@@ -144,9 +144,9 @@ export class Window {
     else if (platform() === "darwin") return !!this.getInfo();
   }
 
-  isWindowVisible(): boolean {
+  isVisible(): boolean {
     if (!addon) return;
-    if (platform() === "win32") return addon.isWindowVisible(this.id);
+    if (platform() === "win32") return addon.isVisible(this.id);
   }
 
   toggleTransparency(toggle: boolean) {

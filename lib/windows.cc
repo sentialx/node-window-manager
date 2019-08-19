@@ -287,7 +287,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
                 Napi::Function::New(env, redrawWindow));
     exports.Set(Napi::String::New(env, "isWindow"),
                 Napi::Function::New(env, isWindow));
-    exports.Set(Napi::String::New(env, "isWindowVisible"),
+    exports.Set(Napi::String::New(env, "isVisible"),
                 Napi::Function::New(env, isVisible));
     exports.Set(Napi::String::New(env, "setWindowOpacity"),
                 Napi::Function::New(env, setWindowOpacity));
