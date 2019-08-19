@@ -153,6 +153,9 @@ Returns `number` - monitor handle.
 
 Returns `boolean` - whether the window is a valid window.
 
+#### win.isVisible() `Windows`
+Returns `boolean` - whether the window is visible or not.
+
 #### win.getOwner() `Windows`
 
 Returns [`Window`](#class-window)
