@@ -109,7 +109,7 @@ export class Window {
     if (platform() === "win32") {
       addon.showWindow(this.id, "minimize");
     } else if (platform() === "darwin") {
-      addon.setWindowMinimized(this.id, this.processId, true);
+      addon.setWindowMinimized(this.id, true);
     }
   }
 
@@ -119,7 +119,7 @@ export class Window {
     if (platform() === "win32") {
       addon.showWindow(this.id, "restore");
     } else if (platform() === "darwin") {
-      addon.setWindowMinimized(this.id, this.processId, false);
+      addon.setWindowMinimized(this.id, false);
     }
   }
 

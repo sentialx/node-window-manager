@@ -174,7 +174,7 @@ Napi::Boolean setWindowMinimized(const Napi::CallbackInfo &info) {
   Napi::Env env{info.Env()};
 
   auto handle = info[0].As<Napi::Number>().Int32Value();
-  auto toggle = info[2].As<Napi::Boolean>();
+  auto toggle = info[1].As<Napi::Boolean>();
 
   auto win = m[handle];
 

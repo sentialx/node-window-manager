@@ -14,4 +14,5 @@ console.timeEnd("getBounds");
 
 console.time("setBounds");
 window.setBounds({ x: 0, y: 0 });
+windowManager.getActiveWindow().minimize();
 console.timeEnd("setBounds");
