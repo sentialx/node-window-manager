@@ -123,7 +123,7 @@ Minimizes the window.
 
 Restores the window.
 
-#### win.maximize() `Windows`
+#### win.maximize() `Windows` `macOS`
 
 Maximizes the window.
 
