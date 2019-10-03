@@ -128,8 +128,9 @@ export class Window {
       if (!addon || !addon.showWindow) return;
       addon.showWindow(this.id, "maximize");
     } else if(platform() === "darwin") {
+      if (!addon) return;
       addon.setWindowMaximized(this.id)
-    }
+    } 
   }
 
   bringToTop() {
