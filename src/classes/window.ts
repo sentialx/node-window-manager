@@ -124,8 +124,12 @@ export class Window {
   }
 
   maximize() {
-    if (!addon || !addon.showWindow) return;
-    addon.showWindow(this.id, "maximize");
+    if(platform() === "win32") {
+      if (!addon || !addon.showWindow) return;
+      addon.showWindow(this.id, "maximize");
+    } else if(platform() === "darwin") {
+      addon.setWindowMaximized(this.id)
+    }
   }
 
   bringToTop() {

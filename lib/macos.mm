@@ -185,6 +185,29 @@ Napi::Boolean setWindowMinimized(const Napi::CallbackInfo &info) {
   return Napi::Boolean::New(env, true);
 }
 
+Napi::Boolean setWindowMaximized(const Napi::CallbackInfo &info) {
+  Napi::Env env{info.Env()};
+  auto handle = info[0].As<Napi::Number>().Int32Value();
+  auto win = m[handle];
+
+  if(win) {
+    NSRect screenSizeRect = [[NSScreen mainScreen] frame];
+    int screenWidth = screenSizeRect.size.width;
+    int screenHeight = screenSizeRect.size.height;
+
+    NSPoint point = NSMakePoint((CGFloat) 0, (CGFloat) 0);
+    NSSize size = NSMakeSize((CGFloat) screenWidth, (CGFloat) screenHeight);
+
+    CFTypeRef positionStorage = (CFTypeRef)(AXValueCreate((AXValueType)kAXValueCGPointType, (const void *)&point));
+    AXUIElementSetAttributeValue(win, kAXPositionAttribute, positionStorage);
+
+    CFTypeRef sizeStorage = (CFTypeRef)(AXValueCreate((AXValueType)kAXValueCGSizeType, (const void *)&size));
+    AXUIElementSetAttributeValue(win, kAXSizeAttribute, sizeStorage);
+  }
+
+  return Napi::Boolean::New(env, true);
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
     exports.Set(Napi::String::New(env, "getWindows"),
                 Napi::Function::New(env, getWindows));
@@ -198,7 +221,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
                 Napi::Function::New(env, bringWindowToTop));
     exports.Set(Napi::String::New(env, "setWindowMinimized"),
                 Napi::Function::New(env, setWindowMinimized));
-
+    exports.Set(Napi::String::New(env, "setWindowMaximized"),
+                Napi::Function::New(env, setWindowMaximized));
     return exports;
 }
 
