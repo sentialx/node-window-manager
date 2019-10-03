@@ -15,7 +15,7 @@ $ npm install node-window-manager
 The following example shows how to get the currently focused window's title and hide it.
 
 ```javascript
-const { windowManager } = require("window-manager");
+const { windowManager } = require("node-window-manager");
 
 const window = windowManager.getActiveWindow();
 
