@@ -129,7 +129,7 @@ export class Window {
       addon.showWindow(this.id, "maximize");
     } else if(platform() === "darwin") {
       if (!addon) return;
-      addon.setWindowMaximized(this.id)
+      addon.setWindowMaximized(this.id);
     } 
   }
 
