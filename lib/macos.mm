@@ -8,8 +8,14 @@
 
 extern "C" AXError _AXUIElementGetWindow(AXUIElementRef, CGWindowID* out);
 
-NSDictionary* opts = @{static_cast<id> (kAXTrustedCheckOptionPrompt): @YES};
-BOOL a = AXIsProcessTrustedWithOptions(static_cast<CFDictionaryRef> (opts));
+Napi::Boolean requestAccessibility(const Napi::CallbackInfo &info) {
+  Napi::Env env{info.Env()};
+
+  NSDictionary* opts = @{static_cast<id> (kAXTrustedCheckOptionPrompt): @YES};
+  BOOL a = AXIsProcessTrustedWithOptions(static_cast<CFDictionaryRef> (opts));
+  
+  return Napi::Boolean::New(env, a);
+}
 
 std::map<int, AXUIElementRef> m;
 
@@ -223,6 +229,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
                 Napi::Function::New(env, setWindowMinimized));
     exports.Set(Napi::String::New(env, "setWindowMaximized"),
                 Napi::Function::New(env, setWindowMaximized));
+    exports.Set(Napi::String::New(env, "requestAccessibility"),
+                Napi::Function::New(env, requestAccessibility));
     return exports;
 }
 

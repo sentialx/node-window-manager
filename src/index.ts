@@ -51,6 +51,11 @@ class WindowManager extends EventEmitter {
     });
   }
 
+  requestAccessibility = () => {
+    if (platform() !== 'darwin') return false;
+    return addon.requestAccessibility();
+  }
+
   getActiveWindow = () => {
     if (!addon) return;
     return new Window(addon.getActiveWindow());
