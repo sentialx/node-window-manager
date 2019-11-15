@@ -17,6 +17,8 @@ The following example shows how to get the currently focused window's title and 
 ```javascript
 const { windowManager } = require("node-window-manager");
 
+windowManager.requestAccessibility(); // required on macOS
+
 const window = windowManager.getActiveWindow();
 
 // Prints the currently focused window title.
@@ -48,6 +50,10 @@ window.setBounds({ x: 0, y: 0 });
 ## Class `WindowManager`
 
 ### Instance methods
+
+#### windowManager.requestAccessibility() `macOS`
+  Required before any action on macOS.
+- Returns `boolean`
 
 #### windowManager.getActiveWindow() `Windows` `macOS`
 
