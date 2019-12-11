@@ -21,4 +21,5 @@ console.timeEnd("setBounds");
 console.log("[info]: Visible Windows List");
 windowManager.getWindows().forEach(window => {
    console.log('Title: '+window.getTitle(), '\n', 'Path: '+window.path);
+   window.bringToTop();
 });

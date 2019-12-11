@@ -128,7 +128,11 @@ export class Window {
 
   bringToTop() {
     if (!addon) return;
-    addon.bringWindowToTop(platform() === "darwin" ? this.processId : this.id);
+    if (process.platform === 'darwin') {
+      addon.bringWindowToTop(this.id, this.processId);
+    } else {
+      addon.bringWindowToTop(this.id);
+    }
   }
 
   redraw() {

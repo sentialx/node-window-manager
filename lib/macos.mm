@@ -162,10 +162,14 @@ Napi::Boolean setWindowBounds(const Napi::CallbackInfo &info) {
 Napi::Boolean bringWindowToTop(const Napi::CallbackInfo &info) {
   Napi::Env env{info.Env()};
 
-  auto pid = info[0].As<Napi::Number>().Int32Value();
+  auto handle = info[0].As<Napi::Number>().Int32Value();
+  auto pid = info[1].As<Napi::Number>().Int32Value();
+
   auto app = AXUIElementCreateApplication(pid);
+  auto win = m[handle];
 
   AXUIElementSetAttributeValue(app, kAXFrontmostAttribute, kCFBooleanTrue);
+  AXUIElementSetAttributeValue(win, kAXMainAttribute, kCFBooleanTrue);
 
   return Napi::Boolean::New(env, true);
 }
