@@ -81,9 +81,9 @@ Emitted when a window has been activated.
 
 We try to keep this class similar to Electron's known [`BrowserWindow`](https://electronjs.org/docs/api/browser-window) class, to keep it simple to use.
 
-### new Window(id: number | [`WindowInfo`](#object-windowinfo))
+### new Window(id: number)
 
-- `id` - this can be either a `number` or a [`WindowInfo`](#object-windowinfo) object.
+- `id` number
 
 ### Instance properties
 
