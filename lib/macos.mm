@@ -54,12 +54,19 @@ Napi::Array getWindows(const Napi::CallbackInfo &info) {
     NSNumber *windowNumber = info[(id)kCGWindowNumber];
     auto app = [NSRunningApplication runningApplicationWithProcessIdentifier: [ownerPid intValue]];
 
+    auto path = app ? [app.bundleURL.path UTF8String] : "";
+
     obj.Set("id", [windowNumber intValue]);
     obj.Set("processId", [ownerPid intValue]);
-    obj.Set("path", app ? [app.bundleURL.path UTF8String] : "");
-    m[[windowNumber intValue]] = getAXWindow([ownerPid intValue], [windowNumber intValue]);
+    obj.Set("path", path);
 
-    vec.push_back(obj);
+    if (m.find([windowNumber intValue]) == m.end()) {
+      m[[windowNumber intValue]] = getAXWindow([ownerPid intValue], [windowNumber intValue]);
+    }
+
+    if (path != "") {
+      vec.push_back(obj);
+    }
   }
 
   auto arr = Napi::Array::New(env, vec.size());
@@ -131,6 +138,7 @@ Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
     obj.Set("path", [app.bundleURL.path UTF8String]);
     obj.Set("bounds", boundsObj);
     obj.Set("title", [windowName UTF8String]);
+    m[[windowNumber intValue]] = getAXWindow([ownerPid intValue], [windowNumber intValue]);
 
     return obj;
   }

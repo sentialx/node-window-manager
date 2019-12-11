@@ -23,7 +23,6 @@ interface WindowInfo {
   bounds?: Rectangle;
   opacity?: number;
   owner?: Window;
-  axRef?: number;
 }
 
 export class Window {
@@ -145,8 +144,8 @@ export class Window {
 
   isWindow(): boolean {
     if (!addon) return;
-    if (platform() === "win32") return addon.isWindow(this.id);
-    else if (platform() === "darwin") return !!this.getInfo();
+    if (platform() === "win32") return this.path && this.path !== '' && addon.isWindow(this.id);
+    else if (platform() === "darwin") return this.path && this.path !== '' && !!this.getInfo();
   }
 
   isVisible(): boolean {

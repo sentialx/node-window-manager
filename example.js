@@ -20,5 +20,5 @@ console.timeEnd("setBounds");
 
 console.log("[info]: Visible Windows List");
 windowManager.getWindows().forEach(window => {
-   if(window.isVisible()) console.log('Title: '+window.getTitle(), '\n', 'Path: '+window.path);
+   console.log('Title: '+window.getTitle(), '\n', 'Path: '+window.path);
 });
