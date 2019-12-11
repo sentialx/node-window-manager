@@ -52,7 +52,7 @@ class WindowManager extends EventEmitter {
   }
 
   requestAccessibility = () => {
-    if (platform() !== 'darwin') return false;
+    if (platform() !== 'darwin') return true;
     return addon.requestAccessibility();
   }
 

@@ -22,7 +22,7 @@ interface WindowInfo {
   title?: string;
   bounds?: Rectangle;
   opacity?: number;
-  owner?: Window;
+  owner?: number;
 }
 
 export class Window {
@@ -31,19 +31,13 @@ export class Window {
   public processId: number;
   public path: string;
 
-  constructor(arg: number | WindowInfo) {
+  constructor(id: number) {
     if (!addon) return;
 
-    if (typeof arg === "object") {
-      this.id = arg.id;
-      this.processId = arg.processId;
-      this.path = arg.path;
-    } else {
-      this.id = arg;
-      const { processId, path } = this.getInfo();
-      this.processId = processId;
-      this.path = path;
-    }
+    this.id = id;
+    const { processId, path } = this.getInfo();
+    this.processId = processId;
+    this.path = path;
   }
 
   getBounds(): Rectangle {
@@ -134,7 +128,11 @@ export class Window {
 
   bringToTop() {
     if (!addon) return;
-    addon.bringWindowToTop(platform() === "darwin" ? this.processId : this.id);
+    if (process.platform === 'darwin') {
+      addon.bringWindowToTop(this.id, this.processId);
+    } else {
+      addon.bringWindowToTop(this.id);
+    }
   }
 
   redraw() {
