@@ -45,27 +45,17 @@ Napi::Array getWindows(const Napi::CallbackInfo &info) {
   CGWindowListOption listOptions = kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements;
   CFArrayRef windowList = CGWindowListCopyWindowInfo(listOptions, kCGNullWindowID);
 
-  std::vector<Napi::Object> vec;
+  std::vector<Napi::Number> vec;
 
   for (NSDictionary *info in (NSArray *)windowList) {
-    auto obj = Napi::Object::New(env);
-
     NSNumber *ownerPid = info[(id)kCGWindowOwnerPID];
     NSNumber *windowNumber = info[(id)kCGWindowNumber];
     auto app = [NSRunningApplication runningApplicationWithProcessIdentifier: [ownerPid intValue]];
 
     auto path = app ? [app.bundleURL.path UTF8String] : "";
 
-    obj.Set("id", [windowNumber intValue]);
-    obj.Set("processId", [ownerPid intValue]);
-    obj.Set("path", path);
-
-    if (m.find([windowNumber intValue]) == m.end()) {
-      m[[windowNumber intValue]] = getAXWindow([ownerPid intValue], [windowNumber intValue]);
-    }
-
     if (path != "") {
-      vec.push_back(obj);
+      vec.push_back(Napi::Number::New(env, [windowNumber intValue]));
     }
   }
 
@@ -78,7 +68,7 @@ Napi::Array getWindows(const Napi::CallbackInfo &info) {
   return arr;
 }
 
-Napi::Object getActiveWindow(const Napi::CallbackInfo &info) {
+Napi::Number getActiveWindow(const Napi::CallbackInfo &info) {
   Napi::Env env{info.Env()};
 
   CGWindowListOption listOptions = kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements;
@@ -92,20 +82,10 @@ Napi::Object getActiveWindow(const Napi::CallbackInfo &info) {
 
     if ([ownerPid intValue] != app.processIdentifier) continue;
 
-    auto obj = Napi::Object::New(env);
-
-    obj.Set("id", [windowNumber intValue]);
-    obj.Set("processId", [ownerPid intValue]);
-    obj.Set("path", [app.bundleURL.path UTF8String]);
-
-    if (m.find([windowNumber intValue]) == m.end()) {
-      m[[windowNumber intValue]] = getAXWindow([ownerPid intValue], [windowNumber intValue]);
-    }
-
-    return obj;
+    return Napi::Number::New(env, [windowNumber intValue]);
   }
 
-  return Napi::Object::New(env);
+  return Napi::Number::New(env, 0);
 }
 
 Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
