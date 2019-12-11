@@ -97,7 +97,10 @@ Napi::Object getActiveWindow(const Napi::CallbackInfo &info) {
     obj.Set("id", [windowNumber intValue]);
     obj.Set("processId", [ownerPid intValue]);
     obj.Set("path", [app.bundleURL.path UTF8String]);
-    m[[windowNumber intValue]] = getAXWindow([ownerPid intValue], [windowNumber intValue]);
+
+    if (m.find([windowNumber intValue]) == m.end()) {
+      m[[windowNumber intValue]] = getAXWindow([ownerPid intValue], [windowNumber intValue]);
+    }
 
     return obj;
   }
@@ -138,7 +141,10 @@ Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
     obj.Set("path", [app.bundleURL.path UTF8String]);
     obj.Set("bounds", boundsObj);
     obj.Set("title", [windowName UTF8String]);
-    m[[windowNumber intValue]] = getAXWindow([ownerPid intValue], [windowNumber intValue]);
+
+    if (m.find([windowNumber intValue]) == m.end()) {
+      m[[windowNumber intValue]] = getAXWindow([ownerPid intValue], [windowNumber intValue]);
+    }
 
     return obj;
   }
