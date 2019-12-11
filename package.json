@@ -30,12 +30,12 @@
   },
   "homepage": "https://github.com/sentialx/node-window-manager#readme",
   "devDependencies": {
-    "@types/node": "12.12.7",
+    "@types/node": "12.12.17",
     "tslint": "5.20.1",
-    "typescript": "3.7.2"
+    "typescript": "3.7.3"
   },
   "dependencies": {
-    "node-addon-api": "1.7.1",
+    "node-addon-api": "2.0.0",
     "node-gyp": "6.0.1"
   }
 }
