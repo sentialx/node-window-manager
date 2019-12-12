@@ -13,7 +13,7 @@ export class Monitor {
 
   getInfo(): IMonitorInfo {
     if (process.platform !== 'win32' || !addon) return;
-    return addon.getWindowInfo(this.id);
+    return addon.getMonitorInfo(this.id);
   }
 
   getBounds(): IRectangle {

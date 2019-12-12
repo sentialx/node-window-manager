@@ -15,5 +15,8 @@ setTimeout(() => {
 
 console.log("Windows List");
 windowManager.getWindows().forEach(window => {
-   console.log(window.getInfo());
+   if (window.isVisible()) {
+      console.log(window.getInfo());
+      console.log(window.getMonitor().getInfo());
+   }
 });
