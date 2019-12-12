@@ -59,13 +59,17 @@ window.setBounds({ x: 0, y: 0 });
 
 - Returns [`Window`](#class-window)
 
-#### windowManager.getScaleFactor(monitor: number) `Windows`
-
-- Returns `number` - the monitor scale factor.
-
 #### windowManager.getWindows() `Windows` `macOS`
 
 - Returns [`Window[]`](#class-window)
+
+#### windowManager.getMonitors() `Windows`
+
+- Returns [`Monitor[]`](#class-monitor)
+
+#### windowManager.getPrimaryMonitor() `Windows`
+
+- Returns [`Monitor`](#class-monitor)
 
 ### Events
 
@@ -151,9 +155,9 @@ Returns `number` between 0 and 1.
 
 #### win.getMonitor() `Windows`
 
-Gets monitor by window.
+Gets monitor which the window belongs to.
 
-Returns `number` - monitor handle.
+Returns [`Monitor`](#class-monitor)
 
 #### win.isWindow() `Windows` `macOS`
 
@@ -176,3 +180,42 @@ Returns [`Window`](#class-window)
 - `size` number - can be only `16`, `32`, `64`, `256`. By default it's `64`.
 
 Returns a png Buffer
+
+
+## Class `Monitor` `Windows`
+
+### new Monitor(id: number)
+
+- `id` number - the monitor handle
+
+### Instance properties
+
+- `id` number
+
+### Instance methods
+
+#### monitor.getBounds() `Windows`
+
+- Returns [`Rectangle`](#object-rectangle)
+
+#### monitor.getWorkArea() `Windows`
+
+Gets monitor working area bounds.
+
+- Returns [`Rectangle`](#object-rectangle)
+
+#### monitor.getInfo() `Windows`
+
+Returns [`MonitorInfo`](#object-monitorinfo)
+
+#### monitor.isPrimary() `Windows`
+
+Whether the monitor is primary.
+
+- Returns `boolean`
+
+#### monitor.getScaleFactor() `Windows`
+
+Gets monitor scale factor (DPI).
+
+- Returns `number`

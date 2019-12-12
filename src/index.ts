@@ -72,7 +72,7 @@ class WindowManager extends EventEmitter {
     return addon.getMonitors().map((mon: any) => new Monitor(mon));
   };
 
-  getPrimaryWindow = (): Monitor => {
+  getPrimaryMonitor = (): Monitor => {
     return this.getMonitors().find(x => x.isPrimary);
   }
 }
