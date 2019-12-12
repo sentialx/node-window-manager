@@ -1,5 +1,6 @@
 import { platform } from "os";
 import { windowManager } from "..";
+import extractFileIcon from 'extract-file-icon';
 
 let addon: any;
 
@@ -164,6 +165,10 @@ export class Window {
   getOpacity() {
     if (platform() !== "win32") return;
     return this.getInfo().opacity;
+  }
+
+  getIcon(size: 16 | 32 | 64 | 256 = 64) {
+    return extractFileIcon(this.path, size);
   }
 
   setOwner(window: Window | null | number) {

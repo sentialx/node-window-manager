@@ -81,9 +81,9 @@ Emitted when a window has been activated.
 
 We try to keep this class similar to Electron's known [`BrowserWindow`](https://electronjs.org/docs/api/browser-window) class, to keep it simple to use.
 
-### new Window(id: number | [`WindowInfo`](#object-windowinfo))
+### new Window(id: number)
 
-- `id` - this can be either a `number` or a [`WindowInfo`](#object-windowinfo) object.
+- `id` number
 
 ### Instance properties
 
@@ -170,3 +170,9 @@ Returns [`Window`](#class-window)
 
 - `win` [Window](#class-window) | number | null
   - pass null to unset window owner.
+
+#### win.getIcon(size: number) `Windows` `macOS`
+
+- `size` number - can be only `16`, `32`, `64`, `256`. By default it's `64`.
+
+Returns a png Buffer
