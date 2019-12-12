@@ -13,11 +13,6 @@ struct Process {
     std::string path;
 };
 
-struct Window {
-    Process process;
-    int64_t id;
-};
-
 template <typename T>
 T getValueFromCallbackData (const Napi::CallbackInfo& info, unsigned handleIndex) {
     return reinterpret_cast<T> (info[handleIndex].As<Napi::Number> ().Int64Value ());
@@ -58,11 +53,10 @@ Napi::Number getActiveWindow (const Napi::CallbackInfo& info) {
     return Napi::Number::New (env, reinterpret_cast<int64_t> (handle));
 }
 
-std::vector<Window> _windows;
+std::vector<int64_t> _windows;
 
 BOOL CALLBACK EnumWindowsProc (HWND hwnd, LPARAM lparam) {
-    auto process = getWindowProcess (hwnd);
-    _windows.push_back ({ process, reinterpret_cast<int64_t> (hwnd) });
+    _windows.push_back (reinterpret_cast<int64_t> (hwnd));
     return TRUE;
 }
 
@@ -75,11 +69,36 @@ Napi::Array getWindows (const Napi::CallbackInfo& info) {
     auto arr = Napi::Array::New (env);
     auto i = 0;
     for (auto _win : _windows) {
-        if (_win.process.path.empty ()) continue;
-        arr.Set (i++, Napi::Number::New (env, _win.id));
+        arr.Set (i++, Napi::Number::New (env, _win));
     }
 
     return arr;
+}
+
+std::vector<int64_t> _monitors;
+
+BOOL CALLBACK EnumMonitorsProc (HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) {
+    _monitors.push_back (reinterpret_cast<int64_t> (hMonitor));
+    return TRUE;
+}
+
+Napi::Array getMonitors (const Napi::CallbackInfo& info) {
+    Napi::Env env{ info.Env () };
+
+    _monitors.clear ();
+    if (EnumDisplayMonitors (NULL, NULL, &EnumMonitorsProc, NULL)) {
+        auto arr = Napi::Array::New (env);
+        auto i = 0;
+
+        for (auto _mon : _monitors) {
+
+            arr.Set (i++, Napi::Number::New (env, _mon));
+        }
+
+        return arr;
+    }
+
+    return Napi::Array::New (env);
 }
 
 Napi::Number getMonitorFromWindow (const Napi::CallbackInfo& info) {
@@ -297,6 +316,7 @@ Napi::Object Init (Napi::Env env, Napi::Object exports) {
     exports.Set (Napi::String::New (env, "getWindowInfo"), Napi::Function::New (env, getWindowInfo));
     exports.Set (Napi::String::New (env, "getMonitorInfo"), Napi::Function::New (env, getMonitorInfo));
     exports.Set (Napi::String::New (env, "getWindows"), Napi::Function::New (env, getWindows));
+    exports.Set (Napi::String::New (env, "getMonitors"), Napi::Function::New (env, getMonitors));
 
     return exports;
 }

@@ -1,6 +1,7 @@
 import { Window } from "./classes/window";
 import { EventEmitter } from "events";
 import { platform } from "os";
+import { Monitor } from "./classes/monitor";
 
 let addon: any;
 
@@ -61,9 +62,14 @@ class WindowManager extends EventEmitter {
     return new Window(addon.getActiveWindow());
   };
 
-  getWindows = () => {
+  getWindows = (): Window[] => {
     if (!addon || !addon.getWindows) return;
     return addon.getWindows().map((win: any) => new Window(win)).filter((x: Window) => x.isWindow());
+  };
+
+  getMonitors = (): Monitor[] => {
+    if (!addon || !addon.getMonitors) return;
+    return addon.getMonitors().map((mon: any) => new Monitor(mon));
   };
 }
 
