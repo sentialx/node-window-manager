@@ -48,15 +48,8 @@ Napi::Array getWindows(const Napi::CallbackInfo &info) {
   std::vector<Napi::Number> vec;
 
   for (NSDictionary *info in (NSArray *)windowList) {
-    NSNumber *ownerPid = info[(id)kCGWindowOwnerPID];
     NSNumber *windowNumber = info[(id)kCGWindowNumber];
-    auto app = [NSRunningApplication runningApplicationWithProcessIdentifier: [ownerPid intValue]];
-
-    auto path = app ? [app.bundleURL.path UTF8String] : "";
-
-    if (path != "") {
-      vec.push_back(Napi::Number::New(env, [windowNumber intValue]));
-    }
+    vec.push_back(Napi::Number::New(env, [windowNumber intValue]));
   }
 
   auto arr = Napi::Array::New(env, vec.size());

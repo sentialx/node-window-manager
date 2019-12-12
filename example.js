@@ -1,5 +1,7 @@
 const { windowManager } = require("./dist/index");
 
+windowManager.requestAccessibility(); // required on macOS
+
 const window = windowManager.getActiveWindow();
 console.log(window.getTitle());
 
