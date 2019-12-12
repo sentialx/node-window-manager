@@ -247,6 +247,38 @@ Napi::Boolean isVisible (const Napi::CallbackInfo& info) {
     return Napi::Boolean::New (env, IsWindowVisible (handle));
 }
 
+Napi::Object getMonitorInfo (const Napi::CallbackInfo& info) {
+    Napi::Env env{ info.Env () };
+
+    auto handle{ getValueFromCallbackData<HMONITOR> (info, 0) };
+
+    MONITORINFO mInfo;
+    mInfo.cbSize = sizeof (MONITORINFO);
+    GetMonitorInfoA (handle, &mInfo);
+
+    Napi::Object bounds{ Napi::Object::New (env) };
+
+    bounds.Set ("x", mInfo.rcMonitor.left);
+    bounds.Set ("y", mInfo.rcMonitor.top);
+    bounds.Set ("width", mInfo.rcMonitor.right - mInfo.rcMonitor.left);
+    bounds.Set ("height", mInfo.rcMonitor.bottom - mInfo.rcMonitor.top);
+
+    Napi::Object workArea{ Napi::Object::New (env) };
+
+    workArea.Set ("x", mInfo.rcWork.left);
+    workArea.Set ("y", mInfo.rcWork.top);
+    workArea.Set ("width", mInfo.rcWork.right - mInfo.rcWork.left);
+    workArea.Set ("height", mInfo.rcWork.bottom - mInfo.rcWork.top);
+
+    Napi::Object obj{ Napi::Object::New (env) };
+
+    obj.Set ("bounds", bounds);
+    obj.Set ("workArea", workArea);
+    obj.Set ("isPrimary", (mInfo.dwFlags & MONITORINFOF_PRIMARY) != 0);
+
+    return obj;
+}
+
 Napi::Object Init (Napi::Env env, Napi::Object exports) {
     exports.Set (Napi::String::New (env, "getActiveWindow"), Napi::Function::New (env, getActiveWindow));
     exports.Set (Napi::String::New (env, "getMonitorFromWindow"), Napi::Function::New (env, getMonitorFromWindow));
@@ -263,6 +295,7 @@ Napi::Object Init (Napi::Env env, Napi::Object exports) {
                  Napi::Function::New (env, toggleWindowTransparency));
     exports.Set (Napi::String::New (env, "setWindowOwner"), Napi::Function::New (env, setWindowOwner));
     exports.Set (Napi::String::New (env, "getWindowInfo"), Napi::Function::New (env, getWindowInfo));
+    exports.Set (Napi::String::New (env, "getMonitorInfo"), Napi::Function::New (env, getMonitorInfo));
     exports.Set (Napi::String::New (env, "getWindows"), Napi::Function::New (env, getWindows));
 
     return exports;
