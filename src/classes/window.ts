@@ -1,13 +1,7 @@
 import { platform } from "os";
-import { windowManager } from "..";
+import { windowManager, addon } from "..";
 import extractFileIcon from 'extract-file-icon';
-
-let addon: any;
-
-if (platform() === "win32" || platform() === "darwin") {
-  let path_addon: string = (process.env.NODE_ENV != "dev") ? "Release" : "Debug";
-  addon = require(`../../build/${path_addon}/addon.node`);
-}
+import { Monitor } from "./monitor";
 
 interface Rectangle {
   x?: number;
@@ -47,7 +41,7 @@ export class Window {
     const { bounds } = this.getInfo();
 
     if (platform() === "win32") {
-      const sf = windowManager.getScaleFactor(this.getMonitor());
+      const sf = this.getMonitor().getScaleFactor();
 
       bounds.x = Math.floor(bounds.x / sf);
       bounds.y = Math.floor(bounds.y / sf);
@@ -64,7 +58,7 @@ export class Window {
     const newBounds = { ...this.getBounds(), ...bounds };
 
     if (platform() === "win32") {
-      const sf = windowManager.getScaleFactor(this.getMonitor());
+      const sf = this.getMonitor().getScaleFactor();
 
       newBounds.x = Math.floor(newBounds.x * sf);
       newBounds.y = Math.floor(newBounds.y * sf);
@@ -82,9 +76,9 @@ export class Window {
     return this.getInfo().title;
   }
 
-  getMonitor(): number {
+  getMonitor(): Monitor {
     if (!addon || !addon.getMonitorFromWindow) return;
-    return addon.getMonitorFromWindow(this.id);
+    return new Monitor(addon.getMonitorFromWindow(this.id));
   }
 
   show() {

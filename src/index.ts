@@ -1,6 +1,6 @@
 import { Window } from "./classes/window";
 import { EventEmitter } from "events";
-import { platform, release } from "os";
+import { platform } from "os";
 
 let addon: any;
 
@@ -61,20 +61,6 @@ class WindowManager extends EventEmitter {
     return new Window(addon.getActiveWindow());
   };
 
-  getScaleFactor = (monitor: number) => {
-    if (platform() !== "win32") return;
-
-    const numbers = release()
-      .split(".")
-      .map(d => parseInt(d, 10));
-
-    if (numbers[0] > 8 || (numbers[0] === 8 && numbers[1] >= 1)) {
-      return addon.getMonitorScaleFactor(monitor);
-    }
-
-    return 1;
-  };
-
   getWindows = () => {
     if (!addon || !addon.getWindows) return;
     return addon.getWindows().map((win: any) => new Window(win)).filter((x: Window) => x.isWindow());
@@ -83,4 +69,4 @@ class WindowManager extends EventEmitter {
 
 const windowManager = new WindowManager();
 
-export { windowManager, Window };
+export { windowManager, Window, addon };
