@@ -55,7 +55,7 @@ Napi::Array getWindows(const Napi::CallbackInfo &info) {
   auto arr = Napi::Array::New(env, vec.size());
 
   for (int i = 0; i < vec.size(); i++) {
-    arr[i] = vec[i];
+    arr.Set(i, vec[i]);
   }
 
   return arr;
