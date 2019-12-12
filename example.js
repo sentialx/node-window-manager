@@ -1,28 +1,19 @@
 const { windowManager } = require("./dist/index");
 
-console.time("getActiveWindow");
 const window = windowManager.getActiveWindow();
-console.timeEnd("getActiveWindow");
-console.log(windowManager.getWindows());
-console.time("getTitle");
 console.log(window.getTitle());
-console.timeEnd("getTitle");
 
-console.time("getBounds");
-console.log(window.getBounds());
-console.timeEnd("getBounds");
+const bounds = window.getBounds();
+console.log(bounds);
 
-console.time("setBounds");
 // window.setBounds({ x: 0, y: 0 });
 window.maximize();
 
-console.timeEnd("setBounds");
+setTimeout(() => {
+   window.setBounds(bounds);
+}, 1000);
 
-console.log("[info]: Visible Windows List");
+console.log("Windows List");
 windowManager.getWindows().forEach(window => {
-   if (window.isVisible()) {
-      console.log(window.getInfo());
-      console.log(window.getIcon());
-      window.bringToTop();
-   }
+   console.log(window.getInfo());
 });
