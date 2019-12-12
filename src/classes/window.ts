@@ -1,24 +1,8 @@
 import { platform } from "os";
-import { windowManager, addon } from "..";
+import { addon } from "..";
 import extractFileIcon from 'extract-file-icon';
 import { Monitor } from "./monitor";
-
-interface Rectangle {
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
-}
-
-interface WindowInfo {
-  id: number;
-  path: string;
-  processId: number;
-  title?: string;
-  bounds?: Rectangle;
-  opacity?: number;
-  owner?: number;
-}
+import { IRectangle, IWindowInfo } from "../interfaces";
 
 export class Window {
   public id: number;
@@ -35,7 +19,7 @@ export class Window {
     this.path = path;
   }
 
-  getBounds(): Rectangle {
+  getBounds(): IRectangle {
     if (!addon) return;
 
     const { bounds } = this.getInfo();
@@ -52,7 +36,7 @@ export class Window {
     return bounds;
   }
 
-  setBounds(bounds: Rectangle) {
+  setBounds(bounds: IRectangle) {
     if (!addon) return;
 
     const newBounds = { ...this.getBounds(), ...bounds };
@@ -184,11 +168,9 @@ export class Window {
     return new Window(this.getInfo().owner);
   }
 
-  getInfo(): WindowInfo {
+  getInfo(): IWindowInfo {
     if (!addon) return;
-
     const info = addon.getWindowInfo(this.id);
-
     return info;
   }
 }
