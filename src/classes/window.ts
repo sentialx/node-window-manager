@@ -1,30 +1,8 @@
 import { platform } from "os";
-import { windowManager } from "..";
+import { addon } from "..";
 import extractFileIcon from 'extract-file-icon';
-
-let addon: any;
-
-if (platform() === "win32" || platform() === "darwin") {
-  let path_addon: string = (process.env.NODE_ENV != "dev") ? "Release" : "Debug";
-  addon = require(`../../build/${path_addon}/addon.node`);
-}
-
-interface Rectangle {
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
-}
-
-interface WindowInfo {
-  id: number;
-  path: string;
-  processId: number;
-  title?: string;
-  bounds?: Rectangle;
-  opacity?: number;
-  owner?: number;
-}
+import { Monitor } from "./monitor";
+import { IRectangle, IWindowInfo } from "../interfaces";
 
 export class Window {
   public id: number;
@@ -41,13 +19,13 @@ export class Window {
     this.path = path;
   }
 
-  getBounds(): Rectangle {
+  getBounds(): IRectangle {
     if (!addon) return;
 
     const { bounds } = this.getInfo();
 
     if (platform() === "win32") {
-      const sf = windowManager.getScaleFactor(this.getMonitor());
+      const sf = this.getMonitor().getScaleFactor();
 
       bounds.x = Math.floor(bounds.x / sf);
       bounds.y = Math.floor(bounds.y / sf);
@@ -58,13 +36,13 @@ export class Window {
     return bounds;
   }
 
-  setBounds(bounds: Rectangle) {
+  setBounds(bounds: IRectangle) {
     if (!addon) return;
 
     const newBounds = { ...this.getBounds(), ...bounds };
 
     if (platform() === "win32") {
-      const sf = windowManager.getScaleFactor(this.getMonitor());
+      const sf = this.getMonitor().getScaleFactor();
 
       newBounds.x = Math.floor(newBounds.x * sf);
       newBounds.y = Math.floor(newBounds.y * sf);
@@ -82,9 +60,9 @@ export class Window {
     return this.getInfo().title;
   }
 
-  getMonitor(): number {
+  getMonitor(): Monitor {
     if (!addon || !addon.getMonitorFromWindow) return;
-    return addon.getMonitorFromWindow(this.id);
+    return new Monitor(addon.getMonitorFromWindow(this.id));
   }
 
   show() {
@@ -190,11 +168,9 @@ export class Window {
     return new Window(this.getInfo().owner);
   }
 
-  getInfo(): WindowInfo {
+  getInfo(): IWindowInfo {
     if (!addon) return;
-
     const info = addon.getWindowInfo(this.id);
-
     return info;
   }
 }

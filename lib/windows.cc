@@ -13,11 +13,6 @@ struct Process {
     std::string path;
 };
 
-struct Window {
-    Process process;
-    int64_t id;
-};
-
 template <typename T>
 T getValueFromCallbackData (const Napi::CallbackInfo& info, unsigned handleIndex) {
     return reinterpret_cast<T> (info[handleIndex].As<Napi::Number> ().Int64Value ());
@@ -58,11 +53,10 @@ Napi::Number getActiveWindow (const Napi::CallbackInfo& info) {
     return Napi::Number::New (env, reinterpret_cast<int64_t> (handle));
 }
 
-std::vector<Window> _windows;
+std::vector<int64_t> _windows;
 
 BOOL CALLBACK EnumWindowsProc (HWND hwnd, LPARAM lparam) {
-    auto process = getWindowProcess (hwnd);
-    _windows.push_back ({ process, reinterpret_cast<int64_t> (hwnd) });
+    _windows.push_back (reinterpret_cast<int64_t> (hwnd));
     return TRUE;
 }
 
@@ -75,11 +69,36 @@ Napi::Array getWindows (const Napi::CallbackInfo& info) {
     auto arr = Napi::Array::New (env);
     auto i = 0;
     for (auto _win : _windows) {
-        if (_win.process.path.empty ()) continue;
-        arr.Set (i++, Napi::Number::New (env, _win.id));
+        arr.Set (i++, Napi::Number::New (env, _win));
     }
 
     return arr;
+}
+
+std::vector<int64_t> _monitors;
+
+BOOL CALLBACK EnumMonitorsProc (HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) {
+    _monitors.push_back (reinterpret_cast<int64_t> (hMonitor));
+    return TRUE;
+}
+
+Napi::Array getMonitors (const Napi::CallbackInfo& info) {
+    Napi::Env env{ info.Env () };
+
+    _monitors.clear ();
+    if (EnumDisplayMonitors (NULL, NULL, &EnumMonitorsProc, NULL)) {
+        auto arr = Napi::Array::New (env);
+        auto i = 0;
+
+        for (auto _mon : _monitors) {
+
+            arr.Set (i++, Napi::Number::New (env, _mon));
+        }
+
+        return arr;
+    }
+
+    return Napi::Array::New (env);
 }
 
 Napi::Number getMonitorFromWindow (const Napi::CallbackInfo& info) {
@@ -247,6 +266,38 @@ Napi::Boolean isVisible (const Napi::CallbackInfo& info) {
     return Napi::Boolean::New (env, IsWindowVisible (handle));
 }
 
+Napi::Object getMonitorInfo (const Napi::CallbackInfo& info) {
+    Napi::Env env{ info.Env () };
+
+    auto handle{ getValueFromCallbackData<HMONITOR> (info, 0) };
+
+    MONITORINFO mInfo;
+    mInfo.cbSize = sizeof (MONITORINFO);
+    GetMonitorInfoA (handle, &mInfo);
+
+    Napi::Object bounds{ Napi::Object::New (env) };
+
+    bounds.Set ("x", mInfo.rcMonitor.left);
+    bounds.Set ("y", mInfo.rcMonitor.top);
+    bounds.Set ("width", mInfo.rcMonitor.right - mInfo.rcMonitor.left);
+    bounds.Set ("height", mInfo.rcMonitor.bottom - mInfo.rcMonitor.top);
+
+    Napi::Object workArea{ Napi::Object::New (env) };
+
+    workArea.Set ("x", mInfo.rcWork.left);
+    workArea.Set ("y", mInfo.rcWork.top);
+    workArea.Set ("width", mInfo.rcWork.right - mInfo.rcWork.left);
+    workArea.Set ("height", mInfo.rcWork.bottom - mInfo.rcWork.top);
+
+    Napi::Object obj{ Napi::Object::New (env) };
+
+    obj.Set ("bounds", bounds);
+    obj.Set ("workArea", workArea);
+    obj.Set ("isPrimary", (mInfo.dwFlags & MONITORINFOF_PRIMARY) != 0);
+
+    return obj;
+}
+
 Napi::Object Init (Napi::Env env, Napi::Object exports) {
     exports.Set (Napi::String::New (env, "getActiveWindow"), Napi::Function::New (env, getActiveWindow));
     exports.Set (Napi::String::New (env, "getMonitorFromWindow"), Napi::Function::New (env, getMonitorFromWindow));
@@ -263,7 +314,9 @@ Napi::Object Init (Napi::Env env, Napi::Object exports) {
                  Napi::Function::New (env, toggleWindowTransparency));
     exports.Set (Napi::String::New (env, "setWindowOwner"), Napi::Function::New (env, setWindowOwner));
     exports.Set (Napi::String::New (env, "getWindowInfo"), Napi::Function::New (env, getWindowInfo));
+    exports.Set (Napi::String::New (env, "getMonitorInfo"), Napi::Function::New (env, getMonitorInfo));
     exports.Set (Napi::String::New (env, "getWindows"), Napi::Function::New (env, getWindows));
+    exports.Set (Napi::String::New (env, "getMonitors"), Napi::Function::New (env, getMonitors));
 
     return exports;
 }

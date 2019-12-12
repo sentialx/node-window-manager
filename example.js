@@ -1,5 +1,7 @@
 const { windowManager } = require("./dist/index");
 
+windowManager.requestAccessibility(); // required on macOS
+
 const window = windowManager.getActiveWindow();
 console.log(window.getTitle());
 
@@ -13,7 +15,12 @@ setTimeout(() => {
    window.setBounds(bounds);
 }, 1000);
 
-console.log("Windows List");
+console.log("Windows list");
 windowManager.getWindows().forEach(window => {
    console.log(window.getInfo());
+});
+
+console.log("Monitors list");
+windowManager.getMonitors().forEach(monitor => {
+   console.log(monitor.getInfo());
 });

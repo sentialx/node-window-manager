@@ -50,11 +50,11 @@ Napi::Array getWindows(const Napi::CallbackInfo &info) {
   for (NSDictionary *info in (NSArray *)windowList) {
     NSNumber *ownerPid = info[(id)kCGWindowOwnerPID];
     NSNumber *windowNumber = info[(id)kCGWindowNumber];
-    auto app = [NSRunningApplication runningApplicationWithProcessIdentifier: [ownerPid intValue]];
 
+    auto app = [NSRunningApplication runningApplicationWithProcessIdentifier: [ownerPid intValue]];
     auto path = app ? [app.bundleURL.path UTF8String] : "";
 
-    if (path != "") {
+    if (app && path != "") {
       vec.push_back(Napi::Number::New(env, [windowNumber intValue]));
     }
   }
