@@ -22,6 +22,7 @@ console.log("[info]: Visible Windows List");
 windowManager.getWindows().forEach(window => {
    if (window.isVisible()) {
       console.log(window.getInfo());
+      console.log(window.getIcon());
       window.bringToTop();
    }
 });

@@ -170,3 +170,9 @@ Returns [`Window`](#class-window)
 
 - `win` [Window](#class-window) | number | null
   - pass null to unset window owner.
+
+#### win.getIcon(size: number) `Windows` `macOS`
+
+- `size` number - can be only `16`, `32`, `64`, `256`. By default it's `64`.
+
+Returns a png Buffer
