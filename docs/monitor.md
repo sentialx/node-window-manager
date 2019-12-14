@@ -29,10 +29,6 @@ Gets monitor working area bounds.
 
 - Returns [`Rectangle`](rectangle.md)
 
-#### monitor.getInfo() `Windows`
-
-Returns [`MonitorInfo`](monitor-info.md)
-
 #### monitor.isPrimary() `Windows`
 
 Whether the monitor is primary.

@@ -28,10 +28,6 @@ Resizes and moves the window to the supplied bounds. Any properties that are not
 window.setBounds({ height: 50 });
 ```
 
-#### win.getInfo() `Windows` `macOS`
-
-Returns [`WindowInfo`](window-info.md)
-
 #### win.getTitle() `Windows` `macOS`
 
 - Returns `string`

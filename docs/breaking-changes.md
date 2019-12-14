@@ -13,10 +13,6 @@ windowManager.getScaleFactor(windowManager.getActiveWindow().getMonitor());
 windowManager.getActiveWindow().getMonitor().getScaleFactor();
 ```
 
-### `window.getMonitor(): number`
-
-Now the `window.getMonitor` method returns [`Monitor`](monitor.md) object.
-
 ### `windowManager.requestAccessibility()` `macOS`
 
 The `windowManager.requestAccessibility` method won't be required before each operation on windows anymore. Only on:
@@ -27,3 +23,18 @@ The `windowManager.requestAccessibility` method won't be required before each op
 - `window.restore`
 - `window.bringToTop`
 - `window.getTitle`
+
+### `window.getMonitor(): number`
+
+Now the `window.getMonitor` method returns [`Monitor`](monitor.md) object.
+
+### `window.getInfo()`
+
+`window.getInfo` method has been removed.
+
+```typescript
+// Deprecated
+const { title } = window.getInfo();
+// Replace with
+const title = window.getTitle();
+```
