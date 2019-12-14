@@ -21,7 +21,7 @@ Napi::Boolean requestAccessibility(const Napi::CallbackInfo &info) {
   return Napi::Boolean::New(env, _requestAccessibility(true));
 }
 
-NSDictionary getWindowInfo(int handle) {
+NSDictionary* getWindowInfo(int handle) {
   CGWindowListOption listOptions = kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements;
   CFArrayRef windowList = CGWindowListCopyWindowInfo(listOptions, kCGNullWindowID);
 
@@ -36,6 +36,26 @@ NSDictionary getWindowInfo(int handle) {
   return NULL;
 }
 
+AXUIElementRef getAXWindow(int pid, int handle) {
+  auto app = AXUIElementCreateApplication(pid);
+
+  NSArray *windows;
+  AXUIElementCopyAttributeValues(app, kAXWindowsAttribute, 0, 100, (CFArrayRef *) &windows);
+
+  for (id child in windows) {
+    auto window = (AXUIElementRef) child;
+
+    CGWindowID windowId;
+    _AXUIElementGetWindow(window, &windowId);
+
+    if (windowId == handle) {
+      return window;
+    }
+  }
+
+  return NULL;
+}
+
 void cacheWindow(int handle, int pid) {
   if (_requestAccessibility(false)) { 
     if (windowsMap.find(handle) == windowsMap.end()) {
@@ -44,7 +64,7 @@ void cacheWindow(int handle, int pid) {
   }
 }
 
-void cacheWindowByInfo(NSDictionary info*) {
+void cacheWindowByInfo(NSDictionary* info) {
   if (info) {
     NSNumber *ownerPid = info[(id)kCGWindowOwnerPID];
     NSNumber *windowNumber = info[(id)kCGWindowNumber];
@@ -66,26 +86,6 @@ AXUIElementRef getAXWindowById(int handle) {
   }
 
   return win;
-}
-
-AXUIElementRef getAXWindow(int pid, int handle) {
-  auto app = AXUIElementCreateApplication(pid);
-
-  NSArray *windows;
-  AXUIElementCopyAttributeValues(app, kAXWindowsAttribute, 0, 100, (CFArrayRef *) &windows);
-
-  for (id child in windows) {
-    auto window = (AXUIElementRef) child;
-
-    CGWindowID windowId;
-    _AXUIElementGetWindow(window, &windowId);
-
-    if (windowId == handle) {
-      return window;
-    }
-  }
-
-  return NULL;
 }
 
 Napi::Array getWindows(const Napi::CallbackInfo &info) {
@@ -142,10 +142,10 @@ Napi::Object initWindow(const Napi::CallbackInfo &info) {
 
   int handle = info[0].As<Napi::Number>().Int32Value();
 
-  auto info = getWindowInfo(handle);
+  auto wInfo = getWindowInfo(handle);
 
-  if (info) {
-    NSNumber *ownerPid = info[(id)kCGWindowOwnerPID];
+  if (wInfo) {
+    NSNumber *ownerPid = wInfo[(id)kCGWindowOwnerPID];
     auto app = [NSRunningApplication runningApplicationWithProcessIdentifier: [ownerPid intValue]];
 
     auto obj = Napi::Object::New(env);
@@ -165,14 +165,14 @@ Napi::String getWindowTitle(const Napi::CallbackInfo &info) {
 
   int handle = info[0].As<Napi::Number>().Int32Value();
 
-  auto info = getWindowInfo(handle);
+  auto wInfo = getWindowInfo(handle);
 
-  if (info) {
-    NSString *windowName = info[(id)kCGWindowName];
-    return [windowName UTF8String];
+  if (wInfo) {
+    NSString *windowName = wInfo[(id)kCGWindowName];
+    return Napi::String::New(env, [windowName UTF8String]);
   }
 
-  return Napi::String::New();
+  return Napi::String::New(env, "");
 }
 
 Napi::Object getWindowBounds(const Napi::CallbackInfo &info) {
@@ -180,11 +180,11 @@ Napi::Object getWindowBounds(const Napi::CallbackInfo &info) {
 
   int handle = info[0].As<Napi::Number>().Int32Value();
 
-  auto info = getWindowInfo(handle);
+  auto wInfo = getWindowInfo(handle);
 
-  if (info) {
+  if (wInfo) {
     CGRect bounds;
-    CGRectMakeWithDictionaryRepresentation((CFDictionaryRef)info[(id)kCGWindowBounds], &bounds);
+    CGRectMakeWithDictionaryRepresentation((CFDictionaryRef)wInfo[(id)kCGWindowBounds], &bounds);
 
     auto obj = Napi::Object::New(env);
     obj.Set("x", bounds.origin.x);

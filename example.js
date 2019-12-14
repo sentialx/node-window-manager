@@ -1,9 +1,9 @@
 const { windowManager } = require("./dist/index");
 
-windowManager.requestAccessibility(); // required on macOS
+console.log(windowManager.requestAccessibility()); // required on macOS
 
 const window = windowManager.getActiveWindow();
-console.log(window.getTitle());
+// console.log(window.getTitle());
 
 const bounds = window.getBounds();
 console.log(bounds);
@@ -18,7 +18,7 @@ setTimeout(() => {
 console.log("Windows list");
 windowManager.getWindows().forEach(window => {
    if (window.isVisible()) {
-      console.log(window.getTitle());
+      console.log(window.path);
    }
 });
 
