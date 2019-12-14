@@ -283,8 +283,6 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
                 Napi::Function::New(env, getWindows));
     exports.Set(Napi::String::New(env, "getActiveWindow"),
                 Napi::Function::New(env, getActiveWindow));
-    exports.Set(Napi::String::New(env, "getWindowInfo"),
-                Napi::Function::New(env, getWindowInfo));
     exports.Set(Napi::String::New(env, "setWindowBounds"),
                 Napi::Function::New(env, setWindowBounds));
     exports.Set(Napi::String::New(env, "getWindowBounds"),

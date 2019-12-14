@@ -258,7 +258,7 @@ Napi::Boolean isWindow (const Napi::CallbackInfo& info) {
     return Napi::Boolean::New (env, IsWindow (handle));
 }
 
-Napi::Boolean isVisible (const Napi::CallbackInfo& info) {
+Napi::Boolean isWindowVisible (const Napi::CallbackInfo& info) {
     Napi::Env env{ info.Env () };
 
     auto handle{ getValueFromCallbackData<HWND> (info, 0) };
@@ -308,7 +308,7 @@ Napi::Object Init (Napi::Env env, Napi::Object exports) {
     exports.Set (Napi::String::New (env, "bringWindowToTop"), Napi::Function::New (env, bringWindowToTop));
     exports.Set (Napi::String::New (env, "redrawWindow"), Napi::Function::New (env, redrawWindow));
     exports.Set (Napi::String::New (env, "isWindow"), Napi::Function::New (env, isWindow));
-    exports.Set (Napi::String::New (env, "isVisible"), Napi::Function::New (env, isVisible));
+    exports.Set (Napi::String::New (env, "isWindowVisible"), Napi::Function::New (env, isWindowVisible));
     exports.Set (Napi::String::New (env, "setWindowOpacity"), Napi::Function::New (env, setWindowOpacity));
     exports.Set (Napi::String::New (env, "toggleWindowTransparency"),
                  Napi::Function::New (env, toggleWindowTransparency));
