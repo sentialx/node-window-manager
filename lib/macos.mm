@@ -3,8 +3,9 @@
 #import <ApplicationServices/ApplicationServices.h>
 #include <napi.h>
 #include <string>
-#include <iostream>
 #include <map>
+#include <thread>
+#include <fstream>
 
 extern "C" AXError _AXUIElementGetWindow(AXUIElementRef, CGWindowID* out);
 
@@ -123,16 +124,16 @@ Napi::Number getActiveWindow(const Napi::CallbackInfo &info) {
   CGWindowListOption listOptions = kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements;
   CFArrayRef windowList = CGWindowListCopyWindowInfo(listOptions, kCGNullWindowID);
 
-  auto app = [NSWorkspace sharedWorkspace].frontmostApplication;
-
   for (NSDictionary *info in (NSArray *)windowList) {
     NSNumber *ownerPid = info[(id)kCGWindowOwnerPID];
     NSNumber *windowNumber = info[(id)kCGWindowNumber];
 
-    if ([ownerPid intValue] != app.processIdentifier) continue;
+    auto app = [NSRunningApplication runningApplicationWithProcessIdentifier: [ownerPid intValue]];
+
+    if (![app isActive]) continue;
 
     return Napi::Number::New(env, [windowNumber intValue]);
-  }
+  }  
 
   return Napi::Number::New(env, 0);
 }
@@ -278,6 +279,7 @@ Napi::Boolean setWindowMaximized(const Napi::CallbackInfo &info) {
   return Napi::Boolean::New(env, true);
 }
 
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
     exports.Set(Napi::String::New(env, "getWindows"),
                 Napi::Function::New(env, getWindows));
@@ -299,6 +301,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
                 Napi::Function::New(env, setWindowMaximized));
     exports.Set(Napi::String::New(env, "requestAccessibility"),
                 Napi::Function::New(env, requestAccessibility));
+
     return exports;
 }
 

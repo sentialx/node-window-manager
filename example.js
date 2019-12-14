@@ -3,12 +3,12 @@ const { windowManager } = require("./dist/index");
 console.log(windowManager.requestAccessibility()); // required on macOS
 
 const window = windowManager.getActiveWindow();
-// console.log(window.getTitle());
+console.log(window.getTitle());
 
 const bounds = window.getBounds();
 console.log(bounds);
 
-// window.setBounds({ x: 0, y: 0 });
+window.setBounds({ x: 0, y: 0 });
 window.maximize();
 
 setTimeout(() => {
@@ -20,6 +20,10 @@ windowManager.getWindows().forEach(window => {
    if (window.isVisible()) {
       console.log(window.path);
    }
+});
+
+windowManager.on('window-activated', (window) => {
+   console.log(window.path);
 });
 
 console.log("Monitors list");
