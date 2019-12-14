@@ -16,7 +16,18 @@ console.log(window.getTitle());
 ### Instance methods
 
 #### windowManager.requestAccessibility() `macOS`
-  Required before any action on macOS.
+  
+If the accessibility permission is not granted on `macOS`, it opens an accessibility permission request dialog.
+
+The method is required to call before calling the following methods:
+
+- `window.setBounds`
+- `window.maximize`
+- `window.minimize`
+- `window.restore`
+- `window.bringToTop`
+- `window.getTitle`
+
 - Returns `boolean`
 
 #### windowManager.getActiveWindow() `Windows` `macOS`
