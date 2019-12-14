@@ -32,19 +32,19 @@ The method is required to call before calling the following methods:
 
 #### windowManager.getActiveWindow() `Windows` `macOS`
 
-- Returns [`Window`](window.md)
+Returns [`Window`](window.md)
 
 #### windowManager.getWindows() `Windows` `macOS`
 
-- Returns [`Window[]`](window.md)
+Returns [`Window[]`](window.md)
 
 #### windowManager.getMonitors() `Windows`
 
-- Returns [`Monitor[]`](monitor.md)
+Returns [`Monitor[]`](monitor.md)
 
 #### windowManager.getPrimaryMonitor() `Windows`
 
-- Returns [`Monitor`](monitor.md)
+Returns [`Monitor`](monitor.md)
 
 ### Events
 
