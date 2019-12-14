@@ -21,7 +21,7 @@ export class Window {
   getBounds(): IRectangle {
     if (!addon) return;
 
-    const { bounds } = addon.getWindowBounds(this.id);
+    const bounds = addon.getWindowBounds(this.id);
 
     if (process.platform === "win32") {
       const sf = this.getMonitor().getScaleFactor();

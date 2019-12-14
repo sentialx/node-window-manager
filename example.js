@@ -17,10 +17,12 @@ setTimeout(() => {
 
 console.log("Windows list");
 windowManager.getWindows().forEach(window => {
-   console.log(window.getInfo());
+   if (window.isVisible()) {
+      console.log(window.getTitle());
+   }
 });
 
 console.log("Monitors list");
 windowManager.getMonitors().forEach(monitor => {
-   console.log(monitor.getInfo());
+   console.log(monitor.getWorkArea());
 });
