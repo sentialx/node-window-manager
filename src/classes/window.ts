@@ -1,8 +1,7 @@
-import { platform } from "os";
 import { addon } from "..";
 import extractFileIcon from 'extract-file-icon';
 import { Monitor } from "./monitor";
-import { IRectangle, IWindowInfo } from "../interfaces";
+import { IRectangle } from "../interfaces";
 
 export class Window {
   public id: number;
@@ -14,7 +13,7 @@ export class Window {
     if (!addon) return;
 
     this.id = id;
-    const { processId, path } = this.getInfo();
+    const { processId, path } = addon.initWindow(id);
     this.processId = processId;
     this.path = path;
   }
@@ -22,9 +21,9 @@ export class Window {
   getBounds(): IRectangle {
     if (!addon) return;
 
-    const { bounds } = this.getInfo();
+    const bounds = addon.getWindowBounds(this.id);
 
-    if (platform() === "win32") {
+    if (process.platform === "win32") {
       const sf = this.getMonitor().getScaleFactor();
 
       bounds.x = Math.floor(bounds.x / sf);
@@ -41,7 +40,7 @@ export class Window {
 
     const newBounds = { ...this.getBounds(), ...bounds };
 
-    if (platform() === "win32") {
+    if (process.platform === "win32") {
       const sf = this.getMonitor().getScaleFactor();
 
       newBounds.x = Math.floor(newBounds.x * sf);
@@ -50,14 +49,14 @@ export class Window {
       newBounds.height = Math.floor(newBounds.height * sf);
 
       addon.setWindowBounds(this.id, newBounds);
-    } else if (platform() === "darwin") {
+    } else if (process.platform === "darwin") {
       addon.setWindowBounds(this.id, newBounds);
     }
   }
 
   getTitle(): string {
     if (!addon) return;
-    return this.getInfo().title;
+    return addon.getWindowTitle(this.id);
   }
 
   getMonitor(): Monitor {
@@ -78,9 +77,9 @@ export class Window {
   minimize() {
     if (!addon) return;
 
-    if (platform() === "win32") {
+    if (process.platform === "win32") {
       addon.showWindow(this.id, "minimize");
-    } else if (platform() === "darwin") {
+    } else if (process.platform === "darwin") {
       addon.setWindowMinimized(this.id, true);
     }
   }
@@ -88,25 +87,26 @@ export class Window {
   restore() {
     if (!addon) return;
 
-    if (platform() === "win32") {
+    if (process.platform === "win32") {
       addon.showWindow(this.id, "restore");
-    } else if (platform() === "darwin") {
+    } else if (process.platform === "darwin") {
       addon.setWindowMinimized(this.id, false);
     }
   }
 
   maximize() {
-    if(platform() === "win32") {
-      if (!addon || !addon.showWindow) return;
+    if (!addon) return;
+
+    if (process.platform === "win32") {
       addon.showWindow(this.id, "maximize");
-    } else if(platform() === "darwin") {
-      if (!addon) return;
+    } else if (process.platform === "darwin") {
       addon.setWindowMaximized(this.id);
     } 
   }
 
   bringToTop() {
     if (!addon) return;
+    
     if (process.platform === 'darwin') {
       addon.bringWindowToTop(this.id, this.processId);
     } else {
@@ -121,13 +121,17 @@ export class Window {
 
   isWindow(): boolean {
     if (!addon) return;
-    if (platform() === "win32") return this.path && this.path !== '' && addon.isWindow(this.id);
-    else if (platform() === "darwin") return this.path && this.path !== '' && !!this.getInfo();
+
+    if (process.platform === "win32") {
+      return this.path && this.path !== '' && addon.isWindow(this.id);
+    } else if (process.platform === "darwin") {
+      return this.path && this.path !== '' && !!addon.initWindow(this.id);
+    }
   }
 
   isVisible(): boolean {
-    if (!addon) return;
-    if (platform() === "win32") return addon.isVisible(this.id);
+    if (!addon || !addon.isWindowVisible) return true;
+    return addon.isWindowVisible(this.id);
   }
 
   toggleTransparency(toggle: boolean) {
@@ -141,8 +145,8 @@ export class Window {
   }
 
   getOpacity() {
-    if (platform() !== "win32") return;
-    return this.getInfo().opacity;
+    if (!addon || !addon.getWindowOpacity) return 1;
+    return addon.getWindowOpacity(this.id);
   }
 
   getIcon(size: 16 | 32 | 64 | 256 = 64) {
@@ -150,7 +154,7 @@ export class Window {
   }
 
   setOwner(window: Window | null | number) {
-    if (!addon || platform() !== "win32") return;
+    if (!addon || !addon.setWindowOwner) return;
 
     let handle = window;
 
@@ -164,13 +168,7 @@ export class Window {
   }
 
   getOwner() {
-    if (!addon || platform() !== "win32") return;
-    return new Window(this.getInfo().owner);
-  }
-
-  getInfo(): IWindowInfo {
-    if (!addon) return;
-    const info = addon.getWindowInfo(this.id);
-    return info;
+    if (!addon || !addon.getWindowOwner) return;
+    return new Window(addon.getWindowOwner(this.id));
   }
 }

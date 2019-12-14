@@ -5,16 +5,6 @@ export interface IRectangle {
   height?: number;
 }
 
-export interface IWindowInfo {
-  id: number;
-  path: string;
-  processId: number;
-  title?: string;
-  bounds?: IRectangle;
-  opacity?: number;
-  owner?: number;
-}
-
 export interface IMonitorInfo {
   id: number;
   bounds?: IRectangle;

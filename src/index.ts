@@ -6,8 +6,8 @@ import { Monitor } from "./classes/monitor";
 let addon: any;
 
 if (platform() === "win32" || platform() === "darwin") {
-  let path_addon: string = (process.env.NODE_ENV != "dev") ? "Release" : "Debug";
-  addon = require(`../build/${path_addon}/addon.node`);
+  const ADDON_PATH = (process.env.NODE_ENV != "dev") ? "Release" : "Debug";
+  addon = require(`../build/${ADDON_PATH}/addon.node`);
 }
 
 let interval: any = null;
@@ -53,7 +53,7 @@ class WindowManager extends EventEmitter {
   }
 
   requestAccessibility = () => {
-    if (platform() !== 'darwin') return true;
+    if (!addon || !addon.requestAccessibility) return true;
     return addon.requestAccessibility();
   }
 

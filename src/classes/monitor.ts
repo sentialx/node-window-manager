@@ -2,37 +2,32 @@ import { addon } from "..";
 import { IMonitorInfo, IRectangle } from "../interfaces";
 import { release } from "os";
 
+const getMonitorInfo = (id: number): IMonitorInfo => {
+  if (!addon || !addon.getMonitorInfo) return;
+  return addon.getMonitorInfo(id);
+}
+
 export class Monitor {
   public id: number;
 
   constructor(id: number) {
-    if (process.platform !== 'win32' || !addon) return;
-
     this.id = id;
   }
 
-  getInfo(): IMonitorInfo {
-    if (process.platform !== 'win32' || !addon) return;
-    return addon.getMonitorInfo(this.id);
-  }
-
   getBounds(): IRectangle {
-    if (process.platform !== 'win32' || !addon) return;
-    return this.getInfo().bounds;
+    return getMonitorInfo(this.id).bounds;
   }
 
   getWorkArea(): IRectangle {
-    if (process.platform !== 'win32' || !addon) return;
-    return this.getInfo().workArea;
+    return getMonitorInfo(this.id).workArea;
   }
 
   isPrimary(): boolean {
-    if (process.platform !== 'win32' || !addon) return;
-    return this.getInfo().isPrimary;
+    return getMonitorInfo(this.id).isPrimary;
   }
 
   getScaleFactor(): number {
-    if (process.platform !== 'win32' || !addon) return;
+    if (!addon || !addon.getMonitorScaleFactor) return;
 
     const numbers = release()
       .split(".")
