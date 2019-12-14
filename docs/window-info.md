@@ -3,6 +3,6 @@
 - `title` string
 - `processId` string
 - `path` string - path to executable associated with the window
-- `bounds` [`Rectangle`](#object-rectangle)
+- `bounds` [`Rectangle`](rectangle.md)
 - `opacity` number (`Windows`)
-- `owner` [`Window`](#class-window) (`Windows`) - owner window of the current window
+- `owner` [`Window`](window.md) (`Windows`) - owner window of the current window

@@ -2,6 +2,13 @@
 
 Control monitors.
 
+```typescript
+import { windowManager } from 'node-window-manager';
+
+// Gets height of the primary window working area.
+const { height } = windowManager.getPrimaryWindow().getWorkArea();
+```
+
 ### new Monitor(id: number)
 
 - `id` number - the monitor handle
@@ -14,17 +21,17 @@ Control monitors.
 
 #### monitor.getBounds() `Windows`
 
-- Returns [`Rectangle`](#object-rectangle)
+- Returns [`Rectangle`](rectangle.md)
 
 #### monitor.getWorkArea() `Windows`
 
 Gets monitor working area bounds.
 
-- Returns [`Rectangle`](#object-rectangle)
+- Returns [`Rectangle`](rectangle.md)
 
 #### monitor.getInfo() `Windows`
 
-Returns [`MonitorInfo`](#object-monitorinfo)
+Returns [`MonitorInfo`](monitor-info.md)
 
 #### monitor.isPrimary() `Windows`
 

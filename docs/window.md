@@ -1,6 +1,6 @@
 ## Class `Window`
 
-Control opened windows.
+Control open windows.
 
 We try to keep this class similar to Electron's known [`BrowserWindow`](https://electronjs.org/docs/api/browser-window) class, to keep it simple to use.
 
@@ -30,7 +30,7 @@ window.setBounds({ height: 50 });
 
 #### win.getInfo() `Windows` `macOS`
 
-Returns [`WindowInfo`](#object-windowinfo)
+Returns [`WindowInfo`](window-info.md)
 
 #### win.getTitle() `Windows` `macOS`
 
@@ -76,7 +76,7 @@ Returns `number` between 0 and 1.
 
 Gets monitor which the window belongs to.
 
-Returns [`Monitor`](#class-monitor)
+Returns [`Monitor`](monitor.md)
 
 #### win.isWindow() `Windows` `macOS`
 
@@ -87,15 +87,15 @@ Returns `boolean` - whether the window is visible or not.
 
 #### win.getOwner() `Windows`
 
-Returns [`Window`](#class-window)
+Returns `Window`
 
-#### win.setOwner(win: [`Window`](#class-window) | number | null) `Windows`
+#### win.setOwner(win: Window | number | null) `Windows`
 
-- `win` [Window](#class-window) | number | null
+- `win` Window | number | null
   - pass null to unset window owner.
 
 #### win.getIcon(size: number) `Windows` `macOS`
 
-- `size` number - can be only `16`, `32`, `64`, `256`. By default it's `64`.
+- `size` number - can be `16`, `32`, `64` or `256`. By default it's `64`.
 
 Returns a png Buffer

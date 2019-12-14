@@ -21,19 +21,19 @@ console.log(window.getTitle());
 
 #### windowManager.getActiveWindow() `Windows` `macOS`
 
-- Returns [`Window`](#class-window)
+- Returns [`Window`](window.md)
 
 #### windowManager.getWindows() `Windows` `macOS`
 
-- Returns [`Window[]`](#class-window)
+- Returns [`Window[]`](window.md)
 
 #### windowManager.getMonitors() `Windows`
 
-- Returns [`Monitor[]`](#class-monitor)
+- Returns [`Monitor[]`](monitor.md)
 
 #### windowManager.getPrimaryMonitor() `Windows`
 
-- Returns [`Monitor`](#class-monitor)
+- Returns [`Monitor`](monitor.md)
 
 ### Events
 
@@ -41,6 +41,6 @@ console.log(window.getTitle());
 
 Returns:
 
-- [`Window`](#class-window)
+- [`Window`](window.md)
 
 Emitted when a window has been activated.
