@@ -109,21 +109,24 @@ Napi::Number getMonitorFromWindow (const Napi::CallbackInfo& info) {
     return Napi::Number::New (env, reinterpret_cast<int64_t> (MonitorFromWindow (handle, 0)));
 }
 
-Napi::Object getWindowInfo (const Napi::CallbackInfo& info) {
+Napi::Object initWindow (const Napi::CallbackInfo& info) {
     Napi::Env env{ info.Env () };
 
     auto handle{ getValueFromCallbackData<HWND> (info, 0) };
     auto process = getWindowProcess (handle);
 
-    BYTE opacity{};
-    GetLayeredWindowAttributes (handle, NULL, &opacity, NULL);
+    Napi::Object obj{ Napi::Object::New (env) };
 
-    int bufsize = GetWindowTextLengthW (handle) + 1;
-    LPWSTR t = new WCHAR[bufsize];
-    GetWindowTextW (handle, t, bufsize);
+    obj.Set ("processId", process.pid);
+    obj.Set ("path", process.path);
 
-    std::wstring ws (t);
-    std::string title = toUtf8 (ws);
+    return obj;
+}
+
+Napi::Object getWindowBounds (const Napi::CallbackInfo& info) {
+    Napi::Env env{ info.Env () };
+
+    auto handle{ getValueFromCallbackData<HWND> (info, 0) };
 
     RECT rect{};
     GetWindowRect (handle, &rect);
@@ -135,16 +138,41 @@ Napi::Object getWindowInfo (const Napi::CallbackInfo& info) {
     bounds.Set ("width", rect.right - rect.left);
     bounds.Set ("height", rect.bottom - rect.top);
 
-    Napi::Object obj{ Napi::Object::New (env) };
+    return bounds;
+}
 
-    obj.Set ("bounds", bounds);
-    obj.Set ("processId", process.pid);
-    obj.Set ("path", process.path);
-    obj.Set ("opacity", static_cast<double> (opacity) / 255.);
-    obj.Set ("title", title);
-    obj.Set ("owner", GetWindowLongPtrA (handle, GWLP_HWNDPARENT));
+Napi::String getWindowTitle (const Napi::CallbackInfo& info) {
+    Napi::Env env{ info.Env () };
 
-    return obj;
+    auto handle{ getValueFromCallbackData<HWND> (info, 0) };
+
+    int bufsize = GetWindowTextLengthW (handle) + 1;
+    LPWSTR t = new WCHAR[bufsize];
+    GetWindowTextW (handle, t, bufsize);
+
+    std::wstring ws (t);
+    std::string title = toUtf8 (ws);
+
+    return Napi::String::New (env, title);
+}
+
+Napi::Number getWindowOpacity (const Napi::CallbackInfo& info) {
+    Napi::Env env{ info.Env () };
+
+    auto handle{ getValueFromCallbackData<HWND> (info, 0) };
+
+    BYTE opacity{};
+    GetLayeredWindowAttributes (handle, NULL, &opacity, NULL);
+
+    return Napi::Number::New (env, static_cast<double> (opacity) / 255.);
+}
+
+Napi::Number getWindowOwner (const Napi::CallbackInfo& info) {
+    Napi::Env env{ info.Env () };
+
+    auto handle{ getValueFromCallbackData<HWND> (info, 0) };
+
+    return Napi::Number::New (env, GetWindowLongPtrA (handle, GWLP_HWNDPARENT));
 }
 
 Napi::Number getMonitorScaleFactor (const Napi::CallbackInfo& info) {
@@ -313,7 +341,11 @@ Napi::Object Init (Napi::Env env, Napi::Object exports) {
     exports.Set (Napi::String::New (env, "toggleWindowTransparency"),
                  Napi::Function::New (env, toggleWindowTransparency));
     exports.Set (Napi::String::New (env, "setWindowOwner"), Napi::Function::New (env, setWindowOwner));
-    exports.Set (Napi::String::New (env, "getWindowInfo"), Napi::Function::New (env, getWindowInfo));
+    exports.Set (Napi::String::New (env, "initWindow"), Napi::Function::New (env, initWindow));
+    exports.Set (Napi::String::New (env, "getWindowBounds"), Napi::Function::New (env, getWindowBounds));
+    exports.Set (Napi::String::New (env, "getWindowTitle"), Napi::Function::New (env, getWindowTitle));
+    exports.Set (Napi::String::New (env, "getWindowOwner"), Napi::Function::New (env, getWindowOwner));
+    exports.Set (Napi::String::New (env, "getWindowOpacity"), Napi::Function::New (env, getWindowOpacity));
     exports.Set (Napi::String::New (env, "getMonitorInfo"), Napi::Function::New (env, getMonitorInfo));
     exports.Set (Napi::String::New (env, "getWindows"), Napi::Function::New (env, getWindows));
     exports.Set (Napi::String::New (env, "getMonitors"), Napi::Function::New (env, getMonitors));
