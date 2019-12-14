@@ -8,16 +8,65 @@
 
 extern "C" AXError _AXUIElementGetWindow(AXUIElementRef, CGWindowID* out);
 
-Napi::Boolean requestAccessibility(const Napi::CallbackInfo &info) {
-  Napi::Env env{info.Env()};
+// CGWindowID to AXUIElementRef windows map
+std::map<int, AXUIElementRef> windowsMap;
 
-  NSDictionary* opts = @{static_cast<id> (kAXTrustedCheckOptionPrompt): @YES};
-  BOOL a = AXIsProcessTrustedWithOptions(static_cast<CFDictionaryRef> (opts));
-  
-  return Napi::Boolean::New(env, a);
+bool _requestAccessibility(bool showDialog) {
+  NSDictionary* opts = @{static_cast<id> (kAXTrustedCheckOptionPrompt): showDialog ? @YES : @NO};
+  return AXIsProcessTrustedWithOptions(static_cast<CFDictionaryRef> (opts));
 }
 
-std::map<int, AXUIElementRef> m;
+Napi::Boolean requestAccessibility(const Napi::CallbackInfo &info) {
+  Napi::Env env{info.Env()};
+  return Napi::Boolean::New(env, _requestAccessibility(true));
+}
+
+NSDictionary getWindowInfo(int handle) {
+  CGWindowListOption listOptions = kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements;
+  CFArrayRef windowList = CGWindowListCopyWindowInfo(listOptions, kCGNullWindowID);
+
+  for (NSDictionary *info in (NSArray *)windowList) {
+    NSNumber *windowNumber = info[(id)kCGWindowNumber];
+    
+    if ([windowNumber intValue] == handle) {
+      return info;
+    }
+  }
+
+  return NULL;
+}
+
+void cacheWindow(int handle, int pid) {
+  if (_requestAccessibility(false)) { 
+    if (windowsMap.find(handle) == windowsMap.end()) {
+      windowsMap[handle] = getAXWindow(pid, handle);
+    }
+  }
+}
+
+void cacheWindowByInfo(NSDictionary info*) {
+  if (info) {
+    NSNumber *ownerPid = info[(id)kCGWindowOwnerPID];
+    NSNumber *windowNumber = info[(id)kCGWindowNumber];
+
+    cacheWindow([windowNumber intValue], [ownerPid intValue]);
+  }
+}
+
+void findAndCacheWindow(int handle) {
+  cacheWindowByInfo(getWindowInfo(handle));
+}
+
+AXUIElementRef getAXWindowById(int handle) {
+  auto win = windowsMap[handle];
+
+  if (!win) {
+    findAndCacheWindow(handle);
+    win = windowsMap[handle];
+  }
+
+  return win;
+}
 
 AXUIElementRef getAXWindow(int pid, int handle) {
   auto app = AXUIElementCreateApplication(pid);
@@ -88,43 +137,60 @@ Napi::Number getActiveWindow(const Napi::CallbackInfo &info) {
   return Napi::Number::New(env, 0);
 }
 
-Napi::Object getWindowInfo(const Napi::CallbackInfo &info) {
+Napi::Object initWindow(const Napi::CallbackInfo &info) {
   Napi::Env env{info.Env()};
-
-  CGWindowListOption listOptions = kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements;
-  CFArrayRef windowList = CGWindowListCopyWindowInfo(listOptions, kCGNullWindowID);
 
   int handle = info[0].As<Napi::Number>().Int32Value();
 
-  for (NSDictionary *info in (NSArray *)windowList) {
-    NSNumber *ownerPid = info[(id)kCGWindowOwnerPID];
-    NSNumber *windowNumber = info[(id)kCGWindowNumber];
-    NSString *windowName = info[(id)kCGWindowName];
-    
-    if ([windowNumber intValue] != handle) continue;
+  auto info = getWindowInfo(handle);
 
+  if (info) {
+    NSNumber *ownerPid = info[(id)kCGWindowOwnerPID];
     auto app = [NSRunningApplication runningApplicationWithProcessIdentifier: [ownerPid intValue]];
 
+    auto obj = Napi::Object::New(env);
+    obj.Set("processId", [ownerPid intValue]);
+    obj.Set("path", [app.bundleURL.path UTF8String]);
+
+    cacheWindow(handle, [ownerPid intValue]);
+  
+    return obj;
+  }
+ 
+  return Napi::Object::New(env);
+}
+
+Napi::String getWindowTitle(const Napi::CallbackInfo &info) {
+  Napi::Env env{info.Env()};
+
+  int handle = info[0].As<Napi::Number>().Int32Value();
+
+  auto info = getWindowInfo(handle);
+
+  if (info) {
+    NSString *windowName = info[(id)kCGWindowName];
+    return [windowName UTF8String];
+  }
+
+  return Napi::String::New();
+}
+
+Napi::Object getWindowBounds(const Napi::CallbackInfo &info) {
+   Napi::Env env{info.Env()};
+
+  int handle = info[0].As<Napi::Number>().Int32Value();
+
+  auto info = getWindowInfo(handle);
+
+  if (info) {
     CGRect bounds;
     CGRectMakeWithDictionaryRepresentation((CFDictionaryRef)info[(id)kCGWindowBounds], &bounds);
 
     auto obj = Napi::Object::New(env);
-    auto boundsObj = Napi::Object::New(env);
-
-    boundsObj.Set("x", bounds.origin.x);
-    boundsObj.Set("y", bounds.origin.y);
-    boundsObj.Set("width", bounds.size.width);
-    boundsObj.Set("height", bounds.size.height);
-
-    obj.Set("id", [windowNumber intValue]);
-    obj.Set("processId", [ownerPid intValue]);
-    obj.Set("path", [app.bundleURL.path UTF8String]);
-    obj.Set("bounds", boundsObj);
-    obj.Set("title", [windowName UTF8String]);
-
-    if (m.find([windowNumber intValue]) == m.end()) {
-      m[[windowNumber intValue]] = getAXWindow([ownerPid intValue], [windowNumber intValue]);
-    }
+    obj.Set("x", bounds.origin.x);
+    obj.Set("y", bounds.origin.y);
+    obj.Set("width", bounds.size.width);
+    obj.Set("height", bounds.size.height);
 
     return obj;
   }
@@ -143,7 +209,7 @@ Napi::Boolean setWindowBounds(const Napi::CallbackInfo &info) {
   auto width = bounds.Get("width").As<Napi::Number>().DoubleValue();
   auto height = bounds.Get("height").As<Napi::Number>().DoubleValue();
 
-  auto win = m[handle];
+  auto win = getAXWindowById(handle);
 
   if (win) {
     NSPoint point = NSMakePoint((CGFloat) x, (CGFloat) y);
@@ -166,7 +232,7 @@ Napi::Boolean bringWindowToTop(const Napi::CallbackInfo &info) {
   auto pid = info[1].As<Napi::Number>().Int32Value();
 
   auto app = AXUIElementCreateApplication(pid);
-  auto win = m[handle];
+  auto win = getAXWindowById(handle);
 
   AXUIElementSetAttributeValue(app, kAXFrontmostAttribute, kCFBooleanTrue);
   AXUIElementSetAttributeValue(win, kAXMainAttribute, kCFBooleanTrue);
@@ -180,7 +246,7 @@ Napi::Boolean setWindowMinimized(const Napi::CallbackInfo &info) {
   auto handle = info[0].As<Napi::Number>().Int32Value();
   auto toggle = info[1].As<Napi::Boolean>();
 
-  auto win = m[handle];
+  auto win = getAXWindowById(handle);
 
   if (win) {
     AXUIElementSetAttributeValue(win, kAXMinimizedAttribute, toggle ? kCFBooleanTrue : kCFBooleanFalse);
@@ -192,7 +258,7 @@ Napi::Boolean setWindowMinimized(const Napi::CallbackInfo &info) {
 Napi::Boolean setWindowMaximized(const Napi::CallbackInfo &info) {
   Napi::Env env{info.Env()};
   auto handle = info[0].As<Napi::Number>().Int32Value();
-  auto win = m[handle];
+  auto win = getAXWindowById(handle);
 
   if(win) {
     NSRect screenSizeRect = [[NSScreen mainScreen] frame];
@@ -221,6 +287,12 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
                 Napi::Function::New(env, getWindowInfo));
     exports.Set(Napi::String::New(env, "setWindowBounds"),
                 Napi::Function::New(env, setWindowBounds));
+    exports.Set(Napi::String::New(env, "getWindowBounds"),
+                Napi::Function::New(env, getWindowBounds));
+    exports.Set(Napi::String::New(env, "getWindowTitle"),
+                Napi::Function::New(env, getWindowTitle));
+    exports.Set(Napi::String::New(env, "initWindow"),
+                Napi::Function::New(env, initWindow));
     exports.Set(Napi::String::New(env, "bringWindowToTop"),
                 Napi::Function::New(env, bringWindowToTop));
     exports.Set(Napi::String::New(env, "setWindowMinimized"),
