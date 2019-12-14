@@ -21,22 +21,22 @@ const { height } = windowManager.getPrimaryWindow().getWorkArea();
 
 #### monitor.getBounds() `Windows`
 
-- Returns [`Rectangle`](rectangle.md)
+Returns [`Rectangle`](rectangle.md)
 
 #### monitor.getWorkArea() `Windows`
 
 Gets monitor working area bounds.
 
-- Returns [`Rectangle`](rectangle.md)
+Returns [`Rectangle`](rectangle.md)
 
 #### monitor.isPrimary() `Windows`
 
 Whether the monitor is primary.
 
-- Returns `boolean`
+Returns `boolean`
 
 #### monitor.getScaleFactor() `Windows`
 
 Gets monitor scale factor (DPI).
 
-- Returns `number`
+Returns `number`
