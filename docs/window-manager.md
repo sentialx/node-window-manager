@@ -28,7 +28,7 @@ The method is required to call before calling the following methods:
 - `window.bringToTop`
 - `window.getTitle`
 
-- Returns `boolean`
+Returns `boolean`
 
 #### windowManager.getActiveWindow() `Windows` `macOS`
 
