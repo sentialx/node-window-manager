@@ -39,4 +39,8 @@ export class Monitor {
 
     return 1;
   };
+
+  isValid(): boolean {
+    return addon && addon.getMonitorInfo;
+  }
 }

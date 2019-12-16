@@ -70,6 +70,8 @@ Returns `number` between 0 and 1.
 
 #### win.getMonitor() `Windows`
 
+> NOTE: on macOS this method returns an `EmptyMonitor` object for compatibility.
+
 Gets monitor which the window belongs to.
 
 Returns [`Monitor`](monitor.md)

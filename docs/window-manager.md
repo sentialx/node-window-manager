@@ -40,9 +40,13 @@ The method is required to call before calling the following methods:
 
 #### windowManager.getMonitors() `Windows`
 
+> NOTE: on macOS this method returns `[]` for compatibility.
+
 - Returns [`Monitor[]`](monitor.md)
 
 #### windowManager.getPrimaryMonitor() `Windows`
+
+> NOTE: on macOS this method returns an `EmptyMonitor` object for compatibility.
 
 - Returns [`Monitor`](monitor.md)
 

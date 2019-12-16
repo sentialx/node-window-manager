@@ -2,6 +2,7 @@ import { addon } from "..";
 import extractFileIcon from 'extract-file-icon';
 import { Monitor } from "./monitor";
 import { IRectangle } from "../interfaces";
+import { EmptyMonitor } from "./empty-monitor";
 
 export class Window {
   public id: number;
@@ -59,8 +60,8 @@ export class Window {
     return addon.getWindowTitle(this.id);
   }
 
-  getMonitor(): Monitor {
-    if (!addon || !addon.getMonitorFromWindow) return;
+  getMonitor(): Monitor | EmptyMonitor {
+    if (!addon || !addon.getMonitorFromWindow) return new EmptyMonitor();
     return new Monitor(addon.getMonitorFromWindow(this.id));
   }
 

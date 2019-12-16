@@ -2,6 +2,7 @@ import { Window } from "./classes/window";
 import { EventEmitter } from "events";
 import { platform } from "os";
 import { Monitor } from "./classes/monitor";
+import { EmptyMonitor } from "./classes/empty-monitor";
 
 let addon: any;
 
@@ -72,8 +73,12 @@ class WindowManager extends EventEmitter {
     return addon.getMonitors().map((mon: any) => new Monitor(mon));
   };
 
-  getPrimaryMonitor = (): Monitor => {
-    return this.getMonitors().find(x => x.isPrimary);
+  getPrimaryMonitor = (): Monitor | EmptyMonitor => {
+    if (process.platform === 'win32') {
+      return this.getMonitors().find(x => x.isPrimary);
+    } else {
+      return new EmptyMonitor();
+    }
   }
 }
 
