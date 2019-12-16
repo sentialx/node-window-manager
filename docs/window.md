@@ -18,7 +18,7 @@ We try to keep this class similar to Electron's known [`BrowserWindow`](https://
 
 #### win.getBounds() `Windows` `macOS`
 
-- Returns [`Rectangle`](#object-rectangle)
+Returns [`Rectangle`](#object-rectangle)
 
 #### win.setBounds(bounds: Rectangle) `Windows` `macOS`
 
@@ -30,7 +30,7 @@ window.setBounds({ height: 50 });
 
 #### win.getTitle() `Windows` `macOS`
 
-- Returns `string`
+Returns `string`
 
 #### win.show() `Windows`
 

@@ -28,15 +28,15 @@ The method is required to call before calling the following methods:
 - `window.bringToTop`
 - `window.getTitle`
 
-- Returns `boolean`
+Returns `boolean`
 
 #### windowManager.getActiveWindow() `Windows` `macOS`
 
-- Returns [`Window`](window.md)
+Returns [`Window`](window.md)
 
 #### windowManager.getWindows() `Windows` `macOS`
 
-- Returns [`Window[]`](window.md)
+Returns [`Window[]`](window.md)
 
 #### windowManager.getMonitors() `Windows`
 
