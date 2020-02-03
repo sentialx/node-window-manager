@@ -258,11 +258,20 @@ Napi::Boolean showWindow (const Napi::CallbackInfo& info) {
 
 Napi::Boolean bringWindowToTop (const Napi::CallbackInfo& info) {
     Napi::Env env{ info.Env () };
-
     auto handle{ getValueFromCallbackData<HWND> (info, 0) };
     BOOL b{ SetForegroundWindow (handle) };
-    SetActiveWindow (handle);
-    SetWindowPos (handle, HWND_TOP, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
+
+    HWND hCurWnd = ::GetForegroundWindow();
+    DWORD dwMyID = ::GetCurrentThreadId();
+    DWORD dwCurID = ::GetWindowThreadProcessId(hCurWnd, NULL);
+    ::AttachThreadInput(dwCurID, dwMyID, TRUE);
+    ::SetWindowPos(handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+    ::SetWindowPos(handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+    ::SetForegroundWindow(handle);
+    ::AttachThreadInput(dwCurID, dwMyID, FALSE);
+    ::SetFocus(handle);
+    b = ::SetActiveWindow(handle);
+
 
     return Napi::Boolean::New (env, b);
 }
