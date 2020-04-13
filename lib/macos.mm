@@ -28,37 +28,41 @@ NSDictionary* getWindowInfo(int handle) {
 
   for (NSDictionary *info in (NSArray *)windowList) {
     NSNumber *windowNumber = info[(id)kCGWindowNumber];
-    
+
     if ([windowNumber intValue] == handle) {
+      CFRelease(windowList);
       return info;
     }
   }
 
+  CFRelease(windowList);
   return NULL;
 }
 
 AXUIElementRef getAXWindow(int pid, int handle) {
   auto app = AXUIElementCreateApplication(pid);
 
-  NSArray *windows;
-  AXUIElementCopyAttributeValues(app, kAXWindowsAttribute, 0, 100, (CFArrayRef *) &windows);
+  CFArrayRef windows;
+  AXUIElementCopyAttributeValues(app, kAXWindowsAttribute, 0, 100, &windows);
 
-  for (id child in windows) {
+  for (id child in  (NSArray *)windows) {
     auto window = (AXUIElementRef) child;
 
     CGWindowID windowId;
     _AXUIElementGetWindow(window, &windowId);
 
     if (windowId == handle) {
+      CFRelease(windows);
       return window;
     }
   }
 
+  CFRelease(windows);
   return NULL;
 }
 
 void cacheWindow(int handle, int pid) {
-  if (_requestAccessibility(false)) { 
+  if (_requestAccessibility(false)) {
     if (windowsMap.find(handle) == windowsMap.end()) {
       windowsMap[handle] = getAXWindow(pid, handle);
     }
@@ -115,6 +119,7 @@ Napi::Array getWindows(const Napi::CallbackInfo &info) {
     arr[i] = vec[i];
   }
 
+  CFRelease(windowList);
   return arr;
 }
 
@@ -130,11 +135,17 @@ Napi::Number getActiveWindow(const Napi::CallbackInfo &info) {
 
     auto app = [NSRunningApplication runningApplicationWithProcessIdentifier: [ownerPid intValue]];
 
-    if (![app isActive]) continue;
+    if (![app isActive]) {
+      [app release];
+      continue;
+    }
 
+    [app release];
+    CFRelease(windowList);
     return Napi::Number::New(env, [windowNumber intValue]);
-  }  
+  }
 
+  CFRelease(windowList);
   return Napi::Number::New(env, 0);
 }
 
@@ -147,17 +158,18 @@ Napi::Object initWindow(const Napi::CallbackInfo &info) {
 
   if (wInfo) {
     NSNumber *ownerPid = wInfo[(id)kCGWindowOwnerPID];
-    auto app = [NSRunningApplication runningApplicationWithProcessIdentifier: [ownerPid intValue]];
+    NSRunningApplication *app = [NSRunningApplication runningApplicationWithProcessIdentifier: [ownerPid intValue]];
 
     auto obj = Napi::Object::New(env);
     obj.Set("processId", [ownerPid intValue]);
     obj.Set("path", [app.bundleURL.path UTF8String]);
 
     cacheWindow(handle, [ownerPid intValue]);
-  
+
+    [app release];
     return obj;
   }
- 
+
   return Napi::Object::New(env);
 }
 
@@ -222,7 +234,7 @@ Napi::Boolean setWindowBounds(const Napi::CallbackInfo &info) {
     CFTypeRef sizeStorage = (CFTypeRef)(AXValueCreate((AXValueType)kAXValueCGSizeType, (const void *)&size));
     AXUIElementSetAttributeValue(win, kAXSizeAttribute, sizeStorage);
   }
-  
+
   return Napi::Boolean::New(env, true);
 }
 
