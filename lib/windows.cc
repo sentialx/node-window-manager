@@ -270,8 +270,7 @@ Napi::Boolean bringWindowToTop (const Napi::CallbackInfo& info) {
     ::SetForegroundWindow(handle);
     ::AttachThreadInput(dwCurID, dwMyID, FALSE);
     ::SetFocus(handle);
-    b = ::SetActiveWindow(handle);
-
+    ::SetActiveWindow(handle);
 
     return Napi::Boolean::New (env, b);
 }
