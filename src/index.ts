@@ -3,12 +3,13 @@ import { EventEmitter } from "events";
 import { platform } from "os";
 import { Monitor } from "./classes/monitor";
 import { EmptyMonitor } from "./classes/empty-monitor";
+import { resolve } from 'path';
 
 let addon: any;
 
 if (platform() === "win32" || platform() === "darwin") {
   const ADDON_PATH = (process.env.NODE_ENV != "dev") ? "Release" : "Debug";
-  addon = require(`../build/${ADDON_PATH}/addon.node`);
+  addon = require(`node-gyp-build`)(resolve(__dirname, '..'));
 }
 
 let interval: any = null;

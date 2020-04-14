@@ -6,3 +6,4 @@ dist
 .vscode/c_cpp_properties.json
 .build
 macos
+prebuilds
