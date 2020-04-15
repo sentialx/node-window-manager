@@ -30,8 +30,9 @@ NSDictionary* getWindowInfo(int handle) {
     NSNumber *windowNumber = info[(id)kCGWindowNumber];
 
     if ([windowNumber intValue] == handle) {
-      CFRelease(windowList);
-      return info;
+        NSDictionary* windowInfo = (NSDictionary*)CFPropertyListCreateDeepCopy(kCFAllocatorDefault, (CFPropertyListRef)info, kCFPropertyListMutableContainers);
+        CFRelease(windowList);
+        return windowInfo;
     }
   }
 
@@ -136,11 +137,9 @@ Napi::Number getActiveWindow(const Napi::CallbackInfo &info) {
     auto app = [NSRunningApplication runningApplicationWithProcessIdentifier: [ownerPid intValue]];
 
     if (![app isActive]) {
-      [app release];
       continue;
     }
 
-    [app release];
     CFRelease(windowList);
     return Napi::Number::New(env, [windowNumber intValue]);
   }
@@ -166,7 +165,6 @@ Napi::Object initWindow(const Napi::CallbackInfo &info) {
 
     cacheWindow(handle, [ownerPid intValue]);
 
-    [app release];
     return obj;
   }
 
