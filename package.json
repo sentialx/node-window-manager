@@ -1,6 +1,6 @@
 {
   "name": "node-window-manager",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Manage windows in macOS, Windows and Linux",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -41,13 +41,5 @@
     "extract-file-icon": "^0.3.2",
     "node-addon-api": "2.0.0",
     "node-gyp-build": "^4.2.1"
-  },
-  "files": [
-    "dist",
-    "LICENSE",
-    "README.md",
-    "binding.gyp",
-    "prebuilds",
-    "lib"
-  ]
+  }
 }
