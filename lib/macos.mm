@@ -30,9 +30,10 @@ NSDictionary* getWindowInfo(int handle) {
     NSNumber *windowNumber = info[(id)kCGWindowNumber];
 
     if ([windowNumber intValue] == handle) {
-        NSDictionary* windowInfo = (NSDictionary*)CFPropertyListCreateDeepCopy(kCFAllocatorDefault, (CFPropertyListRef)info, kCFPropertyListMutableContainers);
+        // Retain property list so it doesn't get release w. windowList
+        CFRetain((CFPropertyListRef)info);
         CFRelease(windowList);
-        return windowInfo;
+        return info;
     }
   }
 
@@ -47,12 +48,14 @@ AXUIElementRef getAXWindow(int pid, int handle) {
   AXUIElementCopyAttributeValues(app, kAXWindowsAttribute, 0, 100, &windows);
 
   for (id child in  (NSArray *)windows) {
-    auto window = (AXUIElementRef) child;
+    AXUIElementRef window = (AXUIElementRef) child;
 
     CGWindowID windowId;
     _AXUIElementGetWindow(window, &windowId);
 
     if (windowId == handle) {
+      // Retain returned window so it doesn't get released with rest of list
+      CFRetain(window);
       CFRelease(windows);
       return window;
     }
@@ -74,7 +77,8 @@ void cacheWindowByInfo(NSDictionary* info) {
   if (info) {
     NSNumber *ownerPid = info[(id)kCGWindowOwnerPID];
     NSNumber *windowNumber = info[(id)kCGWindowNumber];
-
+    // Release dictionary info property since we're don't with it
+    CFRelease((CFPropertyListRef)info);
     cacheWindow([windowNumber intValue], [ownerPid intValue]);
   }
 }
