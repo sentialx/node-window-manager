@@ -77,7 +77,7 @@ void cacheWindowByInfo(NSDictionary* info) {
   if (info) {
     NSNumber *ownerPid = info[(id)kCGWindowOwnerPID];
     NSNumber *windowNumber = info[(id)kCGWindowNumber];
-    // Release dictionary info property since we're don't with it
+    // Release dictionary info property since we're done with it
     CFRelease((CFPropertyListRef)info);
     cacheWindow([windowNumber intValue], [ownerPid intValue]);
   }
