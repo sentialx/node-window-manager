@@ -81,6 +81,11 @@ class WindowManager extends EventEmitter {
       return new EmptyMonitor();
     }
   }
+
+  createProcess = (path: string, cmd = ""): number => {
+    if (!addon || !addon.createProcess) return;
+    return addon.createProcess(path, cmd);
+  };
 }
 
 const windowManager = new WindowManager();

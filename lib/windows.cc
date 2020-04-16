@@ -6,7 +6,7 @@
 #include <string>
 #include <windows.h>
 
-typedef int(__stdcall* lp_GetScaleFactorForMonitor) (HMONITOR, DEVICE_SCALE_FACTOR*);
+typedef int (__stdcall* lp_GetScaleFactorForMonitor) (HMONITOR, DEVICE_SCALE_FACTOR*);
 
 struct Process {
     int pid;
@@ -16,6 +16,10 @@ struct Process {
 template <typename T>
 T getValueFromCallbackData (const Napi::CallbackInfo& info, unsigned handleIndex) {
     return reinterpret_cast<T> (info[handleIndex].As<Napi::Number> ().Int64Value ());
+}
+
+std::wstring get_wstring (const std::string str) {
+    return std::wstring (str.begin (), str.end ());
 }
 
 std::string toUtf8 (const std::wstring& str) {
@@ -43,6 +47,60 @@ Process getWindowProcess (HWND handle) {
     auto path = toUtf8 (wspath);
 
     return { static_cast<int> (pid), path };
+}
+
+HWND find_top_window (DWORD pid) {
+    std::pair<HWND, DWORD> params = { 0, pid };
+
+    BOOL bResult = EnumWindows (
+    [] (HWND hwnd, LPARAM lParam) -> BOOL {
+        auto pParams = (std::pair<HWND, DWORD>*)(lParam);
+
+        DWORD processId;
+        if (GetWindowThreadProcessId (hwnd, &processId) && processId == pParams->second) {
+            SetLastError (-1);
+            pParams->first = hwnd;
+            return FALSE;
+        }
+
+        return TRUE;
+    },
+    (LPARAM)&params);
+
+    if (!bResult && GetLastError () == -1 && params.first) {
+        return params.first;
+    }
+
+    return 0;
+}
+
+Napi::Number getProcessMainWindow (const Napi::CallbackInfo& info) {
+    Napi::Env env{ info.Env () };
+
+    unsigned long process_id = info[0].ToNumber ().Uint32Value ();
+
+    auto handle = find_top_window (process_id);
+
+    return Napi::Number::New (env, reinterpret_cast<int64_t> (handle));
+}
+
+Napi::Number createProcess (const Napi::CallbackInfo& info) {
+    Napi::Env env{ info.Env () };
+
+    auto path = info[0].ToString ().Utf8Value ();
+
+    std::string cmd = "";
+
+    if (info[1].IsString ()) {
+        cmd = info[1].ToString ().Utf8Value ();
+    }
+
+    STARTUPINFOA sInfo = { sizeof (sInfo) };
+    PROCESS_INFORMATION processInfo;
+    CreateProcessA (path.c_str (), &cmd[0], NULL, NULL, FALSE,
+                    CREATE_NEW_PROCESS_GROUP | CREATE_NEW_CONSOLE, NULL, NULL, &sInfo, &processInfo);
+
+    return Napi::Number::New (env, processInfo.dwProcessId);
 }
 
 Napi::Number getActiveWindow (const Napi::CallbackInfo& info) {
@@ -261,16 +319,16 @@ Napi::Boolean bringWindowToTop (const Napi::CallbackInfo& info) {
     auto handle{ getValueFromCallbackData<HWND> (info, 0) };
     BOOL b{ SetForegroundWindow (handle) };
 
-    HWND hCurWnd = ::GetForegroundWindow();
-    DWORD dwMyID = ::GetCurrentThreadId();
-    DWORD dwCurID = ::GetWindowThreadProcessId(hCurWnd, NULL);
-    ::AttachThreadInput(dwCurID, dwMyID, TRUE);
-    ::SetWindowPos(handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
-    ::SetWindowPos(handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
-    ::SetForegroundWindow(handle);
-    ::AttachThreadInput(dwCurID, dwMyID, FALSE);
-    ::SetFocus(handle);
-    ::SetActiveWindow(handle);
+    HWND hCurWnd = ::GetForegroundWindow ();
+    DWORD dwMyID = ::GetCurrentThreadId ();
+    DWORD dwCurID = ::GetWindowThreadProcessId (hCurWnd, NULL);
+    ::AttachThreadInput (dwCurID, dwMyID, TRUE);
+    ::SetWindowPos (handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+    ::SetWindowPos (handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+    ::SetForegroundWindow (handle);
+    ::AttachThreadInput (dwCurID, dwMyID, FALSE);
+    ::SetFocus (handle);
+    ::SetActiveWindow (handle);
 
     return Napi::Boolean::New (env, b);
 }
@@ -357,6 +415,8 @@ Napi::Object Init (Napi::Env env, Napi::Object exports) {
     exports.Set (Napi::String::New (env, "getMonitorInfo"), Napi::Function::New (env, getMonitorInfo));
     exports.Set (Napi::String::New (env, "getWindows"), Napi::Function::New (env, getWindows));
     exports.Set (Napi::String::New (env, "getMonitors"), Napi::Function::New (env, getMonitors));
+    exports.Set (Napi::String::New (env, "createProcess"), Napi::Function::New (env, createProcess));
+    exports.Set (Napi::String::New (env, "getProcessMainWindow"), Napi::Function::New (env, getProcessMainWindow));
 
     return exports;
 }
