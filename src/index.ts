@@ -20,11 +20,15 @@ class WindowManager extends EventEmitter {
   constructor() {
     super();
 
-    let lastId: number = addon.getActiveWindow();
+    let lastId: number;
 
     if (!addon) return;
 
     this.on("newListener", event => {
+      if (event === 'window-activated') {
+        lastId = addon.getActiveWindow();
+      }
+
       if (registeredEvents.indexOf(event) !== -1) return;
 
       if (event === "window-activated") {
