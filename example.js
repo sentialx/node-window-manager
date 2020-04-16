@@ -2,7 +2,6 @@ const { windowManager } = require("./dist/index");
 
 console.log(windowManager.requestAccessibility()); // required on macOS
 
-/*
 const window = windowManager.getActiveWindow();
 console.log(window.getTitle());
 
@@ -31,9 +30,3 @@ console.log("Monitors list");
 windowManager.getMonitors().forEach(monitor => {
    console.log(monitor.getWorkArea());
 });
-*/
-
-
-
-const pid = windowManager.createProcess('C:\\Windows\\explorer.exe');
-

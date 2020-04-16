@@ -20,7 +20,7 @@ class WindowManager extends EventEmitter {
   constructor() {
     super();
 
-    let lastId: number;
+    let lastId: number = addon.getActiveWindow();
 
     if (!addon) return;
 
