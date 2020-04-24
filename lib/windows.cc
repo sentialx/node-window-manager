@@ -42,6 +42,8 @@ Process getWindowProcess (HWND handle) {
     wchar_t exeName[MAX_PATH]{};
 
     QueryFullProcessImageNameW (pHandle, 0, exeName, &dwSize);
+    
+    CloseHandle(pHandle);
 
     auto wspath (exeName);
     auto path = toUtf8 (wspath);
