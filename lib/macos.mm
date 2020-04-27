@@ -37,7 +37,9 @@ NSDictionary* getWindowInfo(int handle) {
     }
   }
 
-  CFRelease(windowList);
+  if (windowList) {
+    CFRelease(windowList);
+  }
   return NULL;
 }
 
@@ -61,7 +63,9 @@ AXUIElementRef getAXWindow(int pid, int handle) {
     }
   }
 
-  CFRelease(windows);
+  if (windows) {
+    CFRelease(windows);
+  }
   return NULL;
 }
 
@@ -124,7 +128,10 @@ Napi::Array getWindows(const Napi::CallbackInfo &info) {
     arr[i] = vec[i];
   }
 
-  CFRelease(windowList);
+  if (windowList) {
+    CFRelease(windowList);
+  }
+  
   return arr;
 }
 
@@ -148,7 +155,9 @@ Napi::Number getActiveWindow(const Napi::CallbackInfo &info) {
     return Napi::Number::New(env, [windowNumber intValue]);
   }
 
-  CFRelease(windowList);
+  if (windowList) {
+    CFRelease(windowList);
+  }
   return Napi::Number::New(env, 0);
 }
 
