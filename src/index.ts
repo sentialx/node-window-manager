@@ -3,12 +3,13 @@ import { EventEmitter } from "events";
 import { platform } from "os";
 import { Monitor } from "./classes/monitor";
 import { EmptyMonitor } from "./classes/empty-monitor";
+import { resolve } from 'path';
 
 let addon: any;
 
 if (platform() === "win32" || platform() === "darwin") {
   const ADDON_PATH = (process.env.NODE_ENV != "dev") ? "Release" : "Debug";
-  addon = require(`../build/${ADDON_PATH}/addon.node`);
+  addon = require(`node-gyp-build`)(resolve(__dirname, '..'));
 }
 
 let interval: any = null;
@@ -24,6 +25,10 @@ class WindowManager extends EventEmitter {
     if (!addon) return;
 
     this.on("newListener", event => {
+      if (event === 'window-activated') {
+        lastId = addon.getActiveWindow();
+      }
+
       if (registeredEvents.indexOf(event) !== -1) return;
 
       if (event === "window-activated") {
@@ -80,6 +85,11 @@ class WindowManager extends EventEmitter {
       return new EmptyMonitor();
     }
   }
+
+  createProcess = (path: string, cmd = ""): number => {
+    if (!addon || !addon.createProcess) return;
+    return addon.createProcess(path, cmd);
+  };
 }
 
 const windowManager = new WindowManager();

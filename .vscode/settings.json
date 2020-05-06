@@ -47,6 +47,11 @@
     "unordered_map": "cpp",
     "xhash": "cpp",
     "map": "cpp",
-    "xtree": "cpp"
+    "xtree": "cpp",
+    "chrono": "cpp",
+    "cstdarg": "cpp",
+    "mutex": "cpp",
+    "ratio": "cpp",
+    "thread": "cpp"
   }
 }
