@@ -18,6 +18,7 @@ setTimeout(() => {
 console.log("Windows list");
 windowManager.getWindows().forEach((window) => {
   if (window.isVisible()) {
+    console.log(window.getTitle());
     console.log(window.path);
   }
 });
