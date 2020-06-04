@@ -1,5 +1,5 @@
 import { addon } from "..";
-import extractFileIcon from 'extract-file-icon';
+import extractFileIcon from "extract-file-icon";
 import { Monitor } from "./monitor";
 import { IRectangle } from "../interfaces";
 import { EmptyMonitor } from "./empty-monitor";
@@ -102,13 +102,13 @@ export class Window {
       addon.showWindow(this.id, "maximize");
     } else if (process.platform === "darwin") {
       addon.setWindowMaximized(this.id);
-    } 
+    }
   }
 
   bringToTop() {
     if (!addon) return;
-    
-    if (process.platform === 'darwin') {
+
+    if (process.platform === "darwin") {
       addon.bringWindowToTop(this.id, this.processId);
     } else {
       addon.bringWindowToTop(this.id);
@@ -124,9 +124,9 @@ export class Window {
     if (!addon) return;
 
     if (process.platform === "win32") {
-      return this.path && this.path !== '' && addon.isWindow(this.id);
+      return this.path && this.path !== "" && addon.isWindow(this.id);
     } else if (process.platform === "darwin") {
-      return this.path && this.path !== '' && !!addon.initWindow(this.id);
+      return this.path && this.path !== "" && !!addon.initWindow(this.id);
     }
   }
 

@@ -12,21 +12,21 @@ window.setBounds({ x: 0, y: 0 });
 window.maximize();
 
 setTimeout(() => {
-   window.setBounds(bounds);
+  window.setBounds(bounds);
 }, 1000);
 
 console.log("Windows list");
-windowManager.getWindows().forEach(window => {
-   if (window.isVisible()) {
-      console.log(window.path);
-   }
+windowManager.getWindows().forEach((window) => {
+  if (window.isVisible()) {
+    console.log(window.path);
+  }
 });
 
-windowManager.on('window-activated', (window) => {
-   console.log(window.path);
+windowManager.on("window-activated", (window) => {
+  console.log(window.path);
 });
 
 console.log("Monitors list");
-windowManager.getMonitors().forEach(monitor => {
-   console.log(monitor.getWorkArea());
+windowManager.getMonitors().forEach((monitor) => {
+  console.log(monitor.getWorkArea());
 });
