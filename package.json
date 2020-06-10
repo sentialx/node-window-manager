@@ -11,7 +11,7 @@
     "install": "node-gyp-build",
     "rebuild": "node-gyp rebuild",
     "rebuild-dev": "npm run rebuild -- --debug",
-    "prepublishOnly": "npm run rebuild",
+    "prepublishOnly": "npm run rebuild && npm run prebuild",
     "prepare": "npm run build"
   },
   "repository": {
