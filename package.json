@@ -1,14 +1,13 @@
 {
   "name": "node-window-manager",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "Manage windows in macOS, Windows and Linux",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "prebuild": "prebuildify --napi",
-    "install": "node-gyp-build",
+    "install": "npm run rebuild",
     "rebuild": "node-gyp rebuild",
     "rebuild-dev": "npm run rebuild -- --debug",
     "prepublishOnly": "npm run rebuild",
@@ -34,7 +33,6 @@
   "devDependencies": {
     "@types/node": "13.11.1",
     "node-gyp": "^6.1.0",
-    "prebuildify": "^3.0.4",
     "tslint": "6.1.1",
     "typescript": "3.8.3"
   },
